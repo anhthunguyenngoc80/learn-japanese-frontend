@@ -6,13 +6,15 @@ interface LogoProps {
   showHoverEffect?: boolean;
   asLink?: boolean;
   href?: string;
+  variant?: "light" | "dark";
 }
 
 export function Logo({ 
   size = "md", 
   showHoverEffect = false, 
   asLink = true,
-  href = "/"
+  href = "/",
+  variant = "light"
 }: LogoProps) {
   const sizeClasses = {
     sm: "h-7 w-7",
@@ -32,6 +34,8 @@ export function Logo({
     lg: "text-xl"
   };
 
+  const isDark = variant === "dark";
+
   const logoContent = (
     <>
       <span 
@@ -45,8 +49,8 @@ export function Logo({
       >
         <Languages className={iconSizeClasses[size]} />
       </span>
-      <span className={`${textSizeClasses[size]} font-bold tracking-tight text-slate-900`}>
-        Nihongo<span className="text-rose-600">Go</span>
+      <span className={`${textSizeClasses[size]} font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+        Nihongo<span className={isDark ? 'text-rose-300' : 'text-rose-600'}>Go</span>
       </span>
     </>
   );

@@ -1,9 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+
 import { Logo, Button } from "../components";
+import { PATHS } from "../constant/Path";
 
 export function Header() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,8 +30,12 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm">Đăng nhập</Button>
-          <Button variant="primary" size="sm">Đăng ký</Button>
+          <Button variant="ghost" size="sm">
+            Đăng nhập
+          </Button>
+          <Button variant="primary" size="sm" onClick={() => navigate(PATHS.register)}>
+            Đăng ký
+          </Button>
         </div>
 
         <button

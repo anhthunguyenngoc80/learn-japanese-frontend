@@ -18,6 +18,15 @@ const PUBLIC_ROUTER: RouteType[] = [
   },
 ]
 
+const AUTH_ROUTER: RouteType[] = [
+  {
+    key: 'register',
+    name: "Register",
+    path: PATHS.register,
+    element: <pages.RegisterPage />
+  },
+]
+
 const PRIVATE_HEADER_ROUTER: RouteType[] = [
 
 ]
@@ -31,4 +40,5 @@ export {
   PUBLIC_ROUTER,
   PRIVATE_HEADER_ROUTER,
   PRIVATE_ROUTER,
+  AUTH_ROUTER
 };

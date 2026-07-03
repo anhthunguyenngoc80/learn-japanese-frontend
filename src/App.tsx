@@ -3,6 +3,7 @@ import * as router from "./router/router";
 
 import "./App.css";
 import { MainLayout } from "./layout";
+import { AuthLayout } from "./layout/AuthLayout";
 
 function App() {
   return (
@@ -14,6 +15,13 @@ function App() {
               key={route.key}
               path={route.path}
               element={MainLayout({ children: route.element })}
+            />
+          ))}
+          {router.AUTH_ROUTER.map((route) => (
+            <Route
+              key={route.key}
+              path={route.path}
+              element={AuthLayout({ children: route.element })}
             />
           ))}
 
