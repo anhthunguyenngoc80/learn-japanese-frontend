@@ -30,7 +30,7 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={() => navigate(PATHS.login)}>
             Đăng nhập
           </Button>
           <Button variant="primary" size="sm" onClick={() => navigate(PATHS.register)}>
