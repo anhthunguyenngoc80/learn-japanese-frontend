@@ -1,7 +1,8 @@
 import axios from "axios";
+import * as constant from "../constant"
 
 const api = axios.create({
-  baseURL: import.meta.env.API_URL,
+  baseURL: constant.baseURL,
   headers: {
     "Content-Type": "application/json",
   },
