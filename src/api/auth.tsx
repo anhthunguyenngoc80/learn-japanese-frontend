@@ -10,3 +10,12 @@ export const register = async ({ username, email, password }: authI.RegisterRequ
 
     return response.data;
 };
+
+export const login = async ({ email, password }: authI.LoginRequest) => {
+    const response = await api.post("/login", {
+        email,
+        password,
+    });
+
+    return response.data;
+};

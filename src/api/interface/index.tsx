@@ -1,1 +1,1 @@
-export type { RegisterRequest } from "./authInterface";
+export type { RegisterRequest, LoginRequest } from "./authInterface";

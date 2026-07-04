@@ -25,6 +25,12 @@ const AUTH_ROUTER: RouteType[] = [
     path: PATHS.register,
     element: <pages.RegisterPage />
   },
+  {
+    key: 'login',
+    name: "Login",
+    path: PATHS.login,
+    element: <pages.LoginPage />
+  },
 ]
 
 const PRIVATE_HEADER_ROUTER: RouteType[] = [
