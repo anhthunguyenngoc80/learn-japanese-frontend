@@ -1,0 +1,1 @@
+export const baseURL = "https://learn-japanese-backend.onrender.com/api"
