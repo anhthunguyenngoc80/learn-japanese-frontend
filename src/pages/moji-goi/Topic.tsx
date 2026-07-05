@@ -7,8 +7,6 @@ import {
   PenLine,
   ListChecks,
   Plus,
-  X,
-  PencilLine,
   FileText,
   ClipboardList,
 } from "lucide-react";
@@ -40,13 +38,6 @@ export const Topic = () => {
     };
     fetchTopics();
   }, [collectionId]);
-
-  const removeWord = (index: number) => {
-    if (!selectedTopic) return;
-    const updated = { ...selectedTopic };
-    updated.words = updated.words.filter((_, i) => i !== index);
-    setSelectedTopic(updated);
-  };
 
   if (loading) {
     return (
