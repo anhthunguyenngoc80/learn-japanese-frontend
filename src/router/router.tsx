@@ -38,7 +38,12 @@ const PRIVATE_HEADER_ROUTER: RouteType[] = [
 ]
 
 const PRIVATE_ROUTER: RouteType[] = [
-
+  {
+    key: 'collection',
+    name: "Collection",
+    path: PATHS.collection,
+    element: <pages.Collection />
+  },
 ]
 
 

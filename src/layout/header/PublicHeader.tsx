@@ -2,10 +2,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
-import { Logo, Button } from "../components";
-import { PATHS } from "../constant/Path";
+import { Logo, Button } from "../../components";
+import { PATHS } from "../../constant/Path";
 
-export function Header() {
+export function PublicHeader() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -54,8 +54,8 @@ export function Header() {
             <a href="#jlpt" className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">JLPT</a>
             <a href="#features" className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Tính năng</a>
             <div className="mt-3 flex flex-col gap-2 pt-3 border-t border-slate-100">
-              <Button variant="secondary" size="sm" fullWidth>Đăng nhập</Button>
-              <Button variant="primary" size="sm" fullWidth>Đăng ký</Button>
+              <Button variant="secondary" size="sm" fullWidth onClick={() => navigate(PATHS.login)}>Đăng nhập</Button>
+              <Button variant="primary" size="sm" fullWidth onClick={() => navigate(PATHS.register)}>Đăng ký</Button>
             </div>
           </div>
         </div>

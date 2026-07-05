@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Button, InputField } from "../../components";
 import * as api from "../../api";
+import * as constant from "../../constant";
+import { loginSuccess, useAppDispatch } from "../../store";
 
 export const LoginPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -44,17 +48,20 @@ export const LoginPage = () => {
 
     setLoading(true);
     try {
-      await api.login({
+      const response = await api.login({
         email: formData.email,
         password: formData.password,
       });
 
-      window.location.href = "/";
+      // Assuming API returns { user: { id, username, email }, token: string }
+      dispatch(loginSuccess({ user: response.data }));
+      navigate(constant.PATHS.collection);
     } catch (error) {
       console.error("Login failed:", error);
       setErrors((prev) => ({
         ...prev,
-        general: "Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.",
+        general:
+          "Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.",
       }));
     } finally {
       setLoading(false);
