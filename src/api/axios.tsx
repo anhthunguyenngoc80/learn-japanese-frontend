@@ -1,4 +1,6 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "../constant";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -16,6 +18,20 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  },
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      const navigate = useNavigate();
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      navigate(PATHS.dashboard);
+    }
     return Promise.reject(error);
   },
 );

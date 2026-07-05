@@ -7,7 +7,6 @@ export interface GetCollectionsResponse {
 
 export interface CreateCollectionRequest {
   name: string;
-  description: string;
 }
 
 export interface CreateCollectionResponse {

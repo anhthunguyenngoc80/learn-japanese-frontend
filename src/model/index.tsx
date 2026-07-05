@@ -1,2 +1,2 @@
-export type { Collection } from "./Collection";
+export type { Collection, Topic, Word, Example } from "./Collection";
 export type { User } from "./User";

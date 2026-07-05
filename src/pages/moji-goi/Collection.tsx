@@ -22,6 +22,10 @@ export const Collection = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    console.log(collections);
+  }, [collections]);
+
   return (
     <div className="grow flex flex-col items-center justify-center px-6 py-12">
       {/* Header */}
@@ -50,53 +54,65 @@ export const Collection = () => {
             học!
           </p>
           <button
-            onClick={() => navigate("/moji-goi")}
+            onClick={() => navigate(PATHS.createCollection)}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold shadow-md shadow-amber-200 hover:shadow-lg hover:from-amber-600 hover:to-amber-700 transition-all"
           >
             <Plus size={18} /> Tạo bộ từ vựng mới
           </button>
         </div>
       ) : (
-        /* Collection list */
-        <div className="w-full max-w-2xl flex flex-col gap-3">
-          {collections.map((collection) => (
+        <>
+          {/* Collection list header with add button */}
+          <div className="w-full max-w-2xl flex items-center justify-between mb-4">
+            <p className="text-sm text-gray-500">
+              {collections.length} bộ từ vựng
+            </p>
             <button
-              key={collection.id}
-              onClick={() => navigate(PATHS.topic(collection.id))}
-              className="group flex items-center gap-4 p-4 rounded-2xl border border-amber-100 bg-white shadow-sm hover:shadow-md hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-200 text-left"
+              onClick={() => navigate(PATHS.createCollection)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-sm font-semibold shadow-md shadow-amber-200 hover:shadow-lg hover:from-amber-600 hover:to-amber-700 transition-all"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
-                <BookOpen className="w-6 h-6 text-amber-600" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="text-base font-semibold text-gray-800 truncate">
-                  {collection.name}
-                </h3>
-                <p className="text-sm text-gray-500 truncate">
-                  {collection.description}
-                </p>
-              </div>
-              <div className="shrink-0 flex items-center gap-2">
-                <span className="text-xs text-gray-400">
-                  {(collection?.words || []).length} từ
-                </span>
-                <div className="w-6 h-6 rounded-full bg-amber-100 grid place-items-center group-hover:bg-amber-200 transition-colors">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    className="text-amber-600"
-                  >
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
-                </div>
-              </div>
+              <Plus size={16} /> Thêm bộ từ vựng
             </button>
-          ))}
-        </div>
+          </div>
+
+          {/* Collection list */}
+          <div className="w-full max-w-2xl flex flex-col gap-3">
+            {collections.map((collection) => (
+              <button
+                key={collection.collection_id}
+                onClick={() => navigate(PATHS.topic(collection.collection_id))}
+                className="group flex items-center gap-4 p-4 rounded-2xl border border-amber-100 bg-white shadow-sm hover:shadow-md hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-200 text-left"
+              >
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
+                  <BookOpen className="w-6 h-6 text-amber-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-base font-semibold text-gray-800 truncate">
+                    {collection.name}
+                  </h3>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  <span className="text-xs text-gray-400">
+                    {(collection?.topics || []).length} từ
+                  </span>
+                  <div className="w-6 h-6 rounded-full bg-amber-100 grid place-items-center group-hover:bg-amber-200 transition-colors">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      className="text-amber-600"
+                    >
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

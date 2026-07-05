@@ -1,2 +1,3 @@
 export { register, login, getUser } from "./auth";
-export { getCollections } from "./collection";
+export { getCollections, createCollection } from "./collection";
+export { getTopics } from "./topic";
