@@ -25,26 +25,47 @@ export function Hero() {
           </h1>
 
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
-            Học từ vựng, Kanji, ngữ pháp và luyện thi JLPT với lộ trình cá nhân hóa. 
-            Thiết kế bởi người yêu tiếng Nhật, dành cho người học nghiêm túc.
+            Học từ vựng, Kanji, ngữ pháp và luyện thi JLPT với lộ trình cá nhân
+            hóa. Thiết kế bởi người yêu tiếng Nhật, dành cho người học nghiêm
+            túc.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button  icon={ArrowRight} iconPosition="right">
+            <Button
+              kind="elevated"
+              icon={ArrowRight}
+              iconPosition="right"
+              size="md"
+              spacing="md"
+            >
               Bắt đầu học ngay
             </Button>
-            <Button  icon={Play}>
+            <Button
+              kind="outline"
+              icon={Play}
+              size="md"
+              spacing="md"
+              color="slate"
+              iconPosition="left"
+            >
               Khám phá
             </Button>
           </div>
 
           <div className="mt-10 flex items-center gap-6 text-sm text-slate-500">
             <div className="flex -space-x-2">
-              {["bg-rose-400", "bg-rose-500", "bg-rose-600", "bg-rose-700"].map((c, i) => (
-                <div key={i} className={`h-8 w-8 rounded-full border-2 border-white ${c}`} />
-              ))}
+              {["bg-rose-400", "bg-rose-500", "bg-rose-600", "bg-rose-700"].map(
+                (c, i) => (
+                  <div
+                    key={i}
+                    className={`h-8 w-8 rounded-full border-2 border-white ${c}`}
+                  />
+                ),
+              )}
             </div>
-            <span><b className="text-slate-900">10,000+</b> học viên đang học</span>
+            <span>
+              <b className="text-slate-900">10,000+</b> học viên đang học
+            </span>
           </div>
         </div>
 
@@ -53,23 +74,31 @@ export function Hero() {
             <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-rose-500 to-rose-400 rotate-6 opacity-20" />
             <div className="relative h-full w-full rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-rose-500/10 border border-slate-100">
               <div className="grid h-full grid-cols-3 grid-rows-3 gap-3">
-                {["日", "本", "語", "学", "習", "漢", "字", "文", "法"].map((ch, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-center rounded-2xl bg-gradient-to-br from-slate-50 to-rose-50 text-3xl font-bold text-slate-800 shadow-sm transition-transform hover:scale-105 hover:from-rose-100 hover:to-rose-100 hover:text-rose-700"
-                    style={{ animation: `float 3s ease-in-out ${i * 0.15}s infinite` }}
-                  >
-                    {ch}
-                  </div>
-                ))}
+                {["日", "本", "語", "学", "習", "漢", "字", "文", "法"].map(
+                  (ch, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-center rounded-2xl bg-gradient-to-br from-slate-50 to-rose-50 text-4xl font-bold text-slate-800 shadow-sm transition-transform hover:scale-105 hover:from-rose-100 hover:to-rose-100 hover:text-rose-700"
+                      style={{
+                        animation: `float 3s ease-in-out ${i * 0.15}s infinite`,
+                      }}
+                    >
+                      {ch}
+                    </div>
+                  ),
+                )}
               </div>
             </div>
             <div className="absolute -bottom-6 -left-6 rounded-2xl bg-white p-4 shadow-xl border border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600 font-bold">A+</div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600 font-bold">
+                  A+
+                </div>
                 <div>
                   <div className="text-xs text-slate-500">Điểm JLPT N3</div>
-                  <div className="text-sm font-bold text-slate-900">180 / 180</div>
+                  <div className="text-sm font-bold text-slate-900">
+                    180 / 180
+                  </div>
                 </div>
               </div>
             </div>

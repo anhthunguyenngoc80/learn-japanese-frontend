@@ -9,13 +9,16 @@
  * Each color provides a consistent visual theme across borders, backgrounds, and text
  */
 export type AccentColor =
-  | "amber"
-  | "indigo"
   | "rose"
-  | "sky"
+  | "red"
+  | "amber"
   | "emerald"
+  | "teal"
+  | "blue"
+  | "indigo"
   | "violet"
-  | "slate";
+  | "slate"
+  | "white";
 
 // ─── Accent Style Configuration ─────────────────────────────────────
 /**
@@ -100,23 +103,23 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
     exampleBar: "bg-rose-300",
     exampleBg: "bg-rose-50/40",
   },
-  sky: {
-    border: "border-sky-300",
-    bg: "bg-sky-50/40",
-    ring: "ring-sky-100",
-    headerBg: "bg-gradient-to-r from-sky-50/50 to-transparent",
-    headerDivider: "border-sky-100",
-    cardHoverBorder: "hover:border-sky-400",
-    badgeBg: "bg-sky-500",
+  teal: {
+    border: "border-teal-300",
+    bg: "bg-teal-50/40",
+    ring: "ring-teal-100",
+    headerBg: "bg-gradient-to-r from-teal-50/50 to-transparent",
+    headerDivider: "border-teal-100",
+    cardHoverBorder: "hover:border-teal-400",
+    badgeBg: "bg-teal-500",
     badgeText: "text-white",
-    dot: "bg-sky-500",
-    text: "text-sky-700",
-    icon: "text-sky-600",
-    chipBg: "bg-sky-100",
-    chipText: "text-sky-700",
-    chipHover: "hover:bg-sky-200",
-    exampleBar: "bg-sky-300",
-    exampleBg: "bg-sky-50/40",
+    dot: "bg-teal-500",
+    text: "text-teal-700",
+    icon: "text-teal-600",
+    chipBg: "bg-teal-100",
+    chipText: "text-teal-700",
+    chipHover: "hover:bg-teal-200",
+    exampleBar: "bg-teal-300",
+    exampleBg: "bg-teal-50/40",
   },
   emerald: {
     border: "border-emerald-300",
@@ -172,6 +175,60 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
     exampleBar: "bg-slate-300",
     exampleBg: "bg-slate-50/40",
   },
+  red: {
+    border: "border-red-300",
+    bg: "bg-red-50/40",
+    ring: "ring-red-100",
+    headerBg: "bg-gradient-to-r from-red-50/50 to-transparent",
+    headerDivider: "border-red-100",
+    cardHoverBorder: "hover:border-red-400",
+    badgeBg: "bg-red-500",
+    badgeText: "text-white",
+    dot: "bg-red-500",
+    text: "text-red-700",
+    icon: "text-red-600",
+    chipBg: "bg-red-100",
+    chipText: "text-red-700",
+    chipHover: "hover:bg-red-200",
+    exampleBar: "bg-red-300",
+    exampleBg: "bg-red-50/40",
+  },
+  blue: {
+    border: "border-blue-300",
+    bg: "bg-blue-50/40",
+    ring: "ring-blue-100",
+    headerBg: "bg-gradient-to-r from-blue-50/50 to-transparent",
+    headerDivider: "border-blue-100",
+    cardHoverBorder: "hover:border-blue-400",
+    badgeBg: "bg-blue-500",
+    badgeText: "text-white",
+    dot: "bg-blue-500",
+    text: "text-blue-700",
+    icon: "text-blue-600",
+    chipBg: "bg-blue-100",
+    chipText: "text-blue-700",
+    chipHover: "hover:bg-blue-200",
+    exampleBar: "bg-blue-300",
+    exampleBg: "bg-blue-50/40",
+  },
+  white: {
+    border: "border-white-300",
+    bg: "bg-white-50/40",
+    ring: "ring-white-100",
+    headerBg: "bg-gradient-to-r from-white-50/50 to-transparent",
+    headerDivider: "border-white-100",
+    cardHoverBorder: "hover:border-white-400",
+    badgeBg: "bg-white-500",
+    badgeText: "text-white",
+    dot: "bg-white-500",
+    text: "text-white-700",
+    icon: "text-white-600",
+    chipBg: "bg-white-100",
+    chipText: "text-white-700",
+    chipHover: "hover:bg-white-200",
+    exampleBar: "bg-white-300",
+    exampleBg: "bg-white-50/40",
+  },
 };
 
 // ─── Topic Accent Cycle ─────────────────────────────────────────────
@@ -184,7 +241,7 @@ export const topicAccentCycle: AccentColor[] = [
   "indigo",
   "emerald",
   "rose",
-  "sky",
+  "teal",
   "violet",
   "slate",
 ];

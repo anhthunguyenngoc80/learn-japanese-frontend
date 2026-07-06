@@ -50,7 +50,13 @@ export const Collection = () => {
             Bạn chưa có bộ từ vựng nào. Hãy tạo bộ từ vựng đầu tiên để bắt đầu
             học!
           </p>
-          <Button  size="md" icon={Plus} iconPosition="left" onClick={() => navigate(PATHS.createCollection)} className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700">
+          <Button
+            size="md"
+            icon={Plus}
+            iconPosition="left"
+            onClick={() => navigate(PATHS.createCollection)}
+            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+          >
             Tạo bộ từ vựng mới
           </Button>
         </div>
@@ -61,7 +67,16 @@ export const Collection = () => {
             <p className="text-sm text-gray-500">
               {collections.length} bộ từ vựng
             </p>
-            <Button  size="sm" icon={Plus} iconPosition="left" onClick={() => navigate(PATHS.createCollection)} className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700">
+            <Button
+              size="md"
+              kind="elevated"
+              color="amber"
+              spacing="sm"
+              icon={Plus}
+              iconPosition="left"
+              onClick={() => navigate(PATHS.createCollection)}
+              radius="full"
+            >
               Thêm bộ từ vựng
             </Button>
           </div>
@@ -71,15 +86,16 @@ export const Collection = () => {
             {collections.map((collection) => (
               <Button
                 key={collection.collection_id}
+                kind="outline"
+                color="amber"
                 onClick={() => navigate(PATHS.topic(collection.collection_id))}
-                
                 className="group w-full justify-between p-4"
               >
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
                   <BookOpen className="w-6 h-6 text-amber-600" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-semibold text-gray-800 truncate">
+                  <h3 className="text-start text-base font-semibold text-gray-800 truncate">
                     {collection.name}
                   </h3>
                 </div>

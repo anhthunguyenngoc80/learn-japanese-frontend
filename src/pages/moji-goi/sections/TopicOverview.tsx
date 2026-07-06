@@ -18,10 +18,15 @@ export const TopicOverview = () => {
         { text: "先生", reading: "せんせい", meaning: "giáo viên" },
       ],
     },
-    { name: "Chưa phân loại", words: [{ text: "友達", reading: "ともだち", meaning: "bạn bè" }] },
+    {
+      name: "Chưa phân loại",
+      words: [{ text: "友達", reading: "ともだち", meaning: "bạn bè" }],
+    },
   ].filter((g) => g.words.length > 0);
 
-  const [expanded, setExpanded] = useState<string | null>(nonEmpty[0]?.name ?? null);
+  const [expanded, setExpanded] = useState<string | null>(
+    nonEmpty[0]?.name ?? null,
+  );
   const active = nonEmpty.find((g) => g.name === expanded) || null;
 
   return (
@@ -31,8 +36,9 @@ export const TopicOverview = () => {
           <Button
             key={g.name}
             onClick={() => setExpanded(g.name)}
-            // variant={expanded === g.name ? "primary" : "secondary"}
-            className={`p-4 rounded-2xl border-2 text-left transition ${
+            kind="outline"
+            color="amber"
+            className={`${
               expanded === g.name
                 ? "border-amber-400 bg-amber-50/60 shadow-sm"
                 : "border-amber-100 bg-white hover:border-amber-200"

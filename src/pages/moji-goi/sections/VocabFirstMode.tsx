@@ -43,13 +43,21 @@ export const VocabFirstMode = ({ words, topics }: ModeContentProps) => {
                 placeholder="Tên chủ đề mới"
                 className="flex-1 px-3 py-2 rounded-xl border border-amber-200 bg-white text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition"
               />
-              <IconButton aria-label="abc" icon={Plus} size="sm" />
+              <IconButton
+                aria-label="abc"
+                icon={Plus}
+                size="md"
+                spacing="md"
+                kind="solid"
+                color="amber"
+              />
             </div>
 
             <div className="flex flex-col gap-3">
               {topics.map((t, idx) => {
                 const count = topics.length;
-                const accentColor = topicAccentCycle[idx % topicAccentCycle.length];
+                const accentColor =
+                  topicAccentCycle[idx % topicAccentCycle.length];
                 const color = accentMap[accentColor];
                 return (
                   <div
@@ -71,7 +79,14 @@ export const VocabFirstMode = ({ words, topics }: ModeContentProps) => {
                           ({count} từ)
                         </span>
                       </div>
-                      <IconButton aria-label="abc" icon={X}  size="sm" className="!p-0 w-5 h-5" />
+                      <IconButton
+                        aria-label="abc"
+                        kind="ghost"
+                        icon={X}
+                        size="sm"
+                        color={accentColor}
+                        className="!p-0 w-5 h-5"
+                      />
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-[11px] text-gray-500 shrink-0">
@@ -88,7 +103,16 @@ export const VocabFirstMode = ({ words, topics }: ModeContentProps) => {
                         placeholder={String(words.length)}
                         className="w-14 px-2 py-1 rounded-lg border border-white/80 bg-white text-xs outline-none focus:border-amber-400"
                       />
-                      <Button  size="sm" className="text-[11px]">Gán</Button>
+                      <Button
+                        kind="soft"
+                        color={accentColor}
+                        size="sm"
+                        spacing="xxs"
+                        radius="sm"
+                        className="text-[11px]"
+                      >
+                        Gán
+                      </Button>
                     </div>
                   </div>
                 );

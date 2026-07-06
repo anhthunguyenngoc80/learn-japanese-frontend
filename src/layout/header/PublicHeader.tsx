@@ -15,33 +15,56 @@ export function PublicHeader() {
         <Logo size="md" showHoverEffect={true} />
 
         <nav className="hidden items-center gap-8 md:flex">
-          <Link to="/" className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600">
+          <Link
+            to="/"
+            className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600"
+          >
             Trang chủ
           </Link>
-          <a href="#jlpt" className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600">
+          <a
+            href="#jlpt"
+            className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600"
+          >
             JLPT
           </a>
-          <a href="#features" className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600">
+          <a
+            href="#features"
+            className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600"
+          >
             Tính năng
           </a>
-          <a href="#how" className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600">
+          <a
+            href="#how"
+            className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600"
+          >
             Lộ trình
           </a>
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button size="sm" onClick={() => navigate(PATHS.login)}>
+          <Button
+            kind="ghost"
+            color="slate"
+            size="sm"
+            spacing="sm"
+            onClick={() => navigate(PATHS.login)}
+          >
             Đăng nhập
           </Button>
-          <Button  size="sm" onClick={() => navigate(PATHS.register)}>
+          <Button
+            kind="elevated"
+            size="sm"
+            spacing="sm"
+            onClick={() => navigate(PATHS.register)}
+          >
             Đăng ký
           </Button>
         </div>
 
         <IconButton
           onClick={() => setOpen(!open)}
-
           size="md"
+          spacing="md"
           className="md:hidden"
           aria-label="Menu"
           icon={open ? X : Menu}
@@ -51,12 +74,44 @@ export function PublicHeader() {
       {open && (
         <div className="border-t border-slate-200 bg-white md:hidden">
           <div className="space-y-1 px-4 py-4">
-            <a href="/" className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Trang chủ</a>
-            <a href="#jlpt" className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">JLPT</a>
-            <a href="#features" className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Tính năng</a>
+            <a
+              href="/"
+              className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Trang chủ
+            </a>
+            <a
+              href="#jlpt"
+              className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              JLPT
+            </a>
+            <a
+              href="#features"
+              className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Tính năng
+            </a>
             <div className="mt-3 flex flex-col gap-2 pt-3 border-t border-slate-100">
-              <Button  size="sm" fullWidth onClick={() => navigate(PATHS.login)}>Đăng nhập</Button>
-              <Button  size="sm" fullWidth onClick={() => navigate(PATHS.register)}>Đăng ký</Button>
+              <Button
+                kind="ghost"
+                color="slate"
+                size="sm"
+                spacing="sm"
+                fullWidth
+                onClick={() => navigate(PATHS.login)}
+              >
+                Đăng nhập
+              </Button>
+              <Button
+                kind="elevated"
+                size="sm"
+                spacing="sm"
+                fullWidth
+                onClick={() => navigate(PATHS.register)}
+              >
+                Đăng ký
+              </Button>
             </div>
           </div>
         </div>

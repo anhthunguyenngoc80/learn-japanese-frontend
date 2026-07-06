@@ -24,7 +24,13 @@ export const WordPreviewTable = ({
           <span className="font-medium text-gray-800 shrink-0">{w.text}</span>
           <span className="text-gray-400 shrink-0">{w.reading}</span>
           <span className="text-gray-500 truncate">{w.meaning}</span>
-          <IconButton aria-label="abc" icon={X}  size="sm" className="text-gray-300 hover:text-red-400 shrink-0" />
+          <IconButton
+            aria-label="abc"
+            color="slate"
+            icon={X}
+            size="sm"
+            spacing="sm"
+          />
         </li>
       ))}
     </ul>

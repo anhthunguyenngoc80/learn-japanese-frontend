@@ -44,14 +44,19 @@ export function PrivateHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button  size="sm" onClick={handleLogout}>
+          <Button
+            kind="ghost"
+            color="slate"
+            size="sm"
+            spacing="sm"
+            onClick={handleLogout}
+          >
             Đăng xuất
           </Button>
         </div>
 
         <IconButton
           onClick={() => setOpen(!open)}
-          
           size="md"
           className="md:hidden"
           aria-label="Menu"
@@ -82,8 +87,10 @@ export function PrivateHeader() {
             </a>
             <div className="mt-3 flex flex-col gap-2 pt-3 border-t border-slate-100">
               <Button
-                
                 size="sm"
+                kind="ghost"
+                color="slate"
+                spacing="sm"
                 fullWidth
                 onClick={handleLogout}
               >

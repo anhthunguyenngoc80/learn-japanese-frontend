@@ -35,7 +35,15 @@ Ví dụ: 単語 | よみ | 意味 | 例文"
         className="w-full px-4 py-3 rounded-xl border border-amber-200 bg-white text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition resize-y font-mono"
       />
 
-      <Button size="sm" icon={Plus} iconPosition="left">
+      <Button
+        kind="soft"
+        color="amber"
+        size="sm"
+        spacing="sm"
+        radius="full"
+        icon={Plus}
+        iconPosition="left"
+      >
         Phân tích
       </Button>
     </div>

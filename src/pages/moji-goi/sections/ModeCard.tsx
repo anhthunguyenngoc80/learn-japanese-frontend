@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { Button } from "../../../components";
 
 export const ModeCard = ({
   icon,
@@ -13,9 +14,11 @@ export const ModeCard = ({
   selected: boolean;
   onClick: () => void;
 }) => (
-  <button
+  <Button
+    kind="outline"
+    color="amber"
     onClick={onClick}
-    className={`text-left p-4 rounded-2xl border-2 transition flex items-start gap-3 ${
+    className={`text-left flex items-start p-4 ${
       selected
         ? "border-amber-400 bg-amber-50/60 shadow-sm"
         : "border-amber-100 bg-white hover:border-amber-200"
@@ -34,5 +37,5 @@ export const ModeCard = ({
         {description}
       </p>
     </div>
-  </button>
+  </Button>
 );

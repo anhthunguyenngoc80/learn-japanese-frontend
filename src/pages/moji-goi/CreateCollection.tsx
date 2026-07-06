@@ -8,7 +8,13 @@ import {
   Rows3,
 } from "lucide-react";
 import { Button } from "../../components";
-import { ModeCard, ParallelMode, TopicFirstMode, TopicOverview, VocabFirstMode } from "./sections";
+import {
+  ModeCard,
+  ParallelMode,
+  TopicFirstMode,
+  TopicOverview,
+  VocabFirstMode,
+} from "./sections";
 import type * as models from "../../model";
 
 const MODE_CARDS: models.ModeCard[] = [
@@ -18,21 +24,21 @@ const MODE_CARDS: models.ModeCard[] = [
     title: "Từ vựng trước, chủ đề sau",
     description:
       "Nhập từ vựng, xem trước, rồi gán chủ đề theo khoảng số hoặc từng từ.",
-    content: VocabFirstMode
+    content: VocabFirstMode,
   },
   {
     mode: "topic-first",
     icon: Layers,
     title: "Chủ đề trước, từ vựng sau",
     description: "Tạo danh sách chủ đề, rồi nhập từ cho từng chủ đề.",
-    content: TopicFirstMode
+    content: TopicFirstMode,
   },
   {
     mode: "parallel",
     icon: Rows3,
     title: "Nhập song song",
     description: "Nhập từ và gán chủ đề cho từng từ cùng lúc.",
-    content: ParallelMode
+    content: ParallelMode,
   },
 ];
 
@@ -42,22 +48,25 @@ const MOCK_WORDS: models.CreateWord[] = [
     text: "単語",
     reading: "たんご",
     meaning: "từ vựng",
-    examples: []
+    examples: [],
   },
   {
     text: "勉強",
     reading: "べんきょう",
-    meaning: "học tập", examples: []
+    meaning: "học tập",
+    examples: [],
   },
   {
     text: "学校",
     reading: "がっこう",
-    meaning: "trường học", examples: []
+    meaning: "trường học",
+    examples: [],
   },
   {
     text: "先生",
     reading: "せんせい",
-    meaning: "giáo viên", examples: []
+    meaning: "giáo viên",
+    examples: [],
   },
   { text: "友達", reading: "ともだち", meaning: "bạn bè", examples: [] },
   { text: "図書館", reading: "としょかん", meaning: "thư viện", examples: [] },
@@ -78,7 +87,14 @@ export const CreateCollection = () => {
 
   return (
     <div className="grow flex flex-col px-6 py-8 max-w-7xl mx-auto w-full">
-      <Button  size="sm" icon={ChevronLeft} iconPosition="left" className="mb-6 w-fit">
+      <Button
+        kind="ghost"
+        size="sm"
+        icon={ChevronLeft}
+        spacing="none"
+        iconPosition="left"
+        className="mb-6 w-fit"
+      >
         Quay lại
       </Button>
 
@@ -114,14 +130,12 @@ export const CreateCollection = () => {
       )}
 
       {/* ============================ SCREEN 1 — vocab-first ============================ */}
-      {screen === 1 && MODE_CARDS.map((card) => {
-        return mode === card.mode && (
-          <card.content
-            words={words}
-            topics={topics}
-          />
-        );
-      })}
+      {screen === 1 &&
+        MODE_CARDS.map((card) => {
+          return (
+            mode === card.mode && <card.content words={words} topics={topics} />
+          );
+        })}
 
       {/* ============================ SCREEN 2 ============================ */}
       {screen === 2 && (
@@ -139,17 +153,40 @@ export const CreateCollection = () => {
 
       {screen === 1 ? (
         <div className="flex justify-end">
-          <Button onClick={() => setScreen(2)}  size="md" icon={ChevronRight} iconPosition="right" className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700">
+          <Button
+            onClick={() => setScreen(2)}
+            kind="solid"
+            color="amber"
+            size="lg"
+            spacing="md"
+            radius="full"
+            icon={ChevronRight}
+            iconPosition="right"
+          >
             Xem trước toàn diện
           </Button>
         </div>
       ) : screen === 2 ? (
         <>
           <div className="flex items-center justify-between mt-8">
-            <Button  size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => setScreen(1)}>
+            <Button
+              size="sm"
+              icon={ChevronLeft}
+              spacing="none"
+              iconPosition="left"
+              onClick={() => setScreen(1)}
+            >
               Quay lại chỉnh sửa
             </Button>
-            <Button  size="md" icon={Save} iconPosition="left" className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700">
+            <Button
+              kind="solid"
+              color="amber"
+              size="lg"
+              spacing="md"
+              radius="full"
+              icon={Save}
+              iconPosition="left"
+            >
               Lưu bộ từ vựng
             </Button>
           </div>
