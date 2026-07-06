@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown, ChevronRight, Quote } from "lucide-react";
+import { Button } from "./Button";
 import {
   accentMap,
   accentFromTopic,
@@ -83,19 +84,17 @@ function WordCard({
       {/* Toggle ví dụ */}
       {exampleCount > 0 && (
         <div className="mt-3">
-          <button
+          <Button
             type="button"
+            
+            size="sm"
             onClick={() => setOpen((v) => !v)}
             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors ${accent.chipBg} ${accent.chipText} ${accent.chipHover}`}
-            aria-expanded={open}
+            icon={open ? ChevronDown : ChevronRight}
+            iconPosition="left"
           >
-            {open ? (
-              <ChevronDown className="h-3.5 w-3.5" />
-            ) : (
-              <ChevronRight className="h-3.5 w-3.5" />
-            )}
             {open ? "Ẩn ví dụ" : `${exampleCount} ví dụ`}
-          </button>
+          </Button>
           {open && (
             <ul className="mt-3 space-y-2">
               {examples.map((ex: Example, i: number) => (

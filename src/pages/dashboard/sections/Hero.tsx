@@ -30,10 +30,10 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button variant="primary" icon={ArrowRight} iconPosition="right">
+            <Button  icon={ArrowRight} iconPosition="right">
               Bắt đầu học ngay
             </Button>
-            <Button variant="secondary" icon={Play}>
+            <Button  icon={Play}>
               Khám phá
             </Button>
           </div>

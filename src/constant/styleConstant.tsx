@@ -24,12 +24,15 @@ export type AccentColor =
  */
 export interface AccentStyles {
   border: string;
+  bg: string;
   ring: string;
   headerBg: string;
   headerDivider: string;
   cardHoverBorder: string;
   badgeBg: string;
   badgeText: string;
+  dot: string;
+  text: string;
   icon: string;
   chipBg: string;
   chipText: string;
@@ -45,12 +48,15 @@ export interface AccentStyles {
 export const accentMap: Record<AccentColor, AccentStyles> = {
   amber: {
     border: "border-amber-300",
+    bg: "bg-amber-50/40",
     ring: "ring-amber-100",
     headerBg: "bg-gradient-to-r from-amber-50/50 to-transparent",
     headerDivider: "border-amber-100",
     cardHoverBorder: "hover:border-amber-400",
     badgeBg: "bg-amber-500",
     badgeText: "text-white",
+    dot: "bg-amber-500",
+    text: "text-amber-700",
     icon: "text-amber-600",
     chipBg: "bg-amber-100",
     chipText: "text-amber-700",
@@ -60,12 +66,15 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
   },
   indigo: {
     border: "border-indigo-300",
+    bg: "bg-indigo-50/40",
     ring: "ring-indigo-100",
     headerBg: "bg-gradient-to-r from-indigo-50/50 to-transparent",
     headerDivider: "border-indigo-100",
     cardHoverBorder: "hover:border-indigo-400",
     badgeBg: "bg-indigo-500",
     badgeText: "text-white",
+    dot: "bg-indigo-500",
+    text: "text-indigo-700",
     icon: "text-indigo-600",
     chipBg: "bg-indigo-100",
     chipText: "text-indigo-700",
@@ -75,12 +84,15 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
   },
   rose: {
     border: "border-rose-300",
+    bg: "bg-rose-50/40",
     ring: "ring-rose-100",
     headerBg: "bg-gradient-to-r from-rose-50/50 to-transparent",
     headerDivider: "border-rose-100",
     cardHoverBorder: "hover:border-rose-400",
     badgeBg: "bg-rose-500",
     badgeText: "text-white",
+    dot: "bg-rose-500",
+    text: "text-rose-700",
     icon: "text-rose-600",
     chipBg: "bg-rose-100",
     chipText: "text-rose-700",
@@ -90,12 +102,15 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
   },
   sky: {
     border: "border-sky-300",
+    bg: "bg-sky-50/40",
     ring: "ring-sky-100",
     headerBg: "bg-gradient-to-r from-sky-50/50 to-transparent",
     headerDivider: "border-sky-100",
     cardHoverBorder: "hover:border-sky-400",
     badgeBg: "bg-sky-500",
     badgeText: "text-white",
+    dot: "bg-sky-500",
+    text: "text-sky-700",
     icon: "text-sky-600",
     chipBg: "bg-sky-100",
     chipText: "text-sky-700",
@@ -105,12 +120,15 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
   },
   emerald: {
     border: "border-emerald-300",
+    bg: "bg-emerald-50/40",
     ring: "ring-emerald-100",
     headerBg: "bg-gradient-to-r from-emerald-50/50 to-transparent",
     headerDivider: "border-emerald-100",
     cardHoverBorder: "hover:border-emerald-400",
     badgeBg: "bg-emerald-500",
     badgeText: "text-white",
+    dot: "bg-emerald-500",
+    text: "text-emerald-700",
     icon: "text-emerald-600",
     chipBg: "bg-emerald-100",
     chipText: "text-emerald-700",
@@ -120,12 +138,15 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
   },
   violet: {
     border: "border-violet-300",
+    bg: "bg-violet-50/40",
     ring: "ring-violet-100",
     headerBg: "bg-gradient-to-r from-violet-50/50 to-transparent",
     headerDivider: "border-violet-100",
     cardHoverBorder: "hover:border-violet-400",
     badgeBg: "bg-violet-500",
     badgeText: "text-white",
+    dot: "bg-violet-500",
+    text: "text-violet-700",
     icon: "text-violet-600",
     chipBg: "bg-violet-100",
     chipText: "text-violet-700",
@@ -135,12 +156,15 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
   },
   slate: {
     border: "border-slate-300",
+    bg: "bg-slate-50/40",
     ring: "ring-slate-100",
     headerBg: "bg-gradient-to-r from-slate-50/50 to-transparent",
     headerDivider: "border-slate-100",
     cardHoverBorder: "hover:border-slate-400",
     badgeBg: "bg-slate-500",
     badgeText: "text-white",
+    dot: "bg-slate-500",
+    text: "text-slate-700",
     icon: "text-slate-600",
     chipBg: "bg-slate-100",
     chipText: "text-slate-700",

@@ -11,6 +11,7 @@ import {
   ClipboardList,
 } from "lucide-react";
 import { PATHS } from "../../constant";
+import { Button } from "../../components";
 import { WordCardList } from "../../components/WordCardList";
 import * as api from "../../api";
 import * as models from "../../model";
@@ -51,12 +52,9 @@ export const Topic = () => {
     // Show topic list
     return (
       <div className="grow flex flex-col px-6 py-8 max-w-3xl mx-auto w-full">
-        <button
-          onClick={() => navigate(PATHS.collection)}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-amber-600 mb-6 w-fit"
-        >
-          <ChevronLeft size={16} /> Quay lại
-        </button>
+        <Button  size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => navigate(PATHS.collection)} className="mb-6 w-fit">
+          Quay lại
+        </Button>
 
         <h1 className="text-3xl font-bold text-gray-800 mb-8">
           Danh sách chủ đề
@@ -64,10 +62,11 @@ export const Topic = () => {
 
         <div className="flex flex-col gap-3">
           {topics.map((topic) => (
-            <button
+            <Button
               key={topic.topic_id}
               onClick={() => setSelectedTopic(topic)}
-              className="group flex items-center gap-4 p-4 rounded-2xl border border-amber-100 bg-white shadow-sm hover:shadow-md hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-200 text-left"
+              
+              className="group w-full justify-between p-4"
             >
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
                 <BookOpen className="w-6 h-6 text-amber-600" />
@@ -95,7 +94,7 @@ export const Topic = () => {
                   </svg>
                 </div>
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -113,12 +112,9 @@ export const Topic = () => {
   return (
     <div className="grow flex flex-col px-6 py-8 max-w-3xl mx-auto w-full">
       {/* Back button */}
-      <button
-        onClick={() => setSelectedTopic(null)}
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-amber-600 mb-6 w-fit"
-      >
-        <ChevronLeft size={16} /> Quay lại
-      </button>
+      <Button  size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => setSelectedTopic(null)} className="mb-6 w-fit">
+        Quay lại
+      </Button>
 
       {/* Header */}
       <div className="flex flex-col gap-2 mb-8">
@@ -132,41 +128,30 @@ export const Topic = () => {
 
       {/* Action cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <button
-          onClick={() => navigate(PATHS.flashcardLearn(selectedTopic.topic_id))}
-          className="group flex flex-col items-center gap-3 p-6 rounded-2xl border border-rose-100 bg-white shadow-sm hover:shadow-md hover:border-rose-300 hover:-translate-y-0.5 transition-all"
-        >
+        <Button  onClick={() => navigate(PATHS.flashcardLearn(selectedTopic.topic_id))} className="group flex flex-col items-center gap-3 p-6 h-auto">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 grid place-items-center group-hover:scale-110 transition-transform">
             <Sparkles className="w-6 h-6 text-rose-600" />
           </div>
           <span className="font-semibold text-gray-800">Học mới</span>
           <span className="text-xs text-gray-400">Học với flashcard</span>
-        </button>
+        </Button>
 
-        <button
-          onClick={() =>
-            navigate(`/moji-goi/practice/${selectedTopic.topic_id}`)
-          }
-          className="group flex flex-col items-center gap-3 p-6 rounded-2xl border border-sky-100 bg-white shadow-sm hover:shadow-md hover:border-sky-300 hover:-translate-y-0.5 transition-all"
-        >
+        <Button  onClick={() => navigate(`/moji-goi/practice/${selectedTopic.topic_id}`)} className="group flex flex-col items-center gap-3 p-6 h-auto">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-100 to-sky-200 grid place-items-center group-hover:scale-110 transition-transform">
             <ListChecks className="w-6 h-6 text-sky-600" />
           </div>
           <span className="font-semibold text-gray-800">Quiz</span>
           <span className="text-xs text-gray-400">Kiểm tra kiến thẻm</span>
-        </button>
+        </Button>
 
         <div className="relative">
-          <button
-            onClick={() => setShowWriteModal(true)}
-            className="group flex flex-col items-center gap-3 p-6 rounded-2xl border border-amber-100 bg-white shadow-sm hover:shadow-md hover:border-amber-300 hover:-translate-y-0.5 transition-all w-full"
-          >
+          <Button  onClick={() => setShowWriteModal(true)} className="group flex flex-col items-center gap-3 p-6 w-full h-auto">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center group-hover:scale-110 transition-transform">
               <PenLine className="w-6 h-6 text-amber-600" />
             </div>
             <span className="font-semibold text-gray-800">Luyện viết</span>
             <span className="text-xs text-gray-400">Luyện viết kanji</span>
-          </button>
+          </Button>
 
           {/* Modal chọn loại luyện viết */}
           {showWriteModal && (
@@ -184,12 +169,13 @@ export const Topic = () => {
                     Bạn muốn luyện viết theo cách nào?
                   </p>
                   <div className="flex flex-col gap-3">
-                    <button
+                    <Button
+                      key="paper"
                       onClick={() => {
                         setShowWriteModal(false);
                         navigate(PATHS.practicePaper(selectedTopic.topic_id));
                       }}
-                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 bg-white hover:border-amber-300 hover:bg-amber-50/50 transition-all text-left group"
+                      className="flex items-center gap-4 p-4 h-auto justify-start"
                     >
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
                         <FileText className="w-5 h-5 text-amber-600" />
@@ -202,13 +188,14 @@ export const Topic = () => {
                           In giấy để luyện viết tay
                         </span>
                       </div>
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      key="write"
                       onClick={() => {
                         setShowWriteModal(false);
                         navigate(PATHS.practiceWrite(selectedTopic.topic_id));
                       }}
-                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 bg-white hover:border-amber-300 hover:bg-amber-50/50 transition-all text-left group"
+                      className="flex items-center gap-4 p-4 h-auto justify-start"
                     >
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-100 to-sky-200 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
                         <ClipboardList className="w-5 h-5 text-sky-600" />
@@ -221,14 +208,11 @@ export const Topic = () => {
                           Luyện viết kanji trực tiếp
                         </span>
                       </div>
-                    </button>
+                    </Button>
                   </div>
-                  <button
-                    onClick={() => setShowWriteModal(false)}
-                    className="mt-4 w-full text-center text-sm text-gray-400 hover:text-gray-600 py-2 transition-colors"
-                  >
+                  <Button  size="sm" onClick={() => setShowWriteModal(false)} className="mt-4 w-full">
                     Huỷ
-                  </button>
+                  </Button>
                 </div>
               </div>
             </>
@@ -242,14 +226,9 @@ export const Topic = () => {
         title="Danh sách từ vựng"
         accent="amber"
         actionButton={
-          <button
-            onClick={() =>
-              navigate(PATHS.editCollection(selectedTopic.topic_id))
-            }
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium hover:bg-amber-200 transition"
-          >
-            <Plus size={13} /> Thêm từ
-          </button>
+          <Button  size="sm" icon={Plus} iconPosition="left" onClick={() => navigate(PATHS.editCollection(selectedTopic.topic_id))} className="bg-amber-100 text-amber-700 hover:bg-amber-200">
+            Thêm từ
+          </Button>
         }
       />
     </div>

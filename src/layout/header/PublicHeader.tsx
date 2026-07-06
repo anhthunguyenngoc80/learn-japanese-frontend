@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
-import { Logo, Button } from "../../components";
+import { Logo, Button, IconButton } from "../../components";
 import { PATHS } from "../../constant/Path";
 
 export function PublicHeader() {
@@ -30,21 +30,22 @@ export function PublicHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm" onClick={() => navigate(PATHS.login)}>
+          <Button size="sm" onClick={() => navigate(PATHS.login)}>
             Đăng nhập
           </Button>
-          <Button variant="primary" size="sm" onClick={() => navigate(PATHS.register)}>
+          <Button  size="sm" onClick={() => navigate(PATHS.register)}>
             Đăng ký
           </Button>
         </div>
 
-        <button
+        <IconButton
           onClick={() => setOpen(!open)}
-          className="rounded-lg p-2 text-slate-700 hover:bg-slate-100 md:hidden"
+
+          size="md"
+          className="md:hidden"
           aria-label="Menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+          icon={open ? X : Menu}
+        />
       </div>
 
       {open && (
@@ -54,8 +55,8 @@ export function PublicHeader() {
             <a href="#jlpt" className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">JLPT</a>
             <a href="#features" className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Tính năng</a>
             <div className="mt-3 flex flex-col gap-2 pt-3 border-t border-slate-100">
-              <Button variant="secondary" size="sm" fullWidth onClick={() => navigate(PATHS.login)}>Đăng nhập</Button>
-              <Button variant="primary" size="sm" fullWidth onClick={() => navigate(PATHS.register)}>Đăng ký</Button>
+              <Button  size="sm" fullWidth onClick={() => navigate(PATHS.login)}>Đăng nhập</Button>
+              <Button  size="sm" fullWidth onClick={() => navigate(PATHS.register)}>Đăng ký</Button>
             </div>
           </div>
         </div>

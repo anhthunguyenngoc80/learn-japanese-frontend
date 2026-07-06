@@ -138,7 +138,7 @@ export const LoginPage = () => {
 
         <Button
           type="submit"
-          variant="primary"
+          
           className="w-full py-3 text-base font-semibold bg-rose-600 hover:bg-rose-700"
           disabled={loading}
         >

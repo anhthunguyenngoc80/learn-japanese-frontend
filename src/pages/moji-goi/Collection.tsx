@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BookOpen, Plus, Library } from "lucide-react";
 
 import { PATHS } from "../../constant/Path";
+import { Button } from "../../components";
 import * as api from "../../api";
 import * as models from "../../model";
 
@@ -21,10 +22,6 @@ export const Collection = () => {
     };
     fetchData();
   }, []);
-
-  useEffect(() => {
-    console.log(collections);
-  }, [collections]);
 
   return (
     <div className="grow flex flex-col items-center justify-center px-6 py-12">
@@ -53,12 +50,9 @@ export const Collection = () => {
             Bạn chưa có bộ từ vựng nào. Hãy tạo bộ từ vựng đầu tiên để bắt đầu
             học!
           </p>
-          <button
-            onClick={() => navigate(PATHS.createCollection)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold shadow-md shadow-amber-200 hover:shadow-lg hover:from-amber-600 hover:to-amber-700 transition-all"
-          >
-            <Plus size={18} /> Tạo bộ từ vựng mới
-          </button>
+          <Button  size="md" icon={Plus} iconPosition="left" onClick={() => navigate(PATHS.createCollection)} className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700">
+            Tạo bộ từ vựng mới
+          </Button>
         </div>
       ) : (
         <>
@@ -67,21 +61,19 @@ export const Collection = () => {
             <p className="text-sm text-gray-500">
               {collections.length} bộ từ vựng
             </p>
-            <button
-              onClick={() => navigate(PATHS.createCollection)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-sm font-semibold shadow-md shadow-amber-200 hover:shadow-lg hover:from-amber-600 hover:to-amber-700 transition-all"
-            >
-              <Plus size={16} /> Thêm bộ từ vựng
-            </button>
+            <Button  size="sm" icon={Plus} iconPosition="left" onClick={() => navigate(PATHS.createCollection)} className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700">
+              Thêm bộ từ vựng
+            </Button>
           </div>
 
           {/* Collection list */}
           <div className="w-full max-w-2xl flex flex-col gap-3">
             {collections.map((collection) => (
-              <button
+              <Button
                 key={collection.collection_id}
                 onClick={() => navigate(PATHS.topic(collection.collection_id))}
-                className="group flex items-center gap-4 p-4 rounded-2xl border border-amber-100 bg-white shadow-sm hover:shadow-md hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-200 text-left"
+                
+                className="group w-full justify-between p-4"
               >
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
                   <BookOpen className="w-6 h-6 text-amber-600" />
@@ -109,7 +101,7 @@ export const Collection = () => {
                     </svg>
                   </div>
                 </div>
-              </button>
+              </Button>
             ))}
           </div>
         </>

@@ -1,3 +1,5 @@
+import type { ComponentType } from "react";
+
 export interface Collection {
   collection_id: string;
   name: string;
@@ -15,7 +17,7 @@ export interface Word {
   word_id: string;
   topic_id: string;
   text: string;
-  sv_word: string;
+  sv_word?: string;
   reading?: string;
   meaning: string;
   partOfSpeech?: string;
@@ -28,4 +30,27 @@ export interface Example {
   word_id: string;
   content: string;
   meaning?: string;
+}
+
+export type CreateExample = Omit<Example, "example_id" | "word_id">;
+export type CreateWord = Omit<Word, "word_id" | "topic_id" | "examples"> & {
+  examples: CreateExample[];
+};
+export type CreateTopic = Omit<Topic, "topic_id" | "collection_id" | "words"> & {
+  words: CreateWord[];
+};
+
+export interface ModeContentProps {
+    words: CreateWord[];
+    topics: CreateTopic[];
+}
+
+export type ModeCardMode = "vocab-first" | "topic-first" | "parallel";
+
+export interface ModeCard {
+  mode: ModeCardMode;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>;
+  title: string;
+  description: string;
+  content: ComponentType<ModeContentProps>;
 }

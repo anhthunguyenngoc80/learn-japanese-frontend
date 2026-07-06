@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
-import { Logo, Button } from "../../components";
+import { Logo, Button, IconButton } from "../../components";
 import { logout, useAppDispatch } from "../../store";
 
 export function PrivateHeader() {
@@ -44,18 +44,19 @@ export function PrivateHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
+          <Button  size="sm" onClick={handleLogout}>
             Đăng xuất
           </Button>
         </div>
 
-        <button
+        <IconButton
           onClick={() => setOpen(!open)}
-          className="rounded-lg p-2 text-slate-700 hover:bg-slate-100 md:hidden"
+          
+          size="md"
+          className="md:hidden"
           aria-label="Menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+          icon={open ? X : Menu}
+        />
       </div>
 
       {open && (
@@ -81,7 +82,7 @@ export function PrivateHeader() {
             </a>
             <div className="mt-3 flex flex-col gap-2 pt-3 border-t border-slate-100">
               <Button
-                variant="secondary"
+                
                 size="sm"
                 fullWidth
                 onClick={handleLogout}

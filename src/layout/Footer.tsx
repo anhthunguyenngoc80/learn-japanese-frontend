@@ -5,7 +5,7 @@ import {
   FaYoutube,
   FaXTwitter,
 } from "react-icons/fa6";
-import { Logo, SocialIconButton } from "../components";
+import { IconButton, Logo } from "../components";
 
 const cols = [
   { title: "Sản phẩm", links: ["Học từ vựng", "Học Kanji", "Ngữ pháp", "Luyện JLPT"] },
@@ -25,7 +25,7 @@ export function Footer() {
             </p>
             <div className="mt-6 flex gap-3">
               {[FaFacebook, FaXTwitter, FaYoutube, FaInstagram, Mail].map((Icon, i) => (
-                <SocialIconButton key={i} icon={Icon} />
+                <IconButton aria-label="abc" key={i} icon={Icon} />
               ))}
             </div>
           </div>

@@ -34,12 +34,5 @@ export const ModeCard = ({
         {description}
       </p>
     </div>
-    <div
-      className={`w-4.5 h-4.5 rounded-full border-2 grid place-items-center shrink-0 mt-1 ${
-        selected ? "border-amber-500 bg-amber-500" : "border-gray-300"
-      }`}
-    >
-      {selected && <Check size={10} className="text-white" />}
-    </div>
   </button>
 );
