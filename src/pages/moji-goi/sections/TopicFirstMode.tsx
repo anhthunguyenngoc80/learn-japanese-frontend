@@ -3,7 +3,7 @@ import { Button, IconButton } from "../../../components";
 import { WordEntryPanel, WordPreviewTable } from "../sections";
 import type { ModeContentProps } from "../../../model";
 
-export const TopicFirstMode = ({ words, topics }: ModeContentProps) => {
+export const TopicFirstMode = ({ words, topics, onFileUpload, isUploading }: ModeContentProps) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       <div>
@@ -48,7 +48,7 @@ export const TopicFirstMode = ({ words, topics }: ModeContentProps) => {
           Từ vựng cho: {topics[0]?.name}
         </h3>
         <div className="mb-4">
-          <WordEntryPanel />
+          <WordEntryPanel onFileSelect={onFileUpload} loading={isUploading} />
         </div>
         <div className="mb-3">
           <WordPreviewTable words={words.slice(0, 2)} compact />

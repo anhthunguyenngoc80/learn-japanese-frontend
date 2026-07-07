@@ -1,10 +1,17 @@
-import { Plus, X } from "lucide-react";
+import { useState } from "react";
+import { Plus, X, Settings2 } from "lucide-react";
 import { Button, IconButton } from "../../../components";
 import { WordEntryPanel, WordPreviewTable, StepHeader } from "../sections";
 import type { ModeContentProps } from "../../../model";
 import { accentMap, topicAccentCycle } from "../../../constant/styleConstant";
 
-export const VocabFirstMode = ({ words, topics }: ModeContentProps) => {
+export const VocabFirstMode = ({ words, topics, onFileUpload, isUploading }: ModeContentProps) => {
+  const [showMappingConfig, setShowMappingConfig] = useState(false);
+
+  const handleMappingConfigClose = () => {
+    setShowMappingConfig(false);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 items-stretch">
       <div className="rounded-2xl border border-amber-200 bg-amber-50/30 p-4 flex flex-col lg:h-[600px]">
@@ -13,9 +20,25 @@ export const VocabFirstMode = ({ words, topics }: ModeContentProps) => {
           title="Nhập từ vựng"
           hint="Dán văn bản hoặc tải file Excel"
           done
+          rightAction={
+            <IconButton
+              aria-label="Cài đặt cột Excel"
+              icon={Settings2}
+              size="sm"
+              kind="ghost"
+              color="slate"
+              onClick={() => setShowMappingConfig(true)}
+              className="!p-1"
+            />
+          }
         />
         <div className="overflow-y-auto pr-1 grow">
-          <WordEntryPanel />
+          <WordEntryPanel 
+            onFileSelect={onFileUpload} 
+            loading={isUploading}
+            showMappingConfig={showMappingConfig}
+            onMappingConfigClose={handleMappingConfigClose}
+          />
         </div>
       </div>
 
@@ -61,6 +84,7 @@ export const VocabFirstMode = ({ words, topics }: ModeContentProps) => {
                 const color = accentMap[accentColor];
                 return (
                   <div
+                    key={"topic-" + t.name}
                     className={`rounded-xl border p-3 ${color.border} ${color.bg}`}
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -103,6 +127,7 @@ export const VocabFirstMode = ({ words, topics }: ModeContentProps) => {
                         placeholder={String(words.length)}
                         className="w-14 px-2 py-1 rounded-lg border border-white/80 bg-white text-xs outline-none focus:border-amber-400"
                       />
+                      <div className="w-full"></div>
                       <Button
                         kind="soft"
                         color={accentColor}

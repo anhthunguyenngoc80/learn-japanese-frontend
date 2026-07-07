@@ -25,8 +25,22 @@ export type ButtonColor =
   | "slate"
   | "white";
 
-/** Kiểu hiển thị: trơn (solid), đổ bóng (elevated), nền nhạt (soft), viền (outline), không nền (ghost). */
-export type ButtonKind = "solid" | "elevated" | "soft" | "outline" | "ghost";
+/**
+ * Kiểu hiển thị:
+ * - solid: trơn
+ * - elevated: đổ bóng
+ * - soft: nền nhạt
+ * - outline: viền
+ * - ghost: không nền, nhưng CÓ nền nhạt khi hover
+ * - text: chỉ có chữ, không có nền kể cả khi hover (chỉ đổi màu chữ)
+ */
+export type ButtonKind =
+  | "solid"
+  | "elevated"
+  | "soft"
+  | "outline"
+  | "ghost"
+  | "text";
 
 /** Độ bo góc: vuông, hơi bo, vừa, bo nhiều, tròn hoàn toàn (pill/circle). */
 export type ButtonRadius = "none" | "sm" | "md" | "lg" | "full";
@@ -52,6 +66,7 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
     outline:
       "border border-rose-300 text-rose-700 hover:shadow-md hover:-translate-y-0.5 hover:border-rose-300 focus-visible:ring-rose-500",
     ghost: "text-rose-700 hover:bg-rose-50 focus-visible:ring-rose-500",
+    text: "text-rose-700 hover:text-rose-800 focus-visible:ring-rose-500",
   },
   red: {
     solid: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
@@ -61,6 +76,7 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
     outline:
       "border border-red-300 text-red-700 hover:shadow-md hover:-translate-y-0.5 hover:border-red-300 focus-visible:ring-red-500",
     ghost: "text-red-700 hover:bg-red-50 focus-visible:ring-red-500",
+    text: "text-red-700 hover:text-red-800 focus-visible:ring-red-500",
   },
   amber: {
     solid:
@@ -71,6 +87,7 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
     outline:
       "border border-amber-300 text-amber-700 hover:shadow-md hover:-translate-y-0.5 hover:border-amber-300 focus-visible:ring-amber-500",
     ghost: "text-amber-700 hover:bg-amber-50 focus-visible:ring-amber-500",
+    text: "text-amber-700 hover:text-amber-800 focus-visible:ring-amber-500",
   },
   emerald: {
     solid:
@@ -82,6 +99,7 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
       "border border-emerald-300 text-emerald-700 hover:shadow-md hover:-translate-y-0.5 hover:border-emerald-300 focus-visible:ring-emerald-500",
     ghost:
       "text-emerald-700 hover:bg-emerald-50 focus-visible:ring-emerald-500",
+    text: "text-emerald-700 hover:text-emerald-800 focus-visible:ring-emerald-500",
   },
   teal: {
     solid:
@@ -92,6 +110,7 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
     outline:
       "border border-teal-300 text-teal-700 hover:shadow-md hover:-translate-y-0.5 hover:border-teal-300 focus-visible:ring-teal-500",
     ghost: "text-teal-700 hover:bg-teal-50 focus-visible:ring-teal-500",
+    text: "text-teal-700 hover:text-teal-800 focus-visible:ring-teal-500",
   },
   blue: {
     solid:
@@ -102,6 +121,7 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
     outline:
       "border border-blue-300 text-blue-700 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-300 focus-visible:ring-blue-500",
     ghost: "text-blue-700 hover:bg-blue-50 focus-visible:ring-blue-500",
+    text: "text-blue-700 hover:text-blue-800 focus-visible:ring-blue-500",
   },
   indigo: {
     solid:
@@ -112,6 +132,7 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
     outline:
       "border border-indigo-300 text-indigo-700 hover:shadow-md hover:-translate-y-0.5 hover:border-indigo-300 focus-visible:ring-indigo-500",
     ghost: "text-indigo-700 hover:bg-indigo-50 focus-visible:ring-indigo-500",
+    text: "text-indigo-700 hover:text-indigo-800 focus-visible:ring-indigo-500",
   },
   violet: {
     solid:
@@ -122,6 +143,7 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
     outline:
       "border border-violet-300 text-violet-700 hover:shadow-md hover:-translate-y-0.5 hover:border-violet-300 focus-visible:ring-violet-500",
     ghost: "text-violet-700 hover:bg-violet-50 focus-visible:ring-violet-500",
+    text: "text-violet-700 hover:text-violet-800 focus-visible:ring-violet-500",
   },
   slate: {
     solid:
@@ -132,6 +154,7 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
     outline:
       "border border-slate-200 text-slate-800 hover:shadow-md hover:-translate-y-0.5 hover:border-slate-300 focus-visible:ring-slate-400",
     ghost: "text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400",
+    text: "text-slate-700 hover:text-slate-900 focus-visible:ring-slate-400",
   },
   white: {
     solid: "bg-white text-slate-800 hover:bg-slate-50 focus-visible:ring-white",
@@ -141,7 +164,32 @@ const colorStyles: Record<ButtonColor, Record<ButtonKind, string>> = {
     outline:
       "border border-white/40 text-white hover:shadow-md hover:-translate-y-0.5 hover:border-white-300 focus-visible:ring-white",
     ghost: "text-white hover:bg-white/10 focus-visible:ring-white",
+    text: "text-white hover:text-white/80 focus-visible:ring-white",
   },
+};
+
+/**
+ * Style áp dụng khi nút ở trạng thái "selected" (đang được chọn/active),
+ * ví dụ trong nhóm toggle, tab dạng nút, hay filter chip.
+ * Áp dụng cho MỌI `kind`, đè lên nền/màu chữ/viền mặc định — kể cả với
+ * "ghost" và "text" (vốn không có nền), để trạng thái chọn luôn rõ ràng.
+ */
+const selectedStyles: Record<ButtonColor, string> = {
+  rose: "bg-rose-100 text-rose-800 border-rose-300 hover:bg-rose-100 hover:text-rose-800",
+  red: "bg-red-100 text-red-800 border-red-300 hover:bg-red-100 hover:text-red-800",
+  amber:
+    "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-100 hover:text-amber-800",
+  emerald:
+    "bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-100 hover:text-emerald-800",
+  teal: "bg-teal-100 text-teal-800 border-teal-300 hover:bg-teal-100 hover:text-teal-800",
+  blue: "bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-100 hover:text-blue-800",
+  indigo:
+    "bg-indigo-100 text-indigo-800 border-indigo-300 hover:bg-indigo-100 hover:text-indigo-800",
+  violet:
+    "bg-violet-100 text-violet-800 border-violet-300 hover:bg-violet-100 hover:text-violet-800",
+  slate:
+    "bg-slate-200 text-slate-900 border-slate-300 hover:bg-slate-200 hover:text-slate-900",
+  white: "bg-white/25 text-white border-white/60 hover:bg-white/25 hover:text-white",
 };
 
 const radiusStyles: Record<ButtonRadius, string> = {
@@ -202,6 +250,7 @@ interface BuildClassNameArgs {
   fullWidth?: boolean;
   disabled?: boolean;
   iconOnly?: boolean;
+  selected?: boolean;
   className?: string;
 }
 
@@ -214,16 +263,23 @@ function buildButtonClassName({
   fullWidth,
   disabled,
   iconOnly,
+  selected,
   className = "",
 }: BuildClassNameArgs) {
   return twMerge(
     "inline-flex items-center justify-center font-semibold transition-all",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
     colorStyles[color][kind],
+    // "text" và "ghost" vốn không có viền — thêm viền trong suốt để khi
+    // selected chuyển sang viền màu thì layout không bị nhảy (giữ nguyên kích thước).
+    (kind === "text" || kind === "ghost") && "border border-transparent",
     radiusStyles[radius],
     iconOnly ? iconOnlyPaddingStyles[spacing] : paddingStyles[spacing],
     !iconOnly && textStyles[size],
     fullWidth ? "w-full" : "",
+    // selectedStyles được đặt SAU colorStyles để twMerge ưu tiên đè lên
+    // các class nền/màu chữ/viền mặc định của kind, áp dụng cho mọi kind.
+    selected ? selectedStyles[color] : "",
     disabled ? "pointer-events-none opacity-50" : "",
     className,
   );
@@ -244,6 +300,8 @@ interface CommonButtonProps {
   iconPosition?: "left" | "right";
   fullWidth?: boolean;
   loading?: boolean;
+  /** Đánh dấu nút đang ở trạng thái được chọn (vd: toggle, tab, filter chip). */
+  selected?: boolean;
   className?: string;
   href?: string;
   disabled?: boolean;
@@ -275,6 +333,7 @@ export const Button = forwardRef<
       iconPosition = "left",
       fullWidth = false,
       loading = false,
+      selected,
       disabled,
       className = "",
       href,
@@ -290,6 +349,7 @@ export const Button = forwardRef<
       spacing,
       fullWidth,
       disabled: disabled || loading,
+      selected,
       className,
     });
 
@@ -317,6 +377,7 @@ export const Button = forwardRef<
           href={href}
           className={combinedClassName}
           aria-disabled={disabled || loading}
+          aria-pressed={selected}
           {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
         >
           {content}
@@ -330,6 +391,7 @@ export const Button = forwardRef<
         type="button"
         className={combinedClassName}
         disabled={disabled || loading}
+        aria-pressed={selected}
         {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
       >
         {content}
@@ -356,6 +418,8 @@ interface CommonIconButtonProps {
   size?: ButtonSize;
   /** Độ rộng rãi của padding quanh icon, độc lập với size. Mặc định "md". */
   spacing?: ButtonSpacing;
+  /** Đánh dấu nút đang ở trạng thái được chọn (vd: toggle, tab, filter chip). */
+  selected?: boolean;
   className?: string;
   href?: string;
   disabled?: boolean;
@@ -383,6 +447,7 @@ export const IconButton = forwardRef<
       radius = "md",
       size = "md",
       spacing = "md",
+      selected,
       disabled,
       className = "",
       href,
@@ -397,6 +462,7 @@ export const IconButton = forwardRef<
       size,
       spacing,
       disabled,
+      selected,
       iconOnly: true,
       className,
     });
@@ -408,6 +474,7 @@ export const IconButton = forwardRef<
           href={href}
           className={combinedClassName}
           aria-disabled={disabled}
+          aria-pressed={selected}
           {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
         >
           <Icon className={iconDimensionStyles[size]} />
@@ -421,6 +488,7 @@ export const IconButton = forwardRef<
         type="button"
         className={combinedClassName}
         disabled={disabled}
+        aria-pressed={selected}
         {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
       >
         <Icon className={iconDimensionStyles[size]} />

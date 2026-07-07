@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Save,
   ChevronLeft,
@@ -16,6 +16,7 @@ import {
   VocabFirstMode,
 } from "./sections";
 import type * as models from "../../model";
+import { parseExcel, parseCSV } from "../../utils/excelParser";
 
 const MODE_CARDS: models.ModeCard[] = [
   {
@@ -82,13 +83,50 @@ export const CreateCollection = () => {
   const [screen, setScreen] = useState<1 | 2>(1);
   const [words, setWords] = useState<models.CreateWord[]>(MOCK_WORDS);
   const [topics, setTopics] = useState<models.CreateTopic[]>(MOCK_TOPICS);
+  const [isUploading, setIsUploading] = useState(false);
 
   const totalWords = words.length;
+
+  const handleFileUpload = async (file: File, parsedWords?: models.CreateWord[]) => {
+    setIsUploading(true);
+    try {
+      let newWords: models.CreateWord[];
+
+      // If parsed words are provided (from child with column mapping), use them
+      if (parsedWords && parsedWords.length > 0) {
+        newWords = parsedWords;
+      } else {
+        // Otherwise, parse the file with default mapping
+        const arrayBuffer = await file.arrayBuffer();
+        const fileExtension = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+
+        if (fileExtension === ".csv") {
+          const text = await file.text();
+          newWords = parseCSV(text);
+        } else {
+          newWords = parseExcel(arrayBuffer);
+        }
+      }
+
+      if (newWords.length > 0) {
+        setWords((prev) => [...prev, ...newWords]);
+      }
+    } catch (err) {
+      console.error("Error parsing file:", err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Current words:", words);
+  }, [words]);
 
   return (
     <div className="grow flex flex-col px-6 py-8 max-w-7xl mx-auto w-full">
       <Button
-        kind="ghost"
+        kind="text"
+        color="slate"
         size="sm"
         icon={ChevronLeft}
         spacing="none"
@@ -133,7 +171,15 @@ export const CreateCollection = () => {
       {screen === 1 &&
         MODE_CARDS.map((card) => {
           return (
-            mode === card.mode && <card.content words={words} topics={topics} />
+            mode === card.mode && (
+              <card.content
+                key={card.mode}
+                words={words}
+                topics={topics}
+                onFileUpload={handleFileUpload}
+                isUploading={isUploading}
+              />
+            )
           );
         })}
 
@@ -170,6 +216,8 @@ export const CreateCollection = () => {
         <>
           <div className="flex items-center justify-between mt-8">
             <Button
+              kind="text"
+              color="slate"
               size="sm"
               icon={ChevronLeft}
               spacing="none"

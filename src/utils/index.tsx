@@ -1,1 +1,1 @@
-export { parseText, parseExcel, parseCSV } from "./excelParser";
+export { parseExcel, parseCSV, type ColumnMapping } from "./excelParser";

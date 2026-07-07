@@ -5,12 +5,12 @@ import type { ModeContentProps } from "../../../model";
 
 const UNASSIGNED = "Chưa phân loại";
 
-export const ParallelMode = ({ words, topics }: ModeContentProps) => {
+export const ParallelMode = ({ words, topics, onFileUpload, isUploading }: ModeContentProps) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       <div>
         <h3 className="font-semibold text-gray-800 mb-3">Nhập từ vựng</h3>
-        <WordEntryPanel />
+        <WordEntryPanel onFileSelect={onFileUpload} loading={isUploading} />
 
         <div className="mt-6">
           <label className="text-sm font-medium text-gray-700 mb-1.5 block">

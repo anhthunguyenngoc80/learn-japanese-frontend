@@ -52,7 +52,7 @@ export const Topic = () => {
     // Show topic list
     return (
       <div className="grow flex flex-col px-6 py-8 max-w-3xl mx-auto w-full">
-        <Button  size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => navigate(PATHS.collection)} className="mb-6 w-fit">
+        <Button kind="text" color="slate" size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => navigate(PATHS.collection)} className="mb-6">
           Quay lại
         </Button>
 
@@ -65,7 +65,7 @@ export const Topic = () => {
             <Button
               key={topic.topic_id}
               onClick={() => setSelectedTopic(topic)}
-              
+
               className="group w-full justify-between p-4"
             >
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
@@ -112,7 +112,7 @@ export const Topic = () => {
   return (
     <div className="grow flex flex-col px-6 py-8 max-w-3xl mx-auto w-full">
       {/* Back button */}
-      <Button  size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => setSelectedTopic(null)} className="mb-6 w-fit">
+      <Button kind="text" color="slate" size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => setSelectedTopic(null)} className="mb-6">
         Quay lại
       </Button>
 
@@ -128,7 +128,7 @@ export const Topic = () => {
 
       {/* Action cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Button  onClick={() => navigate(PATHS.flashcardLearn(selectedTopic.topic_id))} className="group flex flex-col items-center gap-3 p-6 h-auto">
+        <Button onClick={() => navigate(PATHS.flashcardLearn(selectedTopic.topic_id))} className="group flex flex-col items-center gap-3 p-6 h-auto">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 grid place-items-center group-hover:scale-110 transition-transform">
             <Sparkles className="w-6 h-6 text-rose-600" />
           </div>
@@ -136,7 +136,7 @@ export const Topic = () => {
           <span className="text-xs text-gray-400">Học với flashcard</span>
         </Button>
 
-        <Button  onClick={() => navigate(`/moji-goi/practice/${selectedTopic.topic_id}`)} className="group flex flex-col items-center gap-3 p-6 h-auto">
+        <Button onClick={() => navigate(`/moji-goi/practice/${selectedTopic.topic_id}`)} className="group flex flex-col items-center gap-3 p-6 h-auto">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-100 to-sky-200 grid place-items-center group-hover:scale-110 transition-transform">
             <ListChecks className="w-6 h-6 text-sky-600" />
           </div>
@@ -145,7 +145,7 @@ export const Topic = () => {
         </Button>
 
         <div className="relative">
-          <Button  onClick={() => setShowWriteModal(true)} className="group flex flex-col items-center gap-3 p-6 w-full h-auto">
+          <Button onClick={() => setShowWriteModal(true)} className="group flex flex-col items-center gap-3 p-6 w-full h-auto">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center group-hover:scale-110 transition-transform">
               <PenLine className="w-6 h-6 text-amber-600" />
             </div>
@@ -210,7 +210,7 @@ export const Topic = () => {
                       </div>
                     </Button>
                   </div>
-                  <Button  size="sm" onClick={() => setShowWriteModal(false)} className="mt-4 w-full">
+                  <Button size="sm" onClick={() => setShowWriteModal(false)} className="mt-4 w-full">
                     Huỷ
                   </Button>
                 </div>
@@ -226,7 +226,7 @@ export const Topic = () => {
         title="Danh sách từ vựng"
         accent="amber"
         actionButton={
-          <Button  size="sm" icon={Plus} iconPosition="left" onClick={() => navigate(PATHS.editCollection(selectedTopic.topic_id))} className="bg-amber-100 text-amber-700 hover:bg-amber-200">
+          <Button size="sm" icon={Plus} iconPosition="left" onClick={() => navigate(PATHS.editCollection(selectedTopic.topic_id))} className="bg-amber-100 text-amber-700 hover:bg-amber-200">
             Thêm từ
           </Button>
         }

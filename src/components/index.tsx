@@ -5,3 +5,4 @@ export { Logo } from "./Logo";
 export { InputField } from "./InputField";
 export { WordCardList } from "./WordCardList";
 export { UploadExcel } from "./UploadExcel";
+export { Modal } from "./Modal";

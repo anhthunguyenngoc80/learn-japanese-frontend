@@ -1,15 +1,18 @@
 import { Check } from "lucide-react";
+import type { ReactNode } from "react";
 
 export const StepHeader = ({
   step,
   title,
   hint,
   done,
+  rightAction,
 }: {
   step: number;
   title: string;
   hint?: string;
   done?: boolean;
+  rightAction?: ReactNode;
 }) => (
   <div className="flex items-start gap-2.5 mb-3">
     <div
@@ -19,11 +22,14 @@ export const StepHeader = ({
     >
       {done ? <Check size={13} /> : step}
     </div>
-    <div className="min-w-0">
-      <h3 className="font-semibold text-gray-800 leading-tight">{title}</h3>
-      {hint && (
-        <p className="text-xs text-gray-400 leading-tight mt-0.5">{hint}</p>
-      )}
+    <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
+      <div className="min-w-0">
+        <h3 className="font-semibold text-gray-800 leading-tight">{title}</h3>
+        {hint && (
+          <p className="text-xs text-gray-400 leading-tight mt-0.5">{hint}</p>
+        )}
+      </div>
+      {rightAction && <div className="shrink-0">{rightAction}</div>}
     </div>
   </div>
 );

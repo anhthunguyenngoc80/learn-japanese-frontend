@@ -6,4 +6,5 @@ export {
   loginSuccess,
   logout,
   initializeAuth,
+  openModal, closeModal
 } from "./reducer";

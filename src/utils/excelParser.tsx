@@ -1,111 +1,129 @@
 import * as XLSX from "xlsx";
 import type { Example, Word } from "../model";
+import { DEFAULT_WORD_FIELDS, parseArrayPath, type TargetFieldOption } from "../constant";
 
 type CreateExample = Omit<Example, "example_id" | "word_id">;
 type CreateWord = Omit<Word, "word_id" | "topic_id" | "examples"> & {
   examples: CreateExample[];
 };
 
-const parseExamples = (jp: unknown, vn: unknown): CreateExample[] => {
-  const jpLines = String(jp ?? "")
-    .split(/\r?\n/)
-    .map((line) => line.trim());
+export interface ColumnMapping {
+  excelColumn: string;
+  wordField: string;
+}
 
-  const vnLines = String(vn ?? "")
-    .split(/\r?\n/)
-    .map((line) => line.trim());
+// Build 1 Word từ 1 dòng dữ liệu dạng { tênCột: giá trị }
+// - Field thường (text, meaning...) -> gán thẳng
+// - Field dạng "examples.xxx" -> tách theo dòng trong ô, group theo arrayKey, rồi ZIP lại theo index
+//   => 1 ô chứa nhiều dòng = nhiều example, mỗi dòng content khớp với dòng meaning cùng vị trí
+const buildWordFromRow = (
+  row: Record<string, unknown>,
+  mapping: ColumnMapping[],
+  fields: TargetFieldOption[] = DEFAULT_WORD_FIELDS
+): CreateWord => {
+  const flat: Record<string, string> = {};
+  const arrayGroups: Record<string, Record<string, string[]>> = {};
+  for (const { excelColumn, wordField } of mapping) {
+    if (!wordField) continue;
+    const raw = String(row[excelColumn] ?? "").trim();
+    const arrayInfo = parseArrayPath(wordField);
 
-  const length = Math.max(jpLines.length, vnLines.length);
+    if (arrayInfo) {
+      const lines = raw.split(/\r?\n/).map((l) => l.trim());
+      arrayGroups[arrayInfo.arrayPath] ??= {};
+      if (arrayGroups[arrayInfo.arrayPath][arrayInfo.arrayKey] !== undefined) {
+        console.warn(
+          `[Cảnh báo] Nhiều cột Excel cùng được gán vào field "${wordField}" (cột "${excelColumn}" ghi đè dữ liệu cột trước). Kiểm tra lại mapping.`
+        );
+      }
+      arrayGroups[arrayInfo.arrayPath][arrayInfo.arrayKey] = lines;
+    } else {
+      if (flat[wordField] !== undefined) {
+        console.warn(
+          `[Cảnh báo] Nhiều cột Excel cùng được gán vào field "${wordField}" (cột "${excelColumn}" ghi đè dữ liệu cột trước).`
+        );
+      }
+      flat[wordField] = raw;
+    }
+  }
 
-  return Array.from({ length }, (_, i) => ({
-    content: jpLines[i] ?? "",
-    meaning: vnLines[i] ?? "",
-  })).filter((example) => example.content || example.meaning);
+  const result: Record<string, unknown> = { ...flat };
+
+  for (const [arrayPath, group] of Object.entries(arrayGroups)) {
+    const keys = Object.keys(group); // vd ["content", "meaning"]
+    const maxLen = Math.max(0, ...keys.map((k) => group[k].length));
+    result[arrayPath] = Array.from({ length: maxLen }, (_, i) => {
+      const item: Record<string, string> = {};
+      for (const k of keys) item[k] = group[k][i] ?? "";
+      return item;
+    }).filter((item) => Object.values(item).some((v) => v)); // bỏ dòng trống hoàn toàn
+  }
+
+  if (!("examples" in result)) result.examples = [];
+
+  return {
+    text: "",
+    sv_word: "",
+    reading: "",
+    meaning: "",
+    ...result,
+  } as CreateWord;
 };
 
-const createWord = (row: unknown[]): CreateWord => ({
-  text: String(row[1] ?? "").trim(),
-  sv_word: "",
-  reading: String(row[2] ?? "").trim(),
-  meaning: String(row[3] ?? "").trim(),
-  examples: parseExamples(row[4], row[5]),
-});
+const applyDefaultMapping = (columns: string[]): ColumnMapping[] =>
+  DEFAULT_WORD_FIELDS.map((field, i) => ({
+    excelColumn: columns[i] ?? field.label,
+    wordField: field.value,
+  }));
 
-const parseRows = (rows: unknown[][]): CreateWord[] =>
-  rows
-    .slice(1)
-    .filter((row) => row.length >= 4)
-    .map(createWord)
+const parseRows = (rows: Record<string, unknown>[], mapping?: ColumnMapping[]): CreateWord[] => {
+  if (rows.length === 0) return [];
+  const effectiveMapping =
+    mapping && mapping.length > 0 ? mapping : applyDefaultMapping(Object.keys(rows[0]));
+
+  return rows
+    .map((row) => buildWordFromRow(row, effectiveMapping))
     .filter((item) => item.text.length > 0);
+};
 
-export const parseText = (raw: string): CreateWord[] =>
-  raw
-    .split(/\n\s*\n/)
-    .map((block): CreateWord | null => {
-      const trimmed = block.trim();
-      if (!trimmed) return null;
-
-      const [
-        text = "",
-        reading = "",
-        meaning = "",
-        exampleJp = "",
-        exampleVn = "",
-      ] = trimmed.split("|").map((s) => s.trim());
-
-      return {
-        text,
-        sv_word: "",
-        reading,
-        meaning,
-        examples: parseExamples(exampleJp, exampleVn),
-      };
-    })
-    .filter((item): item is CreateWord => item !== null);
-
-export const parseExcel = (data: ArrayBuffer): CreateWord[] => {
+export const parseExcel = (data: ArrayBuffer, mapping?: ColumnMapping[]): CreateWord[] => {
   const workbook = XLSX.read(data, { type: "array" });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
-    header: 1,
-  });
-
-  return parseRows(rows);
+  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet); // đọc theo tên cột, không theo index
+  return parseRows(rows, mapping);
 };
 
-export const parseCSV = (csvText: string): CreateWord[] => {
-  const rows = csvText
-    .split(/\r?\n/)
-    .filter((line) => line.trim())
-    .map(parseCSVLine);
+export const parseCSV = (csvText: string, mapping?: ColumnMapping[]): CreateWord[] => {
+  const lines = csvText.split(/\r?\n/).filter((l) => l.trim());
+  if (lines.length === 0) return [];
 
-  return parseRows(rows);
+  const headers = parseCSVLine(lines[0]);
+  const rows = lines.slice(1).map((line) => {
+    const values = parseCSVLine(line);
+    const row: Record<string, unknown> = {};
+    headers.forEach((h, i) => (row[h] = values[i]));
+    return row;
+  });
+
+  return parseRows(rows, mapping);
 };
 
 const parseCSVLine = (line: string): string[] => {
   const result: string[] = [];
   let current = "";
   let inQuotes = false;
-
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
     const nextChar = line[i + 1];
-
     if (char === '"') {
-      if (inQuotes && nextChar === '"') {
-        current += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
+      if (inQuotes && nextChar === '"') { current += '"'; i++; }
+      else inQuotes = !inQuotes;
     } else if (char === "," && !inQuotes) {
-      result.push(current);
-      current = "";
+      result.push(current); current = "";
     } else {
       current += char;
     }
   }
-
   result.push(current);
   return result;
 };

@@ -3,8 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import * as router from "./router/router";
 
 import "./App.css";
-import { MainLayout } from "./layout";
-import { AuthLayout } from "./layout/AuthLayout";
+import { MainLayout, AuthLayout } from "./layout";
+import { Modal } from "./components/Modal";
 import { useAppDispatch, initializeAuth } from "./store";
 
 function App() {
@@ -46,6 +46,9 @@ function App() {
           },
         )}
       </Routes>
+      
+      {/* Global Modal controlled by Redux */}
+      <Modal />
     </BrowserRouter>
   );
 }
