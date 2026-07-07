@@ -7,14 +7,16 @@ export const StepHeader = ({
   hint,
   done,
   rightAction,
+  className,
 }: {
   step: number;
   title: string;
   hint?: string;
   done?: boolean;
   rightAction?: ReactNode;
+  className?: string;
 }) => (
-  <div className="flex items-start gap-2.5 mb-3">
+  <div className={`flex gap-2.5 mb-3 ${className}`}>
     <div
       className={`w-7 h-7 rounded-full grid place-items-center text-xs font-bold shrink-0 ${
         done ? "bg-emerald-500 text-white" : "bg-amber-500 text-white"
