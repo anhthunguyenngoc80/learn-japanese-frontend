@@ -7,6 +7,17 @@ export interface GetCollectionsResponse {
 
 export interface CreateCollectionRequest {
   name: string;
+  topics: {
+    name: string;
+    words: {
+      text: string;
+      sv_word?: string;
+      reading?: string;
+      meaning: string;
+      partOfSpeech?: string;
+      examples: { content: string; meaning?: string }[];
+    }[];
+  }[];
 }
 
 export interface CreateCollectionResponse {

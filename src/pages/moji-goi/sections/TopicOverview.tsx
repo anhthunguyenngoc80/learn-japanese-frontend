@@ -2,9 +2,36 @@ import { useState } from "react";
 import { Folder } from "lucide-react";
 import { Button } from "../../../components";
 import type { CreateTopic, CreateWord } from "../../../model";
+import {
+  accentFromTopic,
+  accentMap,
+  type AccentColor,
+} from "../../../constant/styleConstant";
+import { WordCard } from "./WordCard";
 
-export const TopicOverview = ({topics, words}: {topics: CreateTopic[], words: CreateWord[]})  => {
+export const TopicOverview = ({
+  topics,
+  words,
+  accent,
+  topic,
+  topicIndex,
+  onEditWord,
+  onDeleteWord,
+}: {
+  topics: CreateTopic[];
+  words: CreateWord[];
+  accent?: AccentColor;
+  topic?: string | number;
+  topicIndex?: number;
+  onEditWord?: (index: number, word: CreateWord) => void;
+  onDeleteWord?: (index: number) => void;
+}) => {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const resolvedAccent: AccentColor =
+    accent ?? (topic != null ? accentFromTopic(topic) : "amber");
+  const s = accentMap[resolvedAccent];
+  const resolvedTopicIndex =
+    topicIndex ?? (typeof topic === "number" ? topic : undefined);
   return (
     <div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
@@ -43,17 +70,14 @@ export const TopicOverview = ({topics, words}: {topics: CreateTopic[], words: Cr
             </span>
           </p>
           <div className="rounded-xl border border-amber-100 bg-white overflow-hidden max-h-[360px] overflow-y-auto">
-            <ul className="divide-y divide-amber-50 text-sm">
-              {words.map((w, i) => (
-                <li key={i} className="px-4 py-2 flex gap-3">
-                  <span className="text-gray-400 w-6 shrink-0">{i + 1}.</span>
-                  <span className="font-medium text-gray-800 shrink-0">
-                    {w.text}
-                  </span>
-                  <span className="text-gray-500 truncate">{w.meaning}</span>
-                </li>
-              ))}
-            </ul>
+            {words.map((w, i) => (
+              <WordCard
+                key={`word-${i}`}
+                word={w}
+                accent={s}
+                topicIndex={resolvedTopicIndex}
+              />
+            ))}
           </div>
         </div>
       )}

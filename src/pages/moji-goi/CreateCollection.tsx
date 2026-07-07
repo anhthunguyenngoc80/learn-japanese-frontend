@@ -17,6 +17,7 @@ import {
 } from "./sections";
 import type * as models from "../../model";
 import { parseExcel, parseCSV, mergeWordsAndTopics } from "../../utils";
+import { createCollection } from "../../api";
 
 const MODE_CARDS: models.ModeCard[] = [
   {
@@ -43,49 +44,14 @@ const MODE_CARDS: models.ModeCard[] = [
   },
 ];
 
-// ----------------------------- DỮ LIỆU MẪU ---------------------------------
-const MOCK_WORDS: models.CreateWord[] = [
-  {
-    text: "単語",
-    reading: "たんご",
-    meaning: "từ vựng",
-    examples: [],
-  },
-  {
-    text: "勉強",
-    reading: "べんきょう",
-    meaning: "học tập",
-    examples: [],
-  },
-  {
-    text: "学校",
-    reading: "がっこう",
-    meaning: "trường học",
-    examples: [],
-  },
-  {
-    text: "先生",
-    reading: "せんせい",
-    meaning: "giáo viên",
-    examples: [],
-  },
-  { text: "友達", reading: "ともだち", meaning: "bạn bè", examples: [] },
-  { text: "図書館", reading: "としょかん", meaning: "thư viện", examples: [] },
-];
-
-const MOCK_TOPICS: models.CreateTopic[] = [
-  { name: "Bài 1 - Chào hỏi", words: MOCK_WORDS },
-  { name: "Bài 2 - Trường học", words: [] },
-];
-
 export const CreateCollection = () => {
   const [mode, setMode] = useState<models.ModeCardMode>(MODE_CARDS[0].mode);
   const [screen, setScreen] = useState<1 | 2>(1);
-  const [words, setWords] = useState<models.CreateWord[]>(MOCK_WORDS);
-  const [topics, setTopics] = useState<models.CreateTopic[]>(MOCK_TOPICS);
+  const [words, setWords] = useState<models.CreateWord[]>([]);
+  const [topics, setTopics] = useState<models.CreateTopic[]>([]);
+  const [collectionName, setCollectionName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-
-  const totalWords = words.length;
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleAddTopic = (name: string) => {
     setTopics((prev) => [...prev, { name, words: [] }]);
@@ -106,7 +72,22 @@ export const CreateCollection = () => {
     });
   };
 
-  const handleFileUpload = async (file: File, parsedWords?: models.CreateWord[]) => {
+  const handleDeleteWord = (index: number) => {
+    setWords((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleEditWord = (index: number, updatedWord: models.CreateWord) => {
+    setWords((prev) => {
+      const updated = [...prev];
+      updated[index] = updatedWord;
+      return updated;
+    });
+  };
+
+  const handleFileUpload = async (
+    file: File,
+    parsedWords?: models.CreateWord[],
+  ) => {
     setIsUploading(true);
     try {
       let newWords: models.CreateWord[];
@@ -117,7 +98,9 @@ export const CreateCollection = () => {
       } else {
         // Otherwise, parse the file with default mapping
         const arrayBuffer = await file.arrayBuffer();
-        const fileExtension = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+        const fileExtension = file.name
+          .substring(file.name.lastIndexOf("."))
+          .toLowerCase();
 
         if (fileExtension === ".csv") {
           const text = await file.text();
@@ -134,6 +117,54 @@ export const CreateCollection = () => {
       console.error("Error parsing file:", err);
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!collectionName.trim()) {
+      alert("Vui lòng nhập tên bộ sưu tập");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      // Build topics array: existing topics + unclassified words as one topic
+      const allTopics = [...topics];
+
+      // Add unclassified words as a topic if there are any
+      if (words.length > 0) {
+        allTopics.push({
+          name: "Chưa phân loại",
+          words: [...words],
+        });
+      }
+
+      const payload = {
+        name: collectionName.trim(),
+        topics: allTopics.map((t) => ({
+          name: t.name,
+          words: t.words.map((w) => ({
+            text: w.text,
+            sv_word: w.sv_word,
+            reading: w.reading,
+            meaning: w.meaning,
+            partOfSpeech: w.partOfSpeech,
+            examples: w.examples.map((e) => ({
+              content: e.content,
+              meaning: e.meaning,
+            })),
+          })),
+        })),
+      };
+
+      const response = await createCollection(payload);
+      console.log("Collection created:", response);
+      alert("Lưu bộ từ vựng thành công!");
+    } catch (err) {
+      console.error("Error saving collection:", err);
+      alert("Có lỗi xảy ra khi lưu bộ từ vựng. Vui lòng thử lại.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -160,6 +191,8 @@ export const CreateCollection = () => {
           Tên bộ sưu tập
         </label>
         <input
+          value={collectionName}
+          onChange={(e) => setCollectionName(e.target.value)}
           placeholder="Ví dụ: Từ vựng N3 - Bài 1"
           className="w-full px-4 py-2.5 rounded-xl border border-amber-200 bg-white text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition"
         />
@@ -200,24 +233,15 @@ export const CreateCollection = () => {
                 onAddTopic={handleAddTopic}
                 onDeleteTopic={handleDeleteTopic}
                 onUpdateTopic={handleUpdateTopic}
+                onDeleteWord={handleDeleteWord}
+                onEditWord={handleEditWord}
               />
             )
           );
         })}
 
       {/* ============================ SCREEN 2 ============================ */}
-      {screen === 2 && (
-        <>
-          <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between">
-            <p className="text-sm text-amber-700 font-medium">
-              Tổng cộng {totalWords} từ vựng trong{" "}
-              {topics.filter((t) => t.words.length > 0).length} chủ đề.
-            </p>
-          </div>
-
-          <TopicOverview topics={topics} words={words} />
-        </>
-      )}
+      {screen === 2 && <TopicOverview topics={topics} words={words} />}
 
       {screen === 1 ? (
         <div className="flex justify-end">
@@ -254,6 +278,8 @@ export const CreateCollection = () => {
               Quay lại chỉnh sửa
             </Button>
             <Button
+              disabled={isSaving}
+              onClick={handleSave}
               kind="solid"
               color="amber"
               size="lg"
@@ -262,7 +288,7 @@ export const CreateCollection = () => {
               icon={Save}
               iconPosition="left"
             >
-              Lưu bộ từ vựng
+              {isSaving ? "Đang lưu..." : "Lưu bộ từ vựng"}
             </Button>
           </div>
         </>

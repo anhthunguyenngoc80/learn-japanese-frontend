@@ -1,22 +1,28 @@
 import { useState, useEffect } from "react";
-import { Plus, X, Settings2, ChevronDown } from "lucide-react";
+import { Plus, Settings2, ChevronDown } from "lucide-react";
 import { Button, IconButton } from "../../../components";
-import { WordEntryPanel, StepHeader } from "../sections";
+import { WordEntryPanel, StepHeader, TopicCard } from "../sections";
 import type { ModeContentProps } from "../../../model";
-import { accentFromTopic, accentMap, topicAccentCycle, type AccentColor } from "../../../constant/styleConstant";
+import {
+  accentFromTopic,
+  accentMap,
+  type AccentColor,
+} from "../../../constant/styleConstant";
 import { WordCard } from "./WordCard";
 
-export const VocabFirstMode = ({ 
-  words, 
-  topics, 
-  onFileUpload, 
+export const VocabFirstMode = ({
+  words,
+  topics,
+  onFileUpload,
   isUploading,
   onAddTopic,
   onDeleteTopic,
   onUpdateTopic,
+  onDeleteWord,
+  onEditWord,
   accent,
   topic,
-  topicIndex 
+  topicIndex,
 }: ModeContentProps & {
   accent?: AccentColor;
   topic?: string | number;
@@ -52,7 +58,9 @@ export const VocabFirstMode = ({
 
     // Use 1-based index as shown in the UI, convert to 0-based for array
     const startIdx = isNaN(from) ? 0 : Math.max(0, from - 1);
-    const endIdx = isNaN(to) ? words.length - 1 : Math.min(words.length - 1, to - 1);
+    const endIdx = isNaN(to)
+      ? words.length - 1
+      : Math.min(words.length - 1, to - 1);
 
     if (startIdx > endIdx) return;
 
@@ -69,7 +77,7 @@ export const VocabFirstMode = ({
   }, [topics]);
 
   const resolvedAccent: AccentColor =
-      accent ?? (topic != null ? accentFromTopic(topic) : "amber");
+    accent ?? (topic != null ? accentFromTopic(topic) : "amber");
   const s = accentMap[resolvedAccent];
   const resolvedTopicIndex =
     topicIndex ?? (typeof topic === "number" ? topic : undefined);
@@ -83,13 +91,13 @@ export const VocabFirstMode = ({
     rightAction?: React.ReactNode,
   ) => {
     const isExpanded = expandedStep === step;
-    
+
     return (
-      <div 
+      <div
         className={`rounded-2xl border p-4 flex flex-col transition-all duration-300 ${
-          isExpanded 
-            ? 'border-amber-200 bg-amber-50/30 flex-1 lg:h-[600px]' 
-            : 'border-gray-200 bg-gray-50 w-20 shrink-0 lg:h-[600px] cursor-pointer hover:bg-gray-100'
+          isExpanded
+            ? "border-amber-200 bg-amber-50/30 flex-1 lg:h-[600px]"
+            : "border-gray-200 bg-gray-50 w-20 shrink-0 lg:h-[600px] cursor-pointer hover:bg-gray-100"
         }`}
         onClick={() => !isExpanded && handleStepToggle(step)}
       >
@@ -99,12 +107,10 @@ export const VocabFirstMode = ({
           hint={isExpanded ? hint : undefined}
           done={done}
           rightAction={isExpanded ? rightAction : undefined}
-          className={isExpanded ? 'items-start' : 'flex-col items-center'}
+          className={isExpanded ? "items-start" : "flex-col items-center"}
         />
         {isExpanded && (
-          <div className="overflow-y-auto pr-1 grow">
-            {content}
-          </div>
+          <div className="overflow-y-auto pr-1 grow">{content}</div>
         )}
         {!isExpanded && (
           <div className="flex items-center justify-center mt-1">
@@ -136,7 +142,7 @@ export const VocabFirstMode = ({
           color="slate"
           onClick={() => setShowMappingConfig(true)}
           className="!p-1"
-        />
+        />,
       )}
 
       {renderStep(
@@ -153,10 +159,10 @@ export const VocabFirstMode = ({
                 accent={s}
                 topicIndex={resolvedTopicIndex}
                 onEdit={(word) => {
-                  // Handle edit word logic here
+                  onEditWord?.(index, word);
                 }}
-                onDelete={(word) => {
-                  // Handle delete word logic here
+                onDelete={() => {
+                  onDeleteWord?.(index);
                 }}
               />
             ))}
@@ -175,7 +181,7 @@ export const VocabFirstMode = ({
               </Button>
             </div>
           )}
-        </div>
+        </div>,
       )}
 
       {renderStep(
@@ -214,79 +220,26 @@ export const VocabFirstMode = ({
           </div>
 
           <div className="flex flex-col gap-3">
-            {topics.map((t, idx) => {
-              const count = topics.length;
-              const accentColor =
-                topicAccentCycle[idx % topicAccentCycle.length];
-              const color = accentMap[accentColor];
-              return (
-                <div
-                  key={"topic-" + t.name}
-                  className={`rounded-xl border p-3 ${color.border} ${color.bg}`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span
-                        className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white shrink-0 ${color.dot}`}
-                      >
-                        {idx + 1}
-                      </span>
-                      <span
-                        className={`text-xs font-semibold truncate ${color.text}`}
-                      >
-                        {t.name}
-                      </span>
-                      <span className="text-[11px] text-gray-400 shrink-0">
-                        ({t.words.length} từ)
-                      </span>
-                    </div>
-                    <IconButton
-                      aria-label="Xoá chủ đề"
-                      kind="ghost"
-                      icon={X}
-                      size="sm"
-                      color={accentColor}
-                      className="!p-0 w-5 h-5"
-                      onClick={() => onDeleteTopic?.(idx)}
-                    />
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] text-gray-500 shrink-0">
-                      Từ số
-                    </span>
-                    <input
-                      placeholder="1"
-                      value={rangeFrom[idx] ?? ""}
-                      onChange={(e) => setRangeFrom((prev) => ({ ...prev, [idx]: e.target.value }))}
-                      className="w-14 px-2 py-1 rounded-lg border border-white/80 bg-white text-xs outline-none focus:border-amber-400"
-                    />
-                    <span className="text-[11px] text-gray-500 shrink-0">
-                      tới
-                    </span>
-                    <input
-                      placeholder={String(words.length)}
-                      value={rangeTo[idx] ?? ""}
-                      onChange={(e) => setRangeTo((prev) => ({ ...prev, [idx]: e.target.value }))}
-                      className="w-14 px-2 py-1 rounded-lg border border-white/80 bg-white text-xs outline-none focus:border-amber-400"
-                    />
-                    <div className="w-full"></div>
-                    <Button
-                      kind="soft"
-                      color={accentColor}
-                      size="sm"
-                      spacing="xxs"
-                      radius="sm"
-                      className="text-[11px]"
-                      onClick={() => handleAssign(idx)}
-                    >
-                      Gán
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
+            {topics.map((t, idx) => (
+              <TopicCard
+                key={"topic-" + t.name}
+                topic={t}
+                index={idx}
+                wordsLength={words.length}
+                rangeFrom={rangeFrom[idx] ?? ""}
+                rangeTo={rangeTo[idx] ?? ""}
+                onRangeFromChange={(value: string) =>
+                  setRangeFrom((prev) => ({ ...prev, [idx]: value }))
+                }
+                onRangeToChange={(value: string) =>
+                  setRangeTo((prev) => ({ ...prev, [idx]: value }))
+                }
+                onAssign={() => handleAssign(idx)}
+                onDelete={() => onDeleteTopic?.(idx)}
+              />
+            ))}
           </div>
-        </div>
+        </div>,
       )}
     </div>
   );
