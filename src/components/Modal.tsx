@@ -1,4 +1,3 @@
-import { X } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store/typedHooks";
 import { closeModal } from "../store/reducer/modalReducer";
 

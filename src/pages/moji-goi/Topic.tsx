@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { PATHS } from "../../constant";
 import { Button } from "../../components";
-import { WordCardList } from "../../components/WordCardList";
 import * as api from "../../api";
 import * as models from "../../model";
 
@@ -220,7 +219,7 @@ export const Topic = () => {
         </div>
       </div>
 
-      <WordCardList
+      {/* <WordCardList
         items={selectedTopic.words}
         icon={<BookOpen size={16} />}
         title="Danh sách từ vựng"
@@ -230,7 +229,7 @@ export const Topic = () => {
             Thêm từ
           </Button>
         }
-      />
+      /> */}
     </div>
   );
 };

@@ -1,16 +1,35 @@
 import { useState } from "react";
 import { Plus, X, Settings2 } from "lucide-react";
 import { Button, IconButton } from "../../../components";
-import { WordEntryPanel, WordPreviewTable, StepHeader } from "../sections";
+import { WordEntryPanel, StepHeader } from "../sections";
 import type { ModeContentProps } from "../../../model";
-import { accentMap, topicAccentCycle } from "../../../constant/styleConstant";
+import { accentFromTopic, accentMap, topicAccentCycle, type AccentColor } from "../../../constant/styleConstant";
+import { WordCard } from "./WordCard";
 
-export const VocabFirstMode = ({ words, topics, onFileUpload, isUploading }: ModeContentProps) => {
+export const VocabFirstMode = ({ 
+  words, 
+  topics, 
+  onFileUpload, 
+  isUploading,
+  accent,
+  topic,
+  topicIndex 
+}: ModeContentProps & {
+  accent?: AccentColor;
+  topic?: string | number;
+  topicIndex?: number;
+}) => {
   const [showMappingConfig, setShowMappingConfig] = useState(false);
 
   const handleMappingConfigClose = () => {
     setShowMappingConfig(false);
   };
+
+  const resolvedAccent: AccentColor =
+      accent ?? (topic != null ? accentFromTopic(topic) : "amber");
+  const s = accentMap[resolvedAccent];
+  const resolvedTopicIndex =
+    topicIndex ?? (typeof topic === "number" ? topic : undefined);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 items-stretch">
@@ -33,8 +52,8 @@ export const VocabFirstMode = ({ words, topics, onFileUpload, isUploading }: Mod
           }
         />
         <div className="overflow-y-auto pr-1 grow">
-          <WordEntryPanel 
-            onFileSelect={onFileUpload} 
+          <WordEntryPanel
+            onFileSelect={onFileUpload}
             loading={isUploading}
             showMappingConfig={showMappingConfig}
             onMappingConfigClose={handleMappingConfigClose}
@@ -48,8 +67,21 @@ export const VocabFirstMode = ({ words, topics, onFileUpload, isUploading }: Mod
           title="Xem trước từ vựng"
           hint="Kiểm tra, sửa hoặc xoá từ. Số ở góc mỗi dòng cho biết từ đã thuộc chủ đề nào."
         />
-        <div className="overflow-y-auto pr-1 grow">
-          <WordPreviewTable words={words} compact />
+        <div className="overflow-y-auto pr-1 grow grid grid-cols-1 gap-4">
+          {words.map((word, index) => (
+            <WordCard
+              key={`word-${index}`}
+              word={word}
+              accent={s}
+              topicIndex={resolvedTopicIndex}
+              onEdit={(word) => {
+                // Handle edit word logic here
+              }}
+              onDelete={(word) => {
+                // Handle delete word logic here
+              }}
+            />
+          ))}
         </div>
       </div>
 

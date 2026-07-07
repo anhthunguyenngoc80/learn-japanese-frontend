@@ -1,9 +1,26 @@
 import { Plus, X, Check } from "lucide-react";
 import { Button, IconButton } from "../../../components";
-import { WordEntryPanel, WordPreviewTable } from "../sections";
+import { WordEntryPanel } from "../sections";
 import type { ModeContentProps } from "../../../model";
+import { WordCard } from "./WordCard";
+import type { AccentColor } from "../../../constant";
+import { accentFromTopic, accentMap } from "../../../constant/styleConstant";
 
-export const TopicFirstMode = ({ words, topics, onFileUpload, isUploading }: ModeContentProps) => {
+export const TopicFirstMode = ({ words, topics, onFileUpload, isUploading, accent,
+  topic,
+  topicIndex
+}: ModeContentProps & {
+  accent?: AccentColor;
+  topic?: string | number;
+  topicIndex?: number;
+}) => {
+
+  const resolvedAccent: AccentColor =
+    accent ?? (topic != null ? accentFromTopic(topic) : "amber");
+  const s = accentMap[resolvedAccent];
+  const resolvedTopicIndex =
+    topicIndex ?? (typeof topic === "number" ? topic : undefined);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       <div>
@@ -23,8 +40,8 @@ export const TopicFirstMode = ({ words, topics, onFileUpload, isUploading }: Mod
               key={"topic-" + i}
               // variant={i === 0 ? "primary" : "secondary"}
               className={`w-full justify-between ${i === 0
-                  ? "border-amber-400 bg-amber-50"
-                  : "border-amber-100 bg-white hover:border-amber-200"
+                ? "border-amber-400 bg-amber-50"
+                : "border-amber-100 bg-white hover:border-amber-200"
                 }`}
             >
               <span className="text-sm font-medium text-gray-800 truncate">
@@ -50,10 +67,17 @@ export const TopicFirstMode = ({ words, topics, onFileUpload, isUploading }: Mod
         <div className="mb-4">
           <WordEntryPanel onFileSelect={onFileUpload} loading={isUploading} />
         </div>
-        <div className="mb-3">
-          <WordPreviewTable words={words.slice(0, 2)} compact />
+        <div className="mb-3 overflow-y-auto pr-1 grow grid grid-cols-1 gap-4">
+          {words.map((word, index) => (
+            <WordCard
+              key={`word-${index}`}
+              word={word}
+              accent={s}
+              topicIndex={resolvedTopicIndex}
+            />
+          ))}
         </div>
-        <Button  size="sm" icon={Check} iconPosition="left" className="bg-amber-100 text-amber-700 hover:bg-amber-200">
+        <Button size="sm" icon={Check} iconPosition="left" className="bg-amber-100 text-amber-700 hover:bg-amber-200">
           Xác nhận cho chủ đề này
         </Button>
       </div>
