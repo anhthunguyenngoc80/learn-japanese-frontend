@@ -43,8 +43,11 @@ export type CreateTopic = Omit<Topic, "topic_id" | "collection_id" | "words"> & 
 export interface ModeContentProps {
     words: CreateWord[];
     topics: CreateTopic[];
-    onFileUpload?: (file: File) => void;
+    onFileUpload?: (file: File, words?: CreateWord[]) => void;
     isUploading?: boolean;
+    onAddTopic?: (name: string) => void;
+    onDeleteTopic?: (index: number) => void;
+    onUpdateTopic?: (topicIndex: number, wordIndices: number[]) => void;
 }
 
 export type ModeCardMode = "vocab-first" | "topic-first" | "parallel";

@@ -1,38 +1,14 @@
 import { useState } from "react";
 import { Folder } from "lucide-react";
 import { Button } from "../../../components";
+import type { CreateTopic, CreateWord } from "../../../model";
 
-export const TopicOverview = () => {
-  const nonEmpty = [
-    {
-      name: "Bài 1 - Chào hỏi",
-      words: [
-        { text: "単語", reading: "たんご", meaning: "từ vựng" },
-        { text: "勉強", reading: "べんきょう", meaning: "học tập" },
-      ],
-    },
-    {
-      name: "Bài 2 - Trường học",
-      words: [
-        { text: "学校", reading: "がっこう", meaning: "trường học" },
-        { text: "先生", reading: "せんせい", meaning: "giáo viên" },
-      ],
-    },
-    {
-      name: "Chưa phân loại",
-      words: [{ text: "友達", reading: "ともだち", meaning: "bạn bè" }],
-    },
-  ].filter((g) => g.words.length > 0);
-
-  const [expanded, setExpanded] = useState<string | null>(
-    nonEmpty[0]?.name ?? null,
-  );
-  const active = nonEmpty.find((g) => g.name === expanded) || null;
-
+export const TopicOverview = ({topics, words}: {topics: CreateTopic[], words: CreateWord[]})  => {
+  const [expanded, setExpanded] = useState<string | null>(null);
   return (
     <div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
-        {nonEmpty.map((g, i) => (
+        {topics.map((g, i) => (
           <Button
             key={g.name}
             onClick={() => setExpanded(g.name)}
@@ -59,17 +35,16 @@ export const TopicOverview = () => {
         ))}
       </div>
 
-      {active && (
+      {words && (
         <div>
           <p className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
-            {active.name}{" "}
             <span className="text-gray-400 font-normal">
-              ({active.words.length} từ)
+              ({words.length} từ)
             </span>
           </p>
           <div className="rounded-xl border border-amber-100 bg-white overflow-hidden max-h-[360px] overflow-y-auto">
             <ul className="divide-y divide-amber-50 text-sm">
-              {active.words.map((w, i) => (
+              {words.map((w, i) => (
                 <li key={i} className="px-4 py-2 flex gap-3">
                   <span className="text-gray-400 w-6 shrink-0">{i + 1}.</span>
                   <span className="font-medium text-gray-800 shrink-0">

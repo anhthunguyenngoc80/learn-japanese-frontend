@@ -16,7 +16,7 @@ import {
   VocabFirstMode,
 } from "./sections";
 import type * as models from "../../model";
-import { parseExcel, parseCSV } from "../../utils/excelParser";
+import { parseExcel, parseCSV, mergeWordsAndTopics } from "../../utils";
 
 const MODE_CARDS: models.ModeCard[] = [
   {
@@ -86,6 +86,25 @@ export const CreateCollection = () => {
   const [isUploading, setIsUploading] = useState(false);
 
   const totalWords = words.length;
+
+  const handleAddTopic = (name: string) => {
+    setTopics((prev) => [...prev, { name, words: [] }]);
+  };
+
+  const handleDeleteTopic = (index: number) => {
+    setTopics((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateTopic = (topicIndex: number, wordIndices: number[]) => {
+    setTopics((prev) => {
+      const updated = [...prev];
+      const selectedWords = wordIndices
+        .filter((i) => i >= 0 && i < words.length)
+        .map((i) => words[i]);
+      updated[topicIndex] = { ...updated[topicIndex], words: selectedWords };
+      return updated;
+    });
+  };
 
   const handleFileUpload = async (file: File, parsedWords?: models.CreateWord[]) => {
     setIsUploading(true);
@@ -178,6 +197,9 @@ export const CreateCollection = () => {
                 topics={topics}
                 onFileUpload={handleFileUpload}
                 isUploading={isUploading}
+                onAddTopic={handleAddTopic}
+                onDeleteTopic={handleDeleteTopic}
+                onUpdateTopic={handleUpdateTopic}
               />
             )
           );
@@ -193,14 +215,19 @@ export const CreateCollection = () => {
             </p>
           </div>
 
-          <TopicOverview />
+          <TopicOverview topics={topics} words={words} />
         </>
       )}
 
       {screen === 1 ? (
         <div className="flex justify-end">
           <Button
-            onClick={() => setScreen(2)}
+            onClick={() => {
+              const merged = mergeWordsAndTopics(words, topics);
+              setTopics(merged.topics);
+              setWords(merged.words);
+              setScreen(2);
+            }}
             kind="solid"
             color="amber"
             size="lg"

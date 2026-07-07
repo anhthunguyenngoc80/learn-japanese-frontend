@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { IconButton } from "../../../components";
 import { WordEntryPanel } from "../sections";
@@ -5,7 +6,8 @@ import type { ModeContentProps } from "../../../model";
 
 const UNASSIGNED = "Chưa phân loại";
 
-export const ParallelMode = ({ words, topics, onFileUpload, isUploading }: ModeContentProps) => {
+export const ParallelMode = ({ words, topics, onFileUpload, isUploading, onAddTopic }: ModeContentProps) => {
+  const [newTopicName, setNewTopicName] = useState("");
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       <div>
@@ -19,9 +21,27 @@ export const ParallelMode = ({ words, topics, onFileUpload, isUploading }: ModeC
           <div className="flex gap-2 mb-3">
             <input
               placeholder="Ví dụ: Bài 1"
+              value={newTopicName}
+              onChange={(e) => setNewTopicName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newTopicName.trim() && onAddTopic) {
+                  onAddTopic(newTopicName.trim());
+                  setNewTopicName("");
+                }
+              }}
               className="flex-1 px-4 py-2 rounded-xl border border-amber-200 bg-white text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition"
             />
-            <IconButton aria-label="abc" icon={Plus} size="sm" />
+            <IconButton 
+              aria-label="Thêm chủ đề" 
+              icon={Plus} 
+              size="sm"
+              onClick={() => {
+                if (newTopicName.trim() && onAddTopic) {
+                  onAddTopic(newTopicName.trim());
+                  setNewTopicName("");
+                }
+              }}
+            />
           </div>
           <div className="flex flex-wrap gap-2">
             {topics.map((t, idx) => (

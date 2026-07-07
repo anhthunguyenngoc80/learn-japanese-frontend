@@ -11,6 +11,9 @@ export const VocabFirstMode = ({
   topics, 
   onFileUpload, 
   isUploading,
+  onAddTopic,
+  onDeleteTopic,
+  onUpdateTopic,
   accent,
   topic,
   topicIndex 
@@ -21,6 +24,9 @@ export const VocabFirstMode = ({
 }) => {
   const [showMappingConfig, setShowMappingConfig] = useState(false);
   const [expandedStep, setExpandedStep] = useState<1 | 2 | 3>(1);
+  const [newTopicName, setNewTopicName] = useState("");
+  const [rangeFrom, setRangeFrom] = useState<Record<number, string>>({});
+  const [rangeTo, setRangeTo] = useState<Record<number, string>>({});
 
   // Auto-advance from step 1 to step 2 when words are entered
   useEffect(() => {
@@ -36,6 +42,31 @@ export const VocabFirstMode = ({
   const handleMappingConfigClose = () => {
     setShowMappingConfig(false);
   };
+
+  const handleAssign = (topicIdx: number) => {
+    const fromStr = rangeFrom[topicIdx]?.trim();
+    const toStr = rangeTo[topicIdx]?.trim();
+
+    const from = fromStr ? parseInt(fromStr, 10) : NaN;
+    const to = toStr ? parseInt(toStr, 10) : NaN;
+
+    // Use 1-based index as shown in the UI, convert to 0-based for array
+    const startIdx = isNaN(from) ? 0 : Math.max(0, from - 1);
+    const endIdx = isNaN(to) ? words.length - 1 : Math.min(words.length - 1, to - 1);
+
+    if (startIdx > endIdx) return;
+
+    const indices: number[] = [];
+    for (let i = startIdx; i <= endIdx; i++) {
+      indices.push(i);
+    }
+
+    onUpdateTopic?.(topicIdx, indices);
+  };
+
+  useEffect(() => {
+    console.log("Current topics:", topics);
+  }, [topics]);
 
   const resolvedAccent: AccentColor =
       accent ?? (topic != null ? accentFromTopic(topic) : "amber");
@@ -156,15 +187,29 @@ export const VocabFirstMode = ({
           <div className="flex gap-2">
             <input
               placeholder="Tên chủ đề mới"
+              value={newTopicName}
+              onChange={(e) => setNewTopicName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newTopicName.trim() && onAddTopic) {
+                  onAddTopic(newTopicName.trim());
+                  setNewTopicName("");
+                }
+              }}
               className="flex-1 px-3 py-2 rounded-xl border border-amber-200 bg-white text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition"
             />
             <IconButton
-              aria-label="abc"
+              aria-label="Thêm chủ đề"
               icon={Plus}
               size="md"
               spacing="md"
               kind="solid"
               color="amber"
+              onClick={() => {
+                if (newTopicName.trim() && onAddTopic) {
+                  onAddTopic(newTopicName.trim());
+                  setNewTopicName("");
+                }
+              }}
             />
           </div>
 
@@ -192,16 +237,17 @@ export const VocabFirstMode = ({
                         {t.name}
                       </span>
                       <span className="text-[11px] text-gray-400 shrink-0">
-                        ({count} từ)
+                        ({t.words.length} từ)
                       </span>
                     </div>
                     <IconButton
-                      aria-label="abc"
+                      aria-label="Xoá chủ đề"
                       kind="ghost"
                       icon={X}
                       size="sm"
                       color={accentColor}
                       className="!p-0 w-5 h-5"
+                      onClick={() => onDeleteTopic?.(idx)}
                     />
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -210,6 +256,8 @@ export const VocabFirstMode = ({
                     </span>
                     <input
                       placeholder="1"
+                      value={rangeFrom[idx] ?? ""}
+                      onChange={(e) => setRangeFrom((prev) => ({ ...prev, [idx]: e.target.value }))}
                       className="w-14 px-2 py-1 rounded-lg border border-white/80 bg-white text-xs outline-none focus:border-amber-400"
                     />
                     <span className="text-[11px] text-gray-500 shrink-0">
@@ -217,6 +265,8 @@ export const VocabFirstMode = ({
                     </span>
                     <input
                       placeholder={String(words.length)}
+                      value={rangeTo[idx] ?? ""}
+                      onChange={(e) => setRangeTo((prev) => ({ ...prev, [idx]: e.target.value }))}
                       className="w-14 px-2 py-1 rounded-lg border border-white/80 bg-white text-xs outline-none focus:border-amber-400"
                     />
                     <div className="w-full"></div>
@@ -227,6 +277,7 @@ export const VocabFirstMode = ({
                       spacing="xxs"
                       radius="sm"
                       className="text-[11px]"
+                      onClick={() => handleAssign(idx)}
                     >
                       Gán
                     </Button>
