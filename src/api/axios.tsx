@@ -9,6 +9,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 60000, // Tăng timeout lên 60s vì backend Render free tier cần thời gian wake up
 });
 
 api.interceptors.request.use(

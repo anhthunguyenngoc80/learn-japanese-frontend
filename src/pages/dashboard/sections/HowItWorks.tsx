@@ -6,6 +6,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "../../../components";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "../../../constant";
 
 type Step = { n: string; icon: LucideIcon; title: string; desc: string };
 
@@ -37,6 +39,7 @@ const steps: Step[] = [
 ];
 
 export function HowItWorks() {
+  const navigate = useNavigate();
   return (
     <section
       id="how"
@@ -71,6 +74,9 @@ export function HowItWorks() {
             kind="elevated"
             color="white"
             className="text-rose-700"
+            onClick={() => {
+              navigate(PATHS.register);
+            }}
           >
             Đăng ký miễn phí
           </Button>

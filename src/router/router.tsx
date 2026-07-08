@@ -54,6 +54,12 @@ const PRIVATE_ROUTER: RouteType[] = [
     path: PATHS.topic(),
     element: <pages.Topic />,
   },
+  {
+    key: "flashcardLearn",
+    name: "Flashcard Learn",
+    path: PATHS.flashcardLearn(),
+    element: <pages.FlashcardLearnPage />,
+  },
 ];
 
 export { PUBLIC_ROUTER, PRIVATE_HEADER_ROUTER, PRIVATE_ROUTER, AUTH_ROUTER };

@@ -130,7 +130,7 @@ export const Topic = () => {
 
       {/* Action cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Button onClick={() => navigate(PATHS.flashcardLearn(selectedTopic.topic_id))} className="group flex flex-col items-center gap-3 p-6 h-auto">
+        <Button onClick={() => navigate(PATHS.flashcardLearn(selectedTopic.topic_id), { state: { words: selectedTopic.words, topicName: selectedTopic.name } })} className="group flex flex-col items-center gap-3 p-6 h-auto">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 grid place-items-center group-hover:scale-110 transition-transform">
             <Sparkles className="w-6 h-6 text-rose-600" />
           </div>

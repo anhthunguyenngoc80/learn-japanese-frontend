@@ -10,37 +10,19 @@ import * as models from "../../model";
 export const Collection = () => {
   const navigate = useNavigate();
   const [collections, setCollections] = useState<models.Collection[]>([]);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.getCollections();
-        setCollections(response.data);
-      } catch (error) {
-        console.error("Failed to fetch collections:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const handleDelete = async (collectionId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!window.confirm("Bạn có chắc chắn muốn xóa bộ từ vựng này?")) return;
-
-    setDeletingId(collectionId);
+  const fetchCollections = async () => {
     try {
-      await api.deleteCollection(collectionId);
-      setCollections((prev) =>
-        prev.filter((c) => c.collection_id !== collectionId),
-      );
+      const response = await api.getCollections();
+      setCollections(response.data);
     } catch (error) {
-      console.error("Failed to delete collection:", error);
-      alert("Có lỗi xảy ra khi xóa bộ từ vựng. Vui lòng thử lại.");
-    } finally {
-      setDeletingId(null);
+      console.error("Failed to fetch collections:", error);
     }
   };
+
+  useEffect(() => {
+    fetchCollections();
+  }, []);
 
   return (
     <div className="grow flex flex-col items-center justify-center px-6 py-12">
@@ -82,7 +64,7 @@ export const Collection = () => {
       ) : (
         <>
           {/* Collection list header with add button */}
-          <div className="w-full max-w-2xl flex items-center justify-between mb-4">
+          <div className="w-full max-w-7xl flex items-center justify-between mb-4 px-4 sm:px-6 lg:px-8">
             <p className="text-sm text-gray-500">
               {collections.length} bộ từ vựng
             </p>
@@ -101,58 +83,91 @@ export const Collection = () => {
           </div>
 
           {/* Collection list */}
-          <div className="w-full max-w-2xl flex flex-col gap-3">
+          <div className="w-full max-w-7xl flex flex-wrap gap-3 px-4 sm:px-6 lg:px-8">
             {collections.map((collection) => (
-              <div
+              <ColectionCard
                 key={collection.collection_id}
-                className="group relative flex "
-              >
-                <Button
-                  kind="outline"
-                  color="amber"
-                  onClick={() => navigate(PATHS.topic(collection.collection_id))}
-                  className="w-full justify-between p-4"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
-                    <BookOpen className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-start text-base font-semibold text-gray-800 truncate">
-                      {collection.name}
-                    </h3>
-                  </div>
-                  <div className="shrink-0 flex items-center gap-2">
-                    <span className="text-xs text-gray-400">
-                      {(collection?.topics || []).length} từ
-                    </span>
-                    <div className="w-6 h-6 rounded-full bg-amber-100 grid place-items-center group-hover:bg-amber-200 transition-colors">
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        className="text-amber-600"
-                      >
-                        <path d="M9 18l6-6-6-6" />
-                      </svg>
-                    </div>
-                  </div>
-                </Button>
-                <IconButton
-                  icon={Trash2}
-                  aria-label="Xóa bộ từ vựng"
-                  onClick={(e) => handleDelete(collection.collection_id, e)}
-                  disabled={deletingId === collection.collection_id}  
-                  title="Xóa bộ từ vựng"
-                >
-                </IconButton>
-              </div>
+                collection={collection}
+                fetchCollections={fetchCollections}
+              />
             ))}
           </div>
         </>
       )}
+    </div>
+  );
+};
+
+const ColectionCard = ({
+  key,
+  collection,
+  fetchCollections,
+}: {
+  key: string;
+  collection: models.Collection;
+  fetchCollections: () => Promise<void>;
+}) => {
+  const navigate = useNavigate();
+
+  const handleDelete = async (collectionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bộ từ vựng này?")) return;
+
+    try {
+      await api.deleteCollection(collectionId);
+      await fetchCollections(); // Refresh the collection list after deletion
+      alert("Xóa bộ từ vựng thành công!");
+    } catch (error) {
+      console.error("Failed to delete collection:", error);
+      alert("Có lỗi xảy ra khi xóa bộ từ vựng. Vui lòng thử lại.");
+    }
+  };
+
+  return (
+    <div
+      key={key}
+      className="group relative flex w-80"
+    >
+      <Button
+        kind="outline"
+        color="amber"
+        onClick={() => navigate(PATHS.topic(collection.collection_id))}
+        className="w-full justify-between p-4"
+      >
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
+          <BookOpen className="w-6 h-6 text-amber-600" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-start text-base font-semibold text-gray-800 truncate">
+            {collection.name}
+          </h3>
+        </div>
+        <div className="shrink-0 flex items-center gap-2">
+          <span className="text-xs text-gray-400">
+            {(collection?.topics || []).length} từ
+          </span>
+          <div className="w-6 h-6 rounded-full bg-amber-100 grid place-items-center group-hover:bg-amber-200 transition-colors">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              className="text-amber-600"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </div>
+        </div>
+      </Button>
+      <IconButton
+        icon={Trash2}
+        aria-label="Xóa bộ từ vựng"
+        onClick={(e) => handleDelete(collection.collection_id, e)}
+        title="Xóa bộ từ vựng"
+      >
+      </IconButton>
     </div>
   );
 };

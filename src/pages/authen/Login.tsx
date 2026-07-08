@@ -56,12 +56,20 @@ export const LoginPage = () => {
       // Assuming API returns { user: { id, username, email }, token: string }
       dispatch(loginSuccess({ user: response.data }));
       navigate(constant.PATHS.collection);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login failed:", error);
+      
+      // Kiểm tra nếu là lỗi timeout/server không phản hồi (Render free tier sleep)
+      let errorMessage = "Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.";
+      if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+        errorMessage = "Máy chủ đang khởi động, vui lòng đợi 30-60 giây và thử lại.";
+      } else if (error.message?.includes("Network Error") || !error.response) {
+        errorMessage = "Không thể kết nối đến máy chủ. Máy chủ có thể đang ở chế độ ngủ, vui lòng thử lại sau 1 phút.";
+      }
+      
       setErrors((prev) => ({
         ...prev,
-        general:
-          "Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.",
+        general: errorMessage,
       }));
     } finally {
       setLoading(false);
