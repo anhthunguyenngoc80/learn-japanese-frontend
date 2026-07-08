@@ -7,3 +7,10 @@ export const getTopics = async (
   const response = await api.get(`/topics/${collectionId}`);
   return response.data;
 };
+
+export const getTopicById = async (
+  topicId: string,
+): Promise<topicI.GetTopicByIdResponse> => {
+  const response = await api.get(`/topic/${topicId}`);
+  return response.data;
+};

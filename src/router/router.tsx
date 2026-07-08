@@ -60,6 +60,18 @@ const PRIVATE_ROUTER: RouteType[] = [
     path: PATHS.flashcardLearn(),
     element: <pages.FlashcardLearnPage />,
   },
+  {
+    key: "practiceWrite",
+    name: "Practice Write",
+    path: PATHS.practiceWrite(),
+    element: <pages.PracticeWritePage />,
+  },
+  {
+    key: "practicePaper",
+    name: "Practice Paper",
+    path: PATHS.practicePaper(),
+    element: <pages.PracticePaperPage />,
+  },
 ];
 
 export { PUBLIC_ROUTER, PRIVATE_HEADER_ROUTER, PRIVATE_ROUTER, AUTH_ROUTER };

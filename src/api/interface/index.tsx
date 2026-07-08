@@ -6,4 +6,4 @@ export type {
   CreateCollectionResponse,
   DeleteCollectionResponse,
 } from "./collectionInterface";
-export type { GetTopicsResponse } from "./topicInterface";
+export type { GetTopicsResponse, GetTopicByIdResponse } from "./topicInterface";

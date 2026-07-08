@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
@@ -14,28 +14,41 @@ export function PublicHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo size="md" showHoverEffect={true} />
 
-        <nav className="hidden items-center gap-8 md:flex">
-          <Link
+        <nav className="hidden items-center gap-1 md:flex">
+          <NavLink
             to="/"
-            className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600"
+            className={({ isActive }) =>
+              `relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 ${
+                isActive
+                  ? "text-rose-700 bg-rose-50 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+              }`
+            }
           >
-            Trang chủ
-          </Link>
+            {({ isActive }) => (
+              <>
+                Trang chủ
+                {isActive && (
+                  <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-rose-500" />
+                )}
+              </>
+            )}
+          </NavLink>
           <a
             href="#jlpt"
-            className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600"
+            className="relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/60"
           >
             JLPT
           </a>
           <a
             href="#features"
-            className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600"
+            className="relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/60"
           >
             Tính năng
           </a>
           <a
             href="#how"
-            className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600"
+            className="relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/60"
           >
             Lộ trình
           </a>
@@ -74,12 +87,25 @@ export function PublicHeader() {
       {open && (
         <div className="border-t border-slate-200 bg-white md:hidden">
           <div className="space-y-1 px-4 py-4">
-            <a
-              href="/"
-              className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Trang chủ
-            </a>
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              `block rounded-lg px-3 py-2 text-sm font-medium ${
+                isActive
+                  ? "text-rose-700 bg-rose-50"
+                  : "text-slate-700 hover:bg-slate-100"
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                Trang chủ
+                {isActive && (
+                  <span className="ml-2 inline-block w-1.5 h-1.5 rounded-full bg-rose-500" />
+                )}
+              </>
+            )}
+          </NavLink>
             <a
               href="#jlpt"
               className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"

@@ -5,3 +5,5 @@ export { Collection } from "./moji-goi/Collection";
 export { CreateCollection } from "./moji-goi/CreateCollection";
 export { Topic } from "./moji-goi/Topic";
 export { FlashcardLearnPage } from "./learn/FlashcardLearn";
+export { PracticeWritePage } from "./learn/PracticeWrite";
+export { PracticePaperPage } from "./learn/PracticePaper";

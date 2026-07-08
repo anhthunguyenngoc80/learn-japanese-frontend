@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { AccentStyles } from "../../../constant/styleConstant";
-import type { CreateExample, CreateWord } from "../../../model";
+import type { CreateExample, CreateWord, Word } from "../../../model";
 import { Button, IconButton } from "../../../components/Button";
 import {
   ChevronDown,
@@ -20,15 +20,15 @@ export const WordCard = ({
   onEdit,
   onDelete,
 }: {
-  word: CreateWord;
-  accent: AccentStyles;
+  word: CreateWord | Word;
+  accent?: AccentStyles;
   topicIndex?: number;
-  onEdit?: (word: CreateWord) => void;
-  onDelete?: (word: CreateWord) => void;
+  onEdit?: (word: CreateWord | Word) => void;
+  onDelete?: (word: CreateWord | Word) => void;
 }) => {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [draft, setDraft] = useState<CreateWord>(word);
+  const [draft, setDraft] = useState<CreateWord | Word>(word);
   const exampleCount =
     (isEditing ? draft.examples?.length : word.examples?.length) ?? 0;
 
@@ -90,11 +90,11 @@ export const WordCard = ({
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border ${accent.border} ${accent.cardHoverBorder} bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl`}
+      className={`w-70 group relative overflow-hidden rounded-2xl border ${accent?.border} ${accent?.cardHoverBorder} bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl`}
     >
       {/* Dải màu accent bên trái - điểm nhấn chính */}
       <div
-        className={`absolute inset-y-0 left-0 w-1.5 ${accent.exampleBar}`}
+        className={`absolute inset-y-0 left-0 w-1.5 ${accent?.exampleBar}`}
         aria-hidden
       />
 
@@ -102,7 +102,7 @@ export const WordCard = ({
         {/* Badge số thứ tự - to hơn, nổi hơn */}
         {topicIndex != null && (
           <div
-            className={`absolute -left-3 -top-3 flex h-9 min-w-9 items-center justify-center rounded-full px-2.5 text-sm font-black shadow-md ring-4 ring-white ${accent.badgeBg} ${accent.badgeText}`}
+            className={`absolute -left-3 -top-3 flex h-9 min-w-9 items-center justify-center rounded-full px-2.5 text-sm font-black shadow-md ring-4 ring-white ${accent?.badgeBg} ${accent?.badgeText}`}
           >
             {topicIndex}
           </div>
@@ -188,7 +188,7 @@ export const WordCard = ({
                     style={{
                       width: `${Math.max((draft.reading ?? "").length, 6)}ch`,
                     }}
-                    className={`${inputBase} text-sm font-medium ${accent.chipText}`}
+                    className={`${inputBase} text-sm font-medium ${accent?.chipText}`}
                     placeholder="Cách đọc"
                   />
                   <input
@@ -206,7 +206,7 @@ export const WordCard = ({
                 <>
                   {word.reading && (
                     <span
-                      className={`rounded-md px-2 py-0.5 text-sm font-medium ${accent.chipBg} ${accent.chipText}`}
+                      className={`rounded-md px-2 py-0.5 text-sm font-medium ${accent?.chipBg} ${accent?.chipText}`}
                     >
                       {word.reading}
                     </span>
@@ -271,7 +271,7 @@ export const WordCard = ({
                   type="button"
                   size="sm"
                   onClick={() => setOpen((v) => !v)}
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-all ${accent.chipBg} ${accent.chipText} ${accent.chipHover}`}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-all ${accent?.chipBg} ${accent?.chipText} ${accent?.chipHover}`}
                   icon={open ? ChevronDown : ChevronRight}
                   iconPosition="left"
                 >
@@ -287,10 +287,10 @@ export const WordCard = ({
                   (ex: CreateExample, i: number) => (
                     <li
                       key={i}
-                      className={`group/ex relative flex gap-3 rounded-xl ${accent.exampleBg} p-3 pl-4 transition-transform hover:translate-x-0.5`}
+                      className={`group/ex relative flex gap-3 rounded-xl ${accent?.exampleBg} p-3 pl-4 transition-transform hover:translate-x-0.5`}
                     >
                       <Quote
-                        className={`absolute right-2 top-2 h-3.5 w-3.5 ${accent.chipText} opacity-30`}
+                        className={`absolute right-2 top-2 h-3.5 w-3.5 ${accent?.chipText} opacity-30`}
                         aria-hidden
                       />
                       <div className="flex-1 text-start text-sm text-gray-700">
@@ -298,7 +298,7 @@ export const WordCard = ({
                           <>
                             <div className="flex items-baseline gap-1">
                               <span
-                                className={`shrink-0 text-xs font-bold ${accent.chipText}`}
+                                className={`shrink-0 text-xs font-bold ${accent?.chipText}`}
                               >
                                 {i + 1}.
                               </span>
@@ -326,7 +326,7 @@ export const WordCard = ({
                           <>
                             <div className="font-medium text-gray-800">
                               <span
-                                className={`mr-1 text-xs font-bold ${accent.chipText}`}
+                                className={`mr-1 text-xs font-bold ${accent?.chipText}`}
                               >
                                 {i + 1}.
                               </span>
@@ -363,7 +363,7 @@ export const WordCard = ({
                 type="button"
                 size="sm"
                 onClick={addExample}
-                className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors ${accent.chipBg} ${accent.chipText} ${accent.chipHover}`}
+                className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors ${accent?.chipBg} ${accent?.chipText} ${accent?.chipHover}`}
                 icon={Plus}
                 iconPosition="left"
               >

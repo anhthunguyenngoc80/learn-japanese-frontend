@@ -6,21 +6,23 @@ import {
   ChevronLeft,
   PenLine,
   ListChecks,
-  FileText,
-  ClipboardList,
 } from "lucide-react";
 import { PATHS } from "../../constant";
 import { Button } from "../../components";
 import * as api from "../../api";
 import * as models from "../../model";
+import { WriteTypeModalContent } from "../learn/sections/WriteTypeModalContent";
+import { useAppDispatch } from "../../store/typedHooks";
+import { openModal } from "../../store/reducer/modalReducer";
+import { WordCard } from "./sections/WordCard";
 
 export const Topic = () => {
   const { collectionId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [topics, setTopics] = useState<models.Topic[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<models.Topic | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showWriteModal, setShowWriteModal] = useState(false);
 
   useEffect(() => {
     const fetchCollection = async () => {
@@ -112,7 +114,7 @@ export const Topic = () => {
   }
 
   return (
-    <div className="grow flex flex-col px-6 py-8 max-w-3xl mx-auto w-full">
+    <div className="grow flex flex-col px-6 py-8 max-w-7xl mx-auto w-full">
       {/* Back button */}
       <Button kind="text" color="slate" size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => setSelectedTopic(null)} className="mb-6">
         Quay lại
@@ -130,7 +132,7 @@ export const Topic = () => {
 
       {/* Action cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Button onClick={() => navigate(PATHS.flashcardLearn(selectedTopic.topic_id), { state: { words: selectedTopic.words, topicName: selectedTopic.name } })} className="group flex flex-col items-center gap-3 p-6 h-auto">
+        <Button kind="outline" onClick={() => navigate(PATHS.flashcardLearn(selectedTopic.topic_id), { state: { words: selectedTopic.words, topicName: selectedTopic.name } })} className="group flex flex-col items-center gap-3 p-6 h-auto">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 grid place-items-center group-hover:scale-110 transition-transform">
             <Sparkles className="w-6 h-6 text-rose-600" />
           </div>
@@ -138,101 +140,40 @@ export const Topic = () => {
           <span className="text-xs text-gray-400">Học với flashcard</span>
         </Button>
 
-        <Button onClick={() => navigate(`/moji-goi/practice/${selectedTopic.topic_id}`)} className="group flex flex-col items-center gap-3 p-6 h-auto">
+        <Button kind="outline" color="indigo" onClick={() => navigate(`/moji-goi/practice/${selectedTopic.topic_id}`)} className="group flex flex-col items-center gap-3 p-6 h-auto">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-100 to-sky-200 grid place-items-center group-hover:scale-110 transition-transform">
             <ListChecks className="w-6 h-6 text-sky-600" />
           </div>
           <span className="font-semibold text-gray-800">Quiz</span>
-          <span className="text-xs text-gray-400">Kiểm tra kiến thẻm</span>
+          <span className="text-xs text-gray-400">Kiểm tra kiến thức</span>
         </Button>
 
         <div className="relative">
-          <Button onClick={() => setShowWriteModal(true)} className="group flex flex-col items-center gap-3 p-6 w-full h-auto">
+          <Button kind="outline" color="amber" 
+            onClick={() => {
+              dispatch(openModal({
+                type: "custom",
+                content: <WriteTypeModalContent topic={selectedTopic} />,
+              }));
+            }}
+            className="group flex flex-col items-center gap-3 p-6 w-full h-auto"
+          >
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center group-hover:scale-110 transition-transform">
               <PenLine className="w-6 h-6 text-amber-600" />
             </div>
             <span className="font-semibold text-gray-800">Luyện viết</span>
             <span className="text-xs text-gray-400">Luyện viết kanji</span>
           </Button>
-
-          {/* Modal chọn loại luyện viết */}
-          {showWriteModal && (
-            <>
-              <div
-                className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
-                onClick={() => setShowWriteModal(false)}
-              />
-              <div className="fixed inset-0 z-50 grid place-items-center pointer-events-none">
-                <div className="pointer-events-auto bg-white rounded-2xl shadow-xl border border-amber-100 p-6 w-80 max-w-[90vw]">
-                  <h3 className="text-lg font-bold text-gray-800 mb-1">
-                    Chọn hình thức luyện viết
-                  </h3>
-                  <p className="text-sm text-gray-400 mb-5">
-                    Bạn muốn luyện viết theo cách nào?
-                  </p>
-                  <div className="flex flex-col gap-3">
-                    <Button
-                      key="paper"
-                      onClick={() => {
-                        setShowWriteModal(false);
-                        navigate(PATHS.practicePaper(selectedTopic.topic_id));
-                      }}
-                      className="flex items-center gap-4 p-4 h-auto justify-start"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
-                        <FileText className="w-5 h-5 text-amber-600" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-gray-800">
-                          Giấy luyện viết
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          In giấy để luyện viết tay
-                        </span>
-                      </div>
-                    </Button>
-                    <Button
-                      key="write"
-                      onClick={() => {
-                        setShowWriteModal(false);
-                        navigate(PATHS.practiceWrite(selectedTopic.topic_id));
-                      }}
-                      className="flex items-center gap-4 p-4 h-auto justify-start"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-100 to-sky-200 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
-                        <ClipboardList className="w-5 h-5 text-sky-600" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-gray-800">
-                          Quiz Luyện viết
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          Luyện viết kanji trực tiếp
-                        </span>
-                      </div>
-                    </Button>
-                  </div>
-                  <Button size="sm" onClick={() => setShowWriteModal(false)} className="mt-4 w-full">
-                    Huỷ
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
         </div>
       </div>
 
-      {/* <WordCardList
-        items={selectedTopic.words}
-        icon={<BookOpen size={16} />}
-        title="Danh sách từ vựng"
-        accent="amber"
-        actionButton={
-          <Button size="sm" icon={Plus} iconPosition="left" onClick={() => navigate(PATHS.editCollection(selectedTopic.topic_id))} className="bg-amber-100 text-amber-700 hover:bg-amber-200">
-            Thêm từ
-          </Button>
-        }
-      /> */}
+      {/* Word list */}
+      <div className="flex flex-wrap justify-between gap-6 gap-y-6">
+      {
+        selectedTopic.words.map((word, index) => (
+          <WordCard key={index} word={word} />
+        ))
+      }      </div>
     </div>
   );
 };
