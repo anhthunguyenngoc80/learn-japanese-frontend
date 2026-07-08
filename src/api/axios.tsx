@@ -1,6 +1,8 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { PATHS } from "../constant";
+import { navigate } from "../utils/navigate";
+import { store } from "../store/store";
+import { logout } from "../store/reducer/authReducer";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -26,10 +28,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      const navigate = useNavigate();
-
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      store.dispatch(logout());
       navigate(PATHS.dashboard);
     }
     return Promise.reject(error);

@@ -24,3 +24,12 @@ export interface CreateCollectionResponse {
   data: models.Collection;
   message: string;
 }
+
+export interface GetCollectionByIdResponse {
+  data: models.Collection;
+  message: string;
+}
+
+export interface DeleteCollectionResponse {
+  message: string;
+}

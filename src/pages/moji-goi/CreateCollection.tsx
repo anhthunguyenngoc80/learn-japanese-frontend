@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Save,
   ChevronLeft,
@@ -18,6 +19,7 @@ import {
 import type * as models from "../../model";
 import { parseExcel, parseCSV, mergeWordsAndTopics } from "../../utils";
 import { createCollection } from "../../api";
+import { PATHS } from "../../constant";
 
 const MODE_CARDS: models.ModeCard[] = [
   {
@@ -49,6 +51,7 @@ export const CreateCollection = () => {
   const [screen, setScreen] = useState<1 | 2>(1);
   const [words, setWords] = useState<models.CreateWord[]>([]);
   const [topics, setTopics] = useState<models.CreateTopic[]>([]);
+  const navigate = useNavigate();
   const [collectionName, setCollectionName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -160,6 +163,7 @@ export const CreateCollection = () => {
       const response = await createCollection(payload);
       console.log("Collection created:", response);
       alert("Lưu bộ từ vựng thành công!");
+      navigate(PATHS.collection);
     } catch (err) {
       console.error("Error saving collection:", err);
       alert("Có lỗi xảy ra khi lưu bộ từ vựng. Vui lòng thử lại.");

@@ -13,3 +13,17 @@ export const createCollection = async (
   const response = await api.post("/collections", data);
   return response.data;
 };
+
+export const getCollectionById = async (
+  collectionId: string,
+): Promise<collectionI.GetCollectionByIdResponse> => {
+  const response = await api.get(`/collections/${collectionId}`);
+  return response.data;
+};
+
+export const deleteCollection = async (
+  collectionId: string,
+): Promise<collectionI.DeleteCollectionResponse> => {
+  const response = await api.delete(`/collections/${collectionId}`);
+  return response.data;
+};

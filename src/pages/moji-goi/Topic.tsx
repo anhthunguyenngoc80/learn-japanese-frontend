@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   PenLine,
   ListChecks,
-  Plus,
   FileText,
   ClipboardList,
 } from "lucide-react";
@@ -24,20 +23,24 @@ export const Topic = () => {
   const [showWriteModal, setShowWriteModal] = useState(false);
 
   useEffect(() => {
-    const fetchTopics = async () => {
+    const fetchCollection = async () => {
       if (!collectionId) return;
       setLoading(true);
       try {
-        const response = await api.getTopics(collectionId);
-        setTopics(response.data);
+        const response = await api.getCollectionById(collectionId);
+        setTopics(response.data.topics);
       } catch (error) {
-        console.error("Failed to fetch topics:", error);
+        console.error("Failed to fetch collection:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchTopics();
+    fetchCollection();
   }, [collectionId]);
+
+  useEffect(() => {
+    console.log("Topics updated:", topics);
+  }, [topics]);
 
   if (loading) {
     return (
