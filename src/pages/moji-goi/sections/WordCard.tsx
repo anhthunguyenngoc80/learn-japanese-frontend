@@ -1,7 +1,11 @@
 import { useState } from "react";
+
 import type { AccentStyles } from "../../../constant/styleConstant";
+
 import type { CreateExample, CreateWord, Word } from "../../../model";
+
 import { Button, IconButton } from "../../../components/Button";
+
 import {
   ChevronDown,
   ChevronRight,
@@ -13,16 +17,75 @@ import {
   Quote,
 } from "lucide-react";
 
+interface CircularProgressProps {
+  progress: number;
+  size?: number;
+  strokeWidth?: number;
+  trackClass?: string;
+  progressClass?: string;
+}
+
+const CircularProgress = ({
+  progress,
+  size = 40,
+  strokeWidth = 4,
+  trackClass = "text-gray-200",
+  progressClass = "text-rose-500",
+}: CircularProgressProps) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const clamped = Math.min(100, Math.max(0, progress));
+  const offset = circumference - (clamped / 100) * circumference;
+
+  return (
+    <div
+      className="relative inline-flex items-center justify-center"
+      style={{ width: size, height: size }}
+      aria-label={`Tiến độ ${Math.round(clamped)}%`}
+    >
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          className={trackClass}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          className={progressClass}
+        />
+      </svg>
+
+      <span className="absolute text-[10px] font-bold leading-none">
+        {Math.round(clamped)}%
+      </span>
+    </div>
+  );
+};
+
 export const WordCard = ({
   word,
   accent,
   topicIndex,
+  progress,
   onEdit,
   onDelete,
 }: {
   word: CreateWord | Word;
   accent?: AccentStyles;
   topicIndex?: number;
+  progress?: number;
   onEdit?: (word: CreateWord | Word) => void;
   onDelete?: (word: CreateWord | Word) => void;
 }) => {
@@ -99,7 +162,7 @@ export const WordCard = ({
       />
 
       <div className="relative p-5 pl-7">
-        {/* Badge số thứ tự - to hơn, nổi hơn */}
+        {/* Badge số thứ tự */}
         {topicIndex != null && (
           <div
             className={`absolute -left-3 -top-3 flex h-9 min-w-9 items-center justify-center rounded-full px-2.5 text-sm font-black shadow-md ring-4 ring-white ${accent?.badgeBg} ${accent?.badgeText}`}
@@ -108,61 +171,72 @@ export const WordCard = ({
           </div>
         )}
 
-        {/* Nút hành động */}
-        <div className="absolute right-3 top-3 flex items-center gap-1 opacity-70 transition-opacity group-hover:opacity-100">
-          {isEditing ? (
-            <>
-              <IconButton
-                icon={Check}
-                kind="ghost"
-                spacing="xs"
-                color="slate"
-                size="sm"
-                onClick={saveEdit}
-                aria-label="Lưu"
-              />
-              <IconButton
-                icon={X}
-                kind="ghost"
-                spacing="xs"
-                color="slate"
-                size="sm"
-                onClick={cancelEdit}
-                aria-label="Hủy"
-              />
-            </>
-          ) : (
-            <>
-              {onEdit && (
-                <IconButton
-                  icon={Pencil}
-                  kind="ghost"
-                  spacing="xs"
-                  color="slate"
-                  size="sm"
-                  onClick={startEdit}
-                  aria-label="Sửa từ"
-                />
-              )}
-              {onDelete && (
-                <IconButton
-                  icon={Trash2}
-                  kind="ghost"
-                  spacing="xs"
-                  color="slate"
-                  size="sm"
-                  onClick={() => onDelete(word)}
-                  aria-label="Xóa từ"
-                />
-              )}
-            </>
+        {/* Tiến độ hình tròn + nút hành động ở góc phải trên */}
+        <div className="absolute right-3 top-3 flex items-center gap-2">
+          {progress != null && (
+            <CircularProgress
+              progress={progress}
+              size={40}
+              strokeWidth={4}
+              progressClass={accent?.icon}
+            />
           )}
+
+          <div className="flex items-center gap-1 opacity-70 transition-opacity group-hover:opacity-100">
+            {isEditing ? (
+              <>
+                <IconButton
+                  icon={Check}
+                  kind="ghost"
+                  spacing="xs"
+                  color="slate"
+                  size="sm"
+                  onClick={saveEdit}
+                  aria-label="Lưu"
+                />
+                <IconButton
+                  icon={X}
+                  kind="ghost"
+                  spacing="xs"
+                  color="slate"
+                  size="sm"
+                  onClick={cancelEdit}
+                  aria-label="Hủy"
+                />
+              </>
+            ) : (
+              <>
+                {onEdit && (
+                  <IconButton
+                    icon={Pencil}
+                    kind="ghost"
+                    spacing="xs"
+                    color="slate"
+                    size="sm"
+                    onClick={startEdit}
+                    aria-label="Sửa từ"
+                  />
+                )}
+                {onDelete && (
+                  <IconButton
+                    icon={Trash2}
+                    kind="ghost"
+                    spacing="xs"
+                    color="slate"
+                    size="sm"
+                    onClick={() => onDelete(word)}
+                    aria-label="Xóa từ"
+                  />
+                )}
+              </>
+            )}
+          </div>
         </div>
 
         {/* Header: từ vựng nổi bật */}
         <div className="flex items-start justify-between gap-3 pr-14">
           <div className="min-w-0 flex-1">
-            {/* Từ chính - to, đậm, có tracking */}
+            {/* Từ chính */}
             {isEditing ? (
               <input
                 type="text"
@@ -177,7 +251,7 @@ export const WordCard = ({
               </h4>
             )}
 
-            {/* Reading + sv_word - dạng chip nhỏ */}
+            {/* Reading + sv_word */}
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
               {isEditing ? (
                 <>
@@ -225,7 +299,7 @@ export const WordCard = ({
               )}
             </div>
 
-            {/* Nghĩa - có thanh accent nhỏ bên trái */}
+            {/* Nghĩa */}
             {isEditing ? (
               <textarea
                 value={draft.meaning ?? ""}
@@ -266,7 +340,10 @@ export const WordCard = ({
           <div className="mt-4">
             {exampleCount > 0 && (
               <div className="flex items-center gap-2">
-                <div className="border-2 border-rose-200 rounded-full flex-1" aria-hidden />
+                <div
+                  className="border-2 border-rose-200 rounded-full flex-1"
+                  aria-hidden
+                />
                 <Button
                   type="button"
                   size="sm"
@@ -277,7 +354,10 @@ export const WordCard = ({
                 >
                   {open ? "Ẩn ví dụ" : `${exampleCount} ví dụ`}
                 </Button>
-                <div className="border-2 border-rose-200 rounded-full flex-1" aria-hidden />
+                <div
+                  className="border-2 border-rose-200 rounded-full flex-1"
+                  aria-hidden
+                />
               </div>
             )}
 

@@ -7,7 +7,20 @@ import {
 } from "react";
 import { type LucideIcon, Loader2 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
-import { colorStyles, iconDimensionStyles, iconOnlyPaddingStyles, paddingStyles, radiusStyles, selectedStyles, textStyles, type AccentColor, type ComponentKind, type ComponentRadius, type ComponentSize, type ComponentSpacing } from "../constant";
+import {
+  colorStyles,
+  iconDimensionStyles,
+  iconOnlyPaddingStyles,
+  paddingStyles,
+  radiusStyles,
+  selectedStyles,
+  textStyles,
+  type AccentColor,
+  type ComponentKind,
+  type ComponentRadius,
+  type ComponentSize,
+  type ComponentSpacing,
+} from "../constant";
 
 /* ------------------------------------------------------------------ */
 /*  Shared class builder                                               */
@@ -269,3 +282,180 @@ export const IconButton = forwardRef<
   },
 );
 IconButton.displayName = "IconButton";
+
+const actionBadgeStyles: Record<string, { bg: string; icon: string }> = {
+  rose: {
+    bg: "bg-gradient-to-br from-rose-100 to-rose-200",
+    icon: "text-rose-600",
+  },
+  orange: {
+    bg: "bg-gradient-to-br from-orange-100 to-orange-200",
+    icon: "text-orange-600",
+  },
+  amber: {
+    bg: "bg-gradient-to-br from-amber-100 to-amber-200",
+    icon: "text-amber-600",
+  },
+  yellow: {
+    bg: "bg-gradient-to-br from-yellow-100 to-yellow-200",
+    icon: "text-yellow-600",
+  },
+  lime: {
+    bg: "bg-gradient-to-br from-lime-100 to-lime-200",
+    icon: "text-lime-600",
+  },
+  green: {
+    bg: "bg-gradient-to-br from-green-100 to-green-200",
+    icon: "text-green-600",
+  },
+  emerald: {
+    bg: "bg-gradient-to-br from-emerald-100 to-emerald-200",
+    icon: "text-emerald-600",
+  },
+  teal: {
+    bg: "bg-gradient-to-br from-teal-100 to-teal-200",
+    icon: "text-teal-600",
+  },
+  cyan: {
+    bg: "bg-gradient-to-br from-cyan-100 to-cyan-200",
+    icon: "text-cyan-600",
+  },
+  sky: {
+    bg: "bg-gradient-to-br from-sky-100 to-sky-200",
+    icon: "text-sky-600",
+  },
+  blue: {
+    bg: "bg-gradient-to-br from-blue-100 to-blue-200",
+    icon: "text-blue-600",
+  },
+  indigo: {
+    bg: "bg-gradient-to-br from-indigo-100 to-indigo-200",
+    icon: "text-indigo-600",
+  },
+  violet: {
+    bg: "bg-gradient-to-br from-violet-100 to-violet-200",
+    icon: "text-violet-600",
+  },
+  purple: {
+    bg: "bg-gradient-to-br from-purple-100 to-purple-200",
+    icon: "text-purple-600",
+  },
+  fuchsia: {
+    bg: "bg-gradient-to-br from-fuchsia-100 to-fuchsia-200",
+    icon: "text-fuchsia-600",
+  },
+  pink: {
+    bg: "bg-gradient-to-br from-pink-100 to-pink-200",
+    icon: "text-pink-600",
+  },
+  red: {
+    bg: "bg-gradient-to-br from-red-100 to-red-200",
+    icon: "text-red-600",
+  },
+  slate: {
+    bg: "bg-gradient-to-br from-slate-100 to-slate-200",
+    icon: "text-slate-600",
+  },
+  gray: {
+    bg: "bg-gradient-to-br from-gray-100 to-gray-200",
+    icon: "text-gray-600",
+  },
+};
+
+/** Kích thước badge tròn + icon bên trong, ăn theo ComponentSize. */
+const actionBadgeSizeStyles: Record<string, { badge: string; icon: string }> = {
+  sm: { badge: "w-9 h-9", icon: "w-4 h-4" },
+  md: { badge: "w-12 h-12", icon: "w-6 h-6" },
+  lg: { badge: "w-14 h-14", icon: "w-7 h-7" },
+};
+
+/* ------------------------------------------------------------------ */
+/*  ActionButton — nút dạng thẻ: icon tròn + tiêu đề + phụ đề          */
+/* ------------------------------------------------------------------ */
+
+interface CommonActionButtonProps {
+  icon: ComponentType<{ className?: string }>;
+  title: string;
+  subtitle?: string;
+  color?: AccentColor;
+  radius?: ComponentRadius;
+  size?: ComponentSize;
+  fullWidth?: boolean;
+  loading?: boolean;
+  disabled?: boolean;
+  className?: string;
+}
+
+type ActionButtonAsButtonProps = CommonActionButtonProps &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, "color" | "title"> & {
+    href?: undefined;
+  };
+
+type ActionButtonAsAnchorProps = CommonActionButtonProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "color" | "title" | "href"> & {
+    href: string;
+  };
+
+export type ActionButtonProps =
+  | ActionButtonAsButtonProps
+  | ActionButtonAsAnchorProps;
+
+export const ActionButton = forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  ActionButtonProps
+>(
+  (
+    {
+      icon: Icon,
+      title,
+      subtitle,
+      color = "rose",
+      radius = "md",
+      size = "lg",
+      fullWidth,
+      loading,
+      disabled,
+      className = "",
+      href,
+      ...rest
+    },
+    ref,
+  ) => {
+    const badgeColor = actionBadgeStyles[color] ?? actionBadgeStyles.rose;
+    const badgeSize = actionBadgeSizeStyles[size] ?? actionBadgeSizeStyles.md;
+
+    const buttonProps = {
+      ref,
+      kind: "outline" as const,
+      color,
+      radius,
+      size,
+      fullWidth,
+      loading,
+      disabled,
+      href,
+      className: twMerge(
+        "group flex flex-col items-center gap-3 p-6 h-auto",
+        className,
+      ),
+      ...rest,
+    };
+
+    return (
+      <Button {...buttonProps}>
+        <div
+          className={twMerge(
+            "rounded-full grid place-items-center transition-transform group-hover:scale-110",
+            badgeSize.badge,
+            badgeColor.bg,
+          )}
+        >
+          <Icon className={twMerge(badgeSize.icon, badgeColor.icon)} />
+        </div>
+        <span className="font-semibold text-gray-800">{title}</span>
+        {subtitle && <span className="text-xs text-gray-400">{subtitle}</span>}
+      </Button>
+    );
+  },
+);
+ActionButton.displayName = "ActionButton";
