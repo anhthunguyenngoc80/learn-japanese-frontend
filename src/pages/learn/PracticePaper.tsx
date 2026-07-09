@@ -31,8 +31,12 @@ const useKanjiIndexMap = () => {
   return kanjiSet;
 };
 
-const splitWordIntoChars = (word: string | undefined, kanjiSet: Set<string> | null): PracticeChar[] => {
+const splitWordIntoChars = (
+  word: string | undefined,
+  kanjiSet: Set<string> | null,
+): PracticeChar[] => {
   if (!word) return [];
+  console.log(word);
   return Array.from(word).map((char) => ({
     char,
     hasKanjiVG: kanjiSet ? kanjiSet.has(char) : false,
@@ -69,9 +73,7 @@ const BoardCell = ({ char, showHint, boardIndex }: BoardCellProps) => {
         height={BOARD_SIZE}
         strokeDurationMs={0}
       />
-      <span className="text-[10px] text-gray-400 mt-0.5">
-        {boardIndex + 1}
-      </span>
+      <span className="text-[10px] text-gray-400 mt-0.5">{boardIndex + 1}</span>
       <div className="flex items-center justify-center gap-0.5 mt-0.5 print:hidden">
         <button
           onClick={() => boardRef.current?.undo()}
@@ -131,7 +133,7 @@ export const PracticePaperPage = () => {
       } catch (error) {
         console.error("Failed to fetch topic:", error);
         setTopic(null);
-      } 
+      }
     };
     fetchTopic();
   }, [topicId, state?.topic]);
@@ -184,7 +186,9 @@ export const PracticePaperPage = () => {
       {/* Content */}
       {!wordCharEntries || wordCharEntries.length === 0 ? (
         <div className="rounded-2xl border border-amber-100 bg-amber-50/30 p-8 text-center">
-          <p className="text-gray-600 font-medium">Không có từ vựng để luyện viết</p>
+          <p className="text-gray-600 font-medium">
+            Không có từ vựng để luyện viết
+          </p>
           <p className="text-sm text-gray-400 mt-1">
             Vui lòng chọn một bộ từ vựng từ danh sách từ vựng.
           </p>
@@ -192,7 +196,10 @@ export const PracticePaperPage = () => {
       ) : (
         <div className="space-y-8">
           {wordCharEntries.map(({ word, wordIndex, chars }) => (
-            <div key={wordIndex} className="border-b border-gray-200 pb-8 last:border-b-0">
+            <div
+              key={wordIndex}
+              className="border-b border-gray-200 pb-8 last:border-b-0"
+            >
               {/* Word header */}
               <div className="flex items-baseline gap-3 mb-4">
                 <span className="text-xs text-gray-400 font-medium">
@@ -201,9 +208,7 @@ export const PracticePaperPage = () => {
                 <span className="font-jp font-semibold text-lg text-gray-800">
                   {word.text}
                 </span>
-                <span className="text-sm text-gray-500">
-                  {word.meaning}
-                </span>
+                <span className="text-sm text-gray-500">{word.meaning}</span>
                 {word.reading && (
                   <span className="text-sm text-gray-400 italic">
                     ({word.reading})
@@ -229,14 +234,16 @@ export const PracticePaperPage = () => {
 
                       {/* Boards row */}
                       <div className="flex gap-1.5 overflow-x-auto pb-2">
-                        {Array.from({ length: BOARDS_PER_CHAR }).map((_, boardIdx) => (
-                          <BoardCell
-                            key={boardIdx}
-                            char={pc.char}
-                            showHint={boardIdx < HINT_COUNT}
-                            boardIndex={boardIdx}
-                          />
-                        ))}
+                        {Array.from({ length: BOARDS_PER_CHAR }).map(
+                          (_, boardIdx) => (
+                            <BoardCell
+                              key={boardIdx}
+                              char={pc.char}
+                              showHint={boardIdx < HINT_COUNT}
+                              boardIndex={boardIdx}
+                            />
+                          ),
+                        )}
                       </div>
                     </div>
                   ))}

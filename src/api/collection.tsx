@@ -21,6 +21,16 @@ export const getCollectionById = async (
   return response.data;
 };
 
+export const getCollectionByIdLimit = async (
+  collectionId: string,
+  data: collectionI.GetCollectionByIdLimitRequest,
+): Promise<collectionI.GetCollectionByIdResponse> => {
+  const response = await api.get(`/collections/${collectionId}`, {
+    params: data,
+  });
+  return response.data;
+};
+
 export const deleteCollection = async (
   collectionId: string,
 ): Promise<collectionI.DeleteCollectionResponse> => {

@@ -29,7 +29,9 @@ export const Topic = () => {
       if (!collectionId) return;
       setLoading(true);
       try {
-        const response = await api.getCollectionById(collectionId);
+        const response = await api.getCollectionByIdLimit(collectionId, {
+          limit: 20,
+        });
         setTopics(response.data.topics);
       } catch (error) {
         console.error("Failed to fetch collection:", error);
@@ -56,7 +58,15 @@ export const Topic = () => {
     // Show topic list
     return (
       <div className="grow flex flex-col px-6 py-8 max-w-3xl mx-auto w-full">
-        <Button kind="text" color="slate" size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => navigate(PATHS.collection)} className="mb-6">
+        <Button
+          kind="text"
+          color="slate"
+          size="sm"
+          icon={ChevronLeft}
+          iconPosition="left"
+          onClick={() => navigate(PATHS.collection)}
+          className="mb-6"
+        >
           Quay lại
         </Button>
 
@@ -69,7 +79,6 @@ export const Topic = () => {
             <Button
               key={topic.topic_id}
               onClick={() => setSelectedTopic(topic)}
-
               className="group w-full justify-between p-4"
             >
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
@@ -116,7 +125,15 @@ export const Topic = () => {
   return (
     <div className="grow flex flex-col px-6 py-8 max-w-7xl mx-auto w-full">
       {/* Back button */}
-      <Button kind="text" color="slate" size="sm" icon={ChevronLeft} iconPosition="left" onClick={() => setSelectedTopic(null)} className="mb-6">
+      <Button
+        kind="text"
+        color="slate"
+        size="sm"
+        icon={ChevronLeft}
+        iconPosition="left"
+        onClick={() => setSelectedTopic(null)}
+        className="mb-6"
+      >
         Quay lại
       </Button>
 
@@ -132,7 +149,18 @@ export const Topic = () => {
 
       {/* Action cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Button kind="outline" onClick={() => navigate(PATHS.flashcardLearn(selectedTopic.topic_id), { state: { words: selectedTopic.words, topicName: selectedTopic.name } })} className="group flex flex-col items-center gap-3 p-6 h-auto">
+        <Button
+          kind="outline"
+          onClick={() =>
+            navigate(PATHS.flashcardLearn(selectedTopic.topic_id), {
+              state: {
+                words: selectedTopic.words,
+                topicName: selectedTopic.name,
+              },
+            })
+          }
+          className="group flex flex-col items-center gap-3 p-6 h-auto"
+        >
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 grid place-items-center group-hover:scale-110 transition-transform">
             <Sparkles className="w-6 h-6 text-rose-600" />
           </div>
@@ -140,7 +168,14 @@ export const Topic = () => {
           <span className="text-xs text-gray-400">Học với flashcard</span>
         </Button>
 
-        <Button kind="outline" color="indigo" onClick={() => navigate(`/moji-goi/practice/${selectedTopic.topic_id}`)} className="group flex flex-col items-center gap-3 p-6 h-auto">
+        <Button
+          kind="outline"
+          color="indigo"
+          onClick={() =>
+            navigate(`/moji-goi/practice/${selectedTopic.topic_id}`)
+          }
+          className="group flex flex-col items-center gap-3 p-6 h-auto"
+        >
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-100 to-sky-200 grid place-items-center group-hover:scale-110 transition-transform">
             <ListChecks className="w-6 h-6 text-sky-600" />
           </div>
@@ -149,12 +184,16 @@ export const Topic = () => {
         </Button>
 
         <div className="relative">
-          <Button kind="outline" color="amber" 
+          <Button
+            kind="outline"
+            color="amber"
             onClick={() => {
-              dispatch(openModal({
-                type: "custom",
-                content: <WriteTypeModalContent topic={selectedTopic} />,
-              }));
+              dispatch(
+                openModal({
+                  type: "custom",
+                  content: <WriteTypeModalContent topic={selectedTopic} />,
+                }),
+              );
             }}
             className="group flex flex-col items-center gap-3 p-6 w-full h-auto"
           >
@@ -169,11 +208,10 @@ export const Topic = () => {
 
       {/* Word list */}
       <div className="flex flex-wrap justify-between gap-6 gap-y-6">
-      {
-        selectedTopic.words.map((word, index) => (
+        {selectedTopic.words.map((word, index) => (
           <WordCard key={index} word={word} />
-        ))
-      }      </div>
+        ))}{" "}
+      </div>
     </div>
   );
 };

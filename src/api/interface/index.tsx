@@ -5,5 +5,6 @@ export type {
   CreateCollectionRequest,
   CreateCollectionResponse,
   DeleteCollectionResponse,
+  GetCollectionByIdLimitRequest,
 } from "./collectionInterface";
 export type { GetTopicsResponse, GetTopicByIdResponse } from "./topicInterface";

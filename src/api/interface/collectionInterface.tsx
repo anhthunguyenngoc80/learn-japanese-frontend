@@ -20,6 +20,9 @@ export interface CreateCollectionRequest {
   }[];
 }
 
+export interface GetCollectionByIdLimitRequest {
+  limit: number;
+}
 export interface CreateCollectionResponse {
   data: models.Collection;
   message: string;
