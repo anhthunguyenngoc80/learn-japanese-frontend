@@ -55,7 +55,7 @@ export const LoginPage = () => {
 
       // Assuming API returns { user: { id, username, email }, token: string }
       dispatch(loginSuccess({ user: response.data }));
-      navigate(constant.PATHS.collection);
+      navigate(constant.PATHS.collections);
     } catch (error: any) {
       console.error("Login failed:", error);
       

@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { Button, IconButton } from "../../../components";
 import type { CreateTopic } from "../../../model";
 import {
-  topicAccentCycle,
+  accentCycle,
   accentMap,
   type AccentColor,
 } from "../../../constant/styleConstant";
@@ -38,7 +38,7 @@ export const TopicCard = ({
 }: TopicCardProps) => {
   const [savedAssignments, setSavedAssignments] = useState<AssignmentRow[]>([]);
   const accentColor: AccentColor =
-    topicAccentCycle[index % topicAccentCycle.length];
+    accentCycle[index % accentCycle.length];
   const color = accentMap[accentColor];
 
   const handleAssign = () => {

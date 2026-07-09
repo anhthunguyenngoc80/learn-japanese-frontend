@@ -4,6 +4,7 @@ export interface Collection {
   collection_id: string;
   name: string;
   topics: Topic[];
+  topic_count: number
 }
 
 export interface Topic {
@@ -11,6 +12,7 @@ export interface Topic {
   topic_id: string;
   name: string;
   words: Word[];
+  word_count: number
 }
 
 export interface Word {
@@ -22,7 +24,7 @@ export interface Word {
   meaning: string;
   partOfSpeech?: string;
   examples?: Example[];
-  learned?: boolean;
+  mastery?: boolean;
 }
 
 export interface Example {

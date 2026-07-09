@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { Navigate } from "react-router-dom";
 import { useAppSelector } from "../store";
+import { widthLayout } from "../constant";
 
 type PrivateRouteProps = {
   children: JSX.Element;
@@ -20,5 +21,11 @@ export const PrivateRoute = ({ children }: PrivateRouteProps) => {
     return <Navigate to="/" replace />;
   }
 
-  return children;
+  
+
+  return (
+  <div className={`${widthLayout} py-12`}>
+    {children}
+    </div>
+  );
 };

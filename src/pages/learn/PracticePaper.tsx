@@ -128,7 +128,7 @@ export const PracticePaperPage = () => {
     // Fallback: call API to fetch topic by ID
     const fetchTopic = async () => {
       try {
-        const response = await api.getTopicById(topicId);
+        const response = await api.getTopicById(topicId, {limit: 20});
         setTopic(response.data);
       } catch (error) {
         console.error("Failed to fetch topic:", error);

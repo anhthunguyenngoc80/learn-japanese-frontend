@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Logo, Button, IconButton } from "../../components";
 import { PATHS } from "../../constant/Path";
+import { widthLayout } from "../../constant";
 
 export function PublicHeader() {
   const navigate = useNavigate();
@@ -11,17 +12,16 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className={`flex h-16 items-center justify-between ${widthLayout}`}>
         <Logo size="md" showHoverEffect={true} />
 
         <nav className="hidden items-center gap-1 md:flex">
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 ${
-                isActive
-                  ? "text-rose-700 bg-rose-50 shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+              `relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 ${isActive
+                ? "text-rose-700 bg-rose-50 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
               }`
             }
           >
@@ -87,25 +87,24 @@ export function PublicHeader() {
       {open && (
         <div className="border-t border-slate-200 bg-white md:hidden">
           <div className="space-y-1 px-4 py-4">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              `block rounded-lg px-3 py-2 text-sm font-medium ${
-                isActive
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `block rounded-lg px-3 py-2 text-sm font-medium ${isActive
                   ? "text-rose-700 bg-rose-50"
                   : "text-slate-700 hover:bg-slate-100"
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                Trang chủ
-                {isActive && (
-                  <span className="ml-2 inline-block w-1.5 h-1.5 rounded-full bg-rose-500" />
-                )}
-              </>
-            )}
-          </NavLink>
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  Trang chủ
+                  {isActive && (
+                    <span className="ml-2 inline-block w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  )}
+                </>
+              )}
+            </NavLink>
             <a
               href="#jlpt"
               className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"

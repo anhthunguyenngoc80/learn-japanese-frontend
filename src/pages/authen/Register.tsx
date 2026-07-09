@@ -72,7 +72,7 @@ export const RegisterPage = () => {
         "Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...",
       );
       console.log("Registered user:", formData.username, formData.email);
-      setTimeout(() => navigate(constant.PATHS.collection), 1500);
+      setTimeout(() => navigate(constant.PATHS.collections), 1500);
     } catch (error) {
       console.error("Registration failed:", error);
       setErrors((prev) => ({

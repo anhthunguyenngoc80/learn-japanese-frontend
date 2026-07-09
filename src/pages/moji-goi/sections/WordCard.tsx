@@ -265,8 +265,8 @@ export const WordCard = ({
         {(exampleCount > 0 || isEditing) && (
           <div className="mt-4">
             {exampleCount > 0 && (
-              <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-gray-200" aria-hidden />
+              <div className="flex items-center gap-2">
+                <div className="border-2 border-rose-200 rounded-full flex-1" aria-hidden />
                 <Button
                   type="button"
                   size="sm"
@@ -277,7 +277,7 @@ export const WordCard = ({
                 >
                   {open ? "Ẩn ví dụ" : `${exampleCount} ví dụ`}
                 </Button>
-                <div className="h-px flex-1 bg-gray-200" aria-hidden />
+                <div className="border-2 border-rose-200 rounded-full flex-1" aria-hidden />
               </div>
             )}
 

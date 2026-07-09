@@ -6,4 +6,4 @@ export {
   deleteCollection,
   getCollectionByIdLimit,
 } from "./collection";
-export { getTopics, getTopicById } from "./topic";
+export { getTopics, getTopicById, deleteTopic } from "./topic";

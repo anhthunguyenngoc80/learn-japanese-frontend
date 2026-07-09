@@ -9,128 +9,16 @@ import { MoreVertical, type LucideIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import {
   Button,
-  IconButton,
-  type ButtonColor,
-  type ButtonKind,
-  type ButtonRadius,
-  type ButtonSpacing,
-} from "./Button";
-
-/* ------------------------------------------------------------------ */
-/*  Design tokens (dùng chung "màu" & "bo góc" & "spacing" với Button)  */
-/* ------------------------------------------------------------------ */
-
-/**
- * Kiểu bề mặt của Card:
- * - solid: nền đặc màu, chữ trắng (giống Button solid)
- * - elevated: nền trắng, đổ bóng theo màu, hover nổi lên
- * - soft: nền nhạt màu
- * - outline: nền trắng, chỉ có viền màu
- * - ghost: trong suốt, chỉ đổi nền nhẹ khi hover
- */
-export type CardKind = "solid" | "elevated" | "soft" | "outline" | "ghost";
-
-/* ------------------------------------------------------------------ */
-/*  Color x Kind matrix cho bề mặt Card — liệt kê tĩnh để Tailwind JIT  */
-/*  quét được (không dùng chuỗi động kiểu `bg-${c}-50`).                */
-/* ------------------------------------------------------------------ */
-
-const cardSurfaceStyles: Record<ButtonColor, Record<CardKind, string>> = {
-  rose: {
-    solid: "bg-rose-600 text-white",
-    elevated:
-      "bg-white border border-rose-100 shadow-lg shadow-rose-500/10 hover:shadow-xl hover:-translate-y-0.5",
-    soft: "bg-rose-50 border border-rose-100",
-    outline:
-      "bg-white border-3 border-rose-200 hover:border-rose-300 hover:shadow-md hover:-translate-y-0.5",
-    ghost: "bg-transparent border border-transparent hover:bg-rose-50",
-  },
-  red: {
-    solid: "bg-red-600 text-white",
-    elevated:
-      "bg-white border border-red-100 shadow-lg shadow-red-500/10 hover:shadow-xl hover:-translate-y-0.5",
-    soft: "bg-red-50 border border-red-100",
-    outline:
-      "bg-white border-3 border-red-200 hover:border-red-300 hover:shadow-md hover:-translate-y-0.5",
-    ghost: "bg-transparent border border-transparent hover:bg-red-50",
-  },
-  amber: {
-    solid: "bg-amber-500 text-white",
-    elevated:
-      "bg-white border border-amber-100 shadow-lg shadow-amber-500/10 hover:shadow-xl hover:-translate-y-0.5",
-    soft: "bg-amber-50 border border-amber-100",
-    outline:
-      "bg-white border-3 border-amber-200 hover:border-amber-300 hover:shadow-md hover:-translate-y-0.5",
-    ghost: "bg-transparent border border-transparent hover:bg-amber-50",
-  },
-  emerald: {
-    solid: "bg-emerald-600 text-white",
-    elevated:
-      "bg-white border border-emerald-100 shadow-lg shadow-emerald-500/10 hover:shadow-xl hover:-translate-y-0.5",
-    soft: "bg-emerald-50 border border-emerald-100",
-    outline:
-      "bg-white border-3 border-emerald-200 hover:border-emerald-300 hover:shadow-md hover:-translate-y-0.5",
-    ghost: "bg-transparent border border-transparent hover:bg-emerald-50",
-  },
-  teal: {
-    solid: "bg-teal-600 text-white",
-    elevated:
-      "bg-white border border-teal-100 shadow-lg shadow-teal-500/10 hover:shadow-xl hover:-translate-y-0.5",
-    soft: "bg-teal-50 border border-teal-100",
-    outline:
-      "bg-white border-3 border-teal-200 hover:border-teal-300 hover:shadow-md hover:-translate-y-0.5",
-    ghost: "bg-transparent border border-transparent hover:bg-teal-50",
-  },
-  blue: {
-    solid: "bg-blue-600 text-white",
-    elevated:
-      "bg-white border border-blue-100 shadow-lg shadow-blue-500/10 hover:shadow-xl hover:-translate-y-0.5",
-    soft: "bg-blue-50 border border-blue-100",
-    outline:
-      "bg-white border-3 border-blue-200 hover:border-blue-300 hover:shadow-md hover:-translate-y-0.5",
-    ghost: "bg-transparent border border-transparent hover:bg-blue-50",
-  },
-  indigo: {
-    solid: "bg-indigo-600 text-white",
-    elevated:
-      "bg-white border border-indigo-100 shadow-lg shadow-indigo-500/10 hover:shadow-xl hover:-translate-y-0.5",
-    soft: "bg-indigo-50 border border-indigo-100",
-    outline:
-      "bg-white border-3 border-indigo-200 hover:border-indigo-300 hover:shadow-md hover:-translate-y-0.5",
-    ghost: "bg-transparent border border-transparent hover:bg-indigo-50",
-  },
-  violet: {
-    solid: "bg-violet-600 text-white",
-    elevated:
-      "bg-white border border-violet-100 shadow-lg shadow-violet-500/10 hover:shadow-xl hover:-translate-y-0.5",
-    soft: "bg-violet-50 border border-violet-100",
-    outline:
-      "bg-white border-3 border-violet-200 hover:border-violet-300 hover:shadow-md hover:-translate-y-0.5",
-    ghost: "bg-transparent border border-transparent hover:bg-violet-50",
-  },
-  slate: {
-    solid: "bg-slate-800 text-white",
-    elevated:
-      "bg-white border border-slate-200 shadow-lg shadow-slate-500/10 hover:shadow-xl hover:-translate-y-0.5",
-    soft: "bg-slate-100 border border-slate-200",
-    outline:
-      "bg-white border-3 border-slate-200 hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5",
-    ghost: "bg-transparent border border-transparent hover:bg-slate-100",
-  },
-  white: {
-    solid: "bg-white text-slate-800",
-    elevated:
-      "bg-white/10 border border-white/20 text-white backdrop-blur hover:bg-white/15 hover:-translate-y-0.5",
-    soft: "bg-white/10 border border-white/10 text-white",
-    outline:
-      "bg-transparent border border-white/30 text-white hover:border-white/50",
-    ghost:
-      "bg-transparent border border-transparent text-white hover:bg-white/10",
-  },
-};
+  IconButton}
+  from "./Button";
+import {
+  type ComponentKind,
+  type ComponentRadius,
+  type ComponentSpacing, colorStyles, radiusStyles, type AccentColor, 
+  stripHoverClasses} from "../constant";
 
 /** Badge nền cho icon — mặc định dùng tông nhạt, riêng khi Card kind="solid" thì đổi sang lớp phủ trắng mờ. */
-const iconBadgeStyles: Record<ButtonColor, string> = {
+const iconBadgeStyles: Record<AccentColor, string> = {
   rose: "bg-rose-100 text-rose-600",
   red: "bg-red-100 text-red-600",
   amber: "bg-amber-100 text-amber-600",
@@ -139,12 +27,13 @@ const iconBadgeStyles: Record<ButtonColor, string> = {
   blue: "bg-blue-100 text-blue-600",
   indigo: "bg-indigo-100 text-indigo-600",
   violet: "bg-violet-100 text-violet-600",
+  sky: "bg-sky-100 text-sky-600",
   slate: "bg-slate-100 text-slate-600",
   white: "bg-white/15 text-white",
 };
 
-const iconBadgeOnSolidStyles: Record<ButtonColor, string> = {
-  rose: "bg-white/15 text-white",
+const iconBadgeOnSolidStyles: Record<AccentColor, string> = {
+  rose: "bg-white text-rose-700",
   red: "bg-white/15 text-white",
   amber: "bg-white/15 text-white",
   emerald: "bg-white/15 text-white",
@@ -152,12 +41,13 @@ const iconBadgeOnSolidStyles: Record<ButtonColor, string> = {
   blue: "bg-white/15 text-white",
   indigo: "bg-white/15 text-white",
   violet: "bg-white/15 text-white",
+  sky: "bg-white/15 text-white",
   slate: "bg-white/15 text-white",
   white: "bg-slate-800/10 text-slate-800",
 };
 
 /** Track & fill cho thanh tiến độ, đổi theo màu — riêng "solid" dùng lớp phủ trắng mờ để nổi trên nền đặc. */
-const progressStyles: Record<ButtonColor, { track: string; fill: string }> = {
+const progressStyles: Record<AccentColor, { track: string; fill: string }> = {
   rose: { track: "bg-rose-100", fill: "bg-rose-600" },
   red: { track: "bg-red-100", fill: "bg-red-600" },
   amber: { track: "bg-amber-100", fill: "bg-amber-500" },
@@ -166,33 +56,15 @@ const progressStyles: Record<ButtonColor, { track: string; fill: string }> = {
   blue: { track: "bg-blue-100", fill: "bg-blue-600" },
   indigo: { track: "bg-indigo-100", fill: "bg-indigo-600" },
   violet: { track: "bg-violet-100", fill: "bg-violet-600" },
+  sky: { track: "bg-sky-100", fill: "bg-sky-600" },
   slate: { track: "bg-slate-200", fill: "bg-slate-700" },
   white: { track: "bg-white/20", fill: "bg-white/80" },
 };
 
-const progressOnSolidStyles = { track: "bg-white/20", fill: "bg-white/90" };
-
-const radiusStyles: Record<ButtonRadius, string> = {
-  none: "rounded-none",
-  sm: "rounded-lg",
-  md: "rounded-xl",
-  lg: "rounded-2xl",
-  full: "rounded-3xl", // "full" trên Card không nên thành hình viên thuốc như Button, chỉ bo rất nhiều
-};
-
-/** Padding cho toàn bộ nội dung Card — dùng chung thang đo với Button để nhất quán. */
-const paddingStyles: Record<ButtonSpacing, string> = {
-  none: "p-0",
-  xxs: "p-2.5",
-  xs: "p-4",
-  sm: "p-5",
-  md: "p-6",
-  lg: "p-8",
-  xl: "p-10",
-};
+const progressOnSolidStyles = { track: "bg-white", fill: "bg-white/90" };
 
 /** Style trạng thái "selected" — dùng khi Card đóng vai trò lựa chọn (vd: chọn gói, chọn hạng mục). */
-const selectedRingStyles: Record<ButtonColor, string> = {
+const selectedRingStyles: Record<AccentColor, string> = {
   rose: "ring-2 ring-rose-500 ring-offset-2",
   red: "ring-2 ring-red-500 ring-offset-2",
   amber: "ring-2 ring-amber-500 ring-offset-2",
@@ -201,12 +73,13 @@ const selectedRingStyles: Record<ButtonColor, string> = {
   blue: "ring-2 ring-blue-500 ring-offset-2",
   indigo: "ring-2 ring-indigo-500 ring-offset-2",
   violet: "ring-2 ring-violet-500 ring-offset-2",
+  sky: "ring-2 ring-sky-500 ring-offset-2",
   slate: "ring-2 ring-slate-400 ring-offset-2",
   white: "ring-2 ring-white ring-offset-2",
 };
 
 /** Màu chữ + hover cho từng mục trong menu "...", dùng lại bảng màu chung. */
-const menuItemTextStyles: Record<ButtonColor, string> = {
+const menuItemTextStyles: Record<AccentColor, string> = {
   rose: "text-rose-700 hover:bg-rose-50",
   red: "text-red-700 hover:bg-red-50",
   amber: "text-amber-700 hover:bg-amber-50",
@@ -215,8 +88,20 @@ const menuItemTextStyles: Record<ButtonColor, string> = {
   blue: "text-blue-700 hover:bg-blue-50",
   indigo: "text-indigo-700 hover:bg-indigo-50",
   violet: "text-violet-700 hover:bg-violet-50",
+  sky: "text-sky-700 hover:bg-sky-50",
   slate: "text-slate-700 hover:bg-slate-50",
   white: "text-slate-700 hover:bg-slate-50",
+};
+
+/** Padding cho toàn bộ nội dung Card — dùng chung thang đo với Button để nhất quán. */
+const paddingStyles: Record<ComponentSpacing, string> = {
+  none: "p-0",
+  xxs: "p-2.5",
+  xs: "p-4",
+  sm: "p-5",
+  md: "p-6",
+  lg: "p-8",
+  xl: "p-10",
 };
 
 /* ------------------------------------------------------------------ */
@@ -228,13 +113,13 @@ export interface CardMenuItem {
   label: string;
   onClick: () => void;
   /** Màu chữ riêng cho mục này, vd "red" cho hành động xoá. Mặc định "slate". */
-  color?: ButtonColor;
+  color?: AccentColor;
   disabled?: boolean;
 }
 
 interface CardMenuProps {
   items: CardMenuItem[];
-  triggerColor: ButtonColor;
+  triggerColor: AccentColor;
   triggerAriaLabel?: string;
 }
 
@@ -336,21 +221,22 @@ export interface CardProps extends Omit<
   "onClick"
 > {
   item: CardData;
-  color?: ButtonColor;
-  kind?: CardKind;
-  radius?: ButtonRadius;
-  spacing?: ButtonSpacing;
+  color?: AccentColor;
+  kind?: ComponentKind;
+  radius?: ComponentRadius;
+  spacing?: ComponentSpacing;
   fullWidth?: boolean;
   selected?: boolean;
   /** Cho phép cả Card bấm được (vd: chọn thẻ), không chỉ nút bên trong. */
   onClick?: () => void;
   /** Ghi đè kind/color của nút hành động bên trong, mặc định tự chọn tương phản hợp lý theo `kind` của Card. */
-  buttonKind?: ButtonKind;
-  buttonColor?: ButtonColor;
+  buttonKind?: ComponentKind;
+  buttonColor?: AccentColor;
   /** Danh sách hành động hiện trong menu "..." ở góc trên bên phải. Bỏ trống thì không hiện nút menu. */
   menuItems?: CardMenuItem[];
   menuButtonLabel?: string;
   className?: string;
+  hoverEffect: boolean
 }
 
 /* ------------------------------------------------------------------ */
@@ -373,6 +259,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       menuItems = [],
       menuButtonLabel,
       className = "",
+      hoverEffect = true,
       ...rest
     },
     ref,
@@ -393,11 +280,15 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     const progress = isSolid ? progressOnSolidStyles : progressStyles[color];
 
     const resolvedButtonColor = buttonColor ?? (isOnDark ? "white" : color);
-    const resolvedButtonKind = buttonKind ?? (isOnDark ? "soft" : "solid");
+    const resolvedComponentKind = buttonKind ?? (isOnDark ? "soft" : "solid");
+
+    const colorClass = hoverEffect
+      ? colorStyles[color][kind]
+      : stripHoverClasses(colorStyles[color][kind]);
 
     const containerClassName = twMerge(
       "flex flex-col transition-all",
-      cardSurfaceStyles[color][kind],
+      colorClass,
       radiusStyles[radius],
       paddingStyles[spacing],
       fullWidth ? "w-full" : "",
@@ -428,7 +319,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
                 <item.icon />
               </span>
             )}
-            <div className="min-w-0">
+            <div className="min-w-0 text-start">
               <h3 className={twMerge("truncate font-bold", titleTextClass)}>
                 {item.title}
               </h3>
@@ -485,7 +376,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           <Button
             className="mt-5"
             color={resolvedButtonColor}
-            kind={resolvedButtonKind}
+            kind={resolvedComponentKind}
             fullWidth
             href={item.buttonHref}
             onClick={

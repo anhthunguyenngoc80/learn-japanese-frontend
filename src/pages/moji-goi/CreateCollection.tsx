@@ -163,7 +163,7 @@ export const CreateCollection = () => {
       const response = await createCollection(payload);
       console.log("Collection created:", response);
       alert("Lưu bộ từ vựng thành công!");
-      navigate(PATHS.collection);
+      navigate(PATHS.collections);
     } catch (err) {
       console.error("Error saving collection:", err);
       alert("Có lỗi xảy ra khi lưu bộ từ vựng. Vui lòng thử lại.");

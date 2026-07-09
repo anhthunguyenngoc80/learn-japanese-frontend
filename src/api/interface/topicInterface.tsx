@@ -9,3 +9,10 @@ export interface GetTopicByIdResponse {
   data: models.Topic;
   message: string;
 }
+export interface GetCollectionByIdRequest {
+  limit: number;
+}
+
+export interface DeleteTopicResponse {
+  message: string;
+}

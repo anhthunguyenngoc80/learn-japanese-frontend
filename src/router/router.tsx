@@ -37,10 +37,10 @@ const PRIVATE_HEADER_ROUTER: RouteType[] = [];
 
 const PRIVATE_ROUTER: RouteType[] = [
   {
-    key: "collection",
-    name: "Collection",
-    path: PATHS.collection,
-    element: <pages.Collection />,
+    key: "collection list",
+    name: "Collection list",
+    path: PATHS.collections,
+    element: <pages.CollectionList />,
   },
   {
     key: "createCollection",
@@ -49,10 +49,10 @@ const PRIVATE_ROUTER: RouteType[] = [
     element: <pages.CreateCollection />,
   },
   {
-    key: "topic",
-    name: "Topic",
-    path: PATHS.topic(),
-    element: <pages.Topic />,
+    key: "collection",
+    name: "Collection",
+    path: PATHS.collection(),
+    element: <pages.Collection />,
   },
   {
     key: "flashcardLearn",
@@ -71,6 +71,12 @@ const PRIVATE_ROUTER: RouteType[] = [
     name: "Practice Paper",
     path: PATHS.practicePaper(),
     element: <pages.PracticePaperPage />,
+  },
+    {
+    key: "topic",
+    name: "topic",
+    path: PATHS.topic(),
+    element: <pages.Topic />,
   },
 ];
 

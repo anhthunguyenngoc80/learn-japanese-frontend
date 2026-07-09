@@ -6,3 +6,4 @@ export { ParallelMode } from "./ParallelMode";
 export { TopicOverview } from "./TopicOverview";
 export { WordEntryPanel } from "./WordEntryPanel";
 export { TopicCard } from "./TopicCard";
+export { CollectionLayout } from "./CollectionLayout";

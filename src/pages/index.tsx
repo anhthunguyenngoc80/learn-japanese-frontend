@@ -1,9 +1,4 @@
 export { DashboardPage } from "./dashboard";
-export { RegisterPage } from "./authen/Register";
-export { LoginPage } from "./authen/Login";
-export { Collection } from "./moji-goi/Collection";
-export { CreateCollection } from "./moji-goi/CreateCollection";
-export { Topic } from "./moji-goi/Topic";
-export { FlashcardLearnPage } from "./learn/FlashcardLearn";
-export { PracticeWritePage } from "./learn/PracticeWrite";
-export { PracticePaperPage } from "./learn/PracticePaper";
+export { RegisterPage, LoginPage } from "./authen";
+export { Collection, CollectionList, CreateCollection, Topic } from "./moji-goi/";
+export { FlashcardLearnPage, PracticeWritePage, PracticePaperPage } from "./learn";

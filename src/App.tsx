@@ -60,11 +60,12 @@ function AppRoutes() {
               key={route.key}
               path={route.path}
               element={
-                <PrivateRoute>
-                  <MainLayout>
+                <MainLayout>
+                  <PrivateRoute>
                     {route.element}
-                  </MainLayout>
-                </PrivateRoute>
+                  </PrivateRoute>
+                </MainLayout>
+
               }
             />
           );
