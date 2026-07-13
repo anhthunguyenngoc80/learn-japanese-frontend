@@ -36,6 +36,13 @@ export type ComponentSpacing =
   | "lg"
   | "xl";
 
+/**
+ * Độ dày viền — áp dụng cho `kind="outline"` (viền thấy được) và cho
+ * `kind="text"` / `kind="ghost"` (viền trong suốt, chỉ để giữ layout ổn định
+ * khi chuyển sang trạng thái `selected`). Độc lập với `radius` và `spacing`.
+ */
+export type ComponentBorderWidth = "none" | "thin" | "sm" | "md" | "lg";
+
 // ─── Topic Accent Cycle ─────────────────────────────────────────────
 /**
  * Ordered cycle of accent colors for topic assignment
@@ -286,7 +293,6 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
 
 /* ------------------------------------------------------------------ */
 /*  Color x Kind matrix — mỗi màu cần liệt kê class đầy đủ, tĩnh,       */
-/*  để Tailwind JIT quét được (không dùng chuỗi động kiểu `bg-${c}`).  */
 /* ------------------------------------------------------------------ */
 
 export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
@@ -297,7 +303,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-rose-600 text-white shadow-lg shadow-rose-500/30 hover:bg-rose-700 hover:shadow-xl hover:shadow-rose-500/40 hover:-translate-y-0.5 focus-visible:ring-rose-500",
     soft: "bg-rose-100 text-rose-700 hover:bg-rose-200 focus-visible:ring-rose-500",
     outline:
-      "border-3 border-rose-300 text-rose-700 hover:shadow-md hover:-translate-y-0.5 hover:border-rose-300 focus-visible:ring-rose-500",
+      "border-rose-300 text-rose-700 hover:shadow-md hover:-translate-y-0.5 hover:border-rose-300 focus-visible:ring-rose-500",
     ghost: "text-rose-700 hover:bg-rose-50 focus-visible:ring-rose-500",
     text: "text-rose-700 hover:text-rose-800 focus-visible:ring-rose-500",
   },
@@ -307,7 +313,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-red-600 text-white shadow-lg shadow-red-500/30 hover:bg-red-700 hover:shadow-xl hover:shadow-red-500/40 hover:-translate-y-0.5 focus-visible:ring-red-500",
     soft: "bg-red-100 text-red-700 hover:bg-red-200 focus-visible:ring-red-500",
     outline:
-      "border-3 border-red-300 text-red-700 hover:shadow-md hover:-translate-y-0.5 hover:border-red-300 focus-visible:ring-red-500",
+      "border-red-300 text-red-700 hover:shadow-md hover:-translate-y-0.5 hover:border-red-300 focus-visible:ring-red-500",
     ghost: "text-red-700 hover:bg-red-50 focus-visible:ring-red-500",
     text: "text-red-700 hover:text-red-800 focus-visible:ring-red-500",
   },
@@ -318,7 +324,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-amber-500 text-white shadow-lg shadow-amber-500/30 hover:bg-amber-600 hover:shadow-xl hover:shadow-amber-500/40 hover:-translate-y-0.5 focus-visible:ring-amber-500",
     soft: "bg-amber-100 text-amber-700 hover:bg-amber-200 focus-visible:ring-amber-500",
     outline:
-      "border-3 border-amber-300 text-amber-700 hover:shadow-md hover:-translate-y-0.5 hover:border-amber-300 focus-visible:ring-amber-500",
+      "border-amber-300 text-amber-700 hover:shadow-md hover:-translate-y-0.5 hover:border-amber-300 focus-visible:ring-amber-500",
     ghost: "text-amber-700 hover:bg-amber-50 focus-visible:ring-amber-500",
     text: "text-amber-700 hover:text-amber-800 focus-visible:ring-amber-500",
   },
@@ -329,7 +335,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 hover:bg-emerald-700 hover:shadow-xl hover:shadow-emerald-500/40 hover:-translate-y-0.5 focus-visible:ring-emerald-500",
     soft: "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 focus-visible:ring-emerald-500",
     outline:
-      "border-3 border-emerald-300 text-emerald-700 hover:shadow-md hover:-translate-y-0.5 hover:border-emerald-300 focus-visible:ring-emerald-500",
+      "border-emerald-300 text-emerald-700 hover:shadow-md hover:-translate-y-0.5 hover:border-emerald-300 focus-visible:ring-emerald-500",
     ghost:
       "text-emerald-700 hover:bg-emerald-50 focus-visible:ring-emerald-500",
     text: "text-emerald-700 hover:text-emerald-800 focus-visible:ring-emerald-500",
@@ -341,7 +347,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-teal-600 text-white shadow-lg shadow-teal-500/30 hover:bg-teal-700 hover:shadow-xl hover:shadow-teal-500/40 hover:-translate-y-0.5 focus-visible:ring-teal-500",
     soft: "bg-teal-100 text-teal-700 hover:bg-teal-200 focus-visible:ring-teal-500",
     outline:
-      "border-3 border-teal-300 text-teal-700 hover:shadow-md hover:-translate-y-0.5 hover:border-teal-300 focus-visible:ring-teal-500",
+      "border-teal-300 text-teal-700 hover:shadow-md hover:-translate-y-0.5 hover:border-teal-300 focus-visible:ring-teal-500",
     ghost: "text-teal-700 hover:bg-teal-50 focus-visible:ring-teal-500",
     text: "text-teal-700 hover:text-teal-800 focus-visible:ring-teal-500",
   },
@@ -352,7 +358,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-blue-600 text-white shadow-lg shadow-blue-500/30 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 focus-visible:ring-blue-500",
     soft: "bg-blue-100 text-blue-700 hover:bg-blue-200 focus-visible:ring-blue-500",
     outline:
-      "border-3 border-blue-300 text-blue-700 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-300 focus-visible:ring-blue-500",
+      "border-blue-300 text-blue-700 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-300 focus-visible:ring-blue-500",
     ghost: "text-blue-700 hover:bg-blue-50 focus-visible:ring-blue-500",
     text: "text-blue-700 hover:text-blue-800 focus-visible:ring-blue-500",
   },
@@ -363,7 +369,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-500/40 hover:-translate-y-0.5 focus-visible:ring-indigo-500",
     soft: "bg-indigo-100 text-indigo-700 hover:bg-indigo-200 focus-visible:ring-indigo-500",
     outline:
-      "border-3 border-indigo-300 text-indigo-700 hover:shadow-md hover:-translate-y-0.5 hover:border-indigo-300 focus-visible:ring-indigo-500",
+      "border-indigo-300 text-indigo-700 hover:shadow-md hover:-translate-y-0.5 hover:border-indigo-300 focus-visible:ring-indigo-500",
     ghost: "text-indigo-700 hover:bg-indigo-50 focus-visible:ring-indigo-500",
     text: "text-indigo-700 hover:text-indigo-800 focus-visible:ring-indigo-500",
   },
@@ -374,7 +380,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-violet-600 text-white shadow-lg shadow-violet-500/30 hover:bg-violet-700 hover:shadow-xl hover:shadow-violet-500/40 hover:-translate-y-0.5 focus-visible:ring-violet-500",
     soft: "bg-violet-100 text-violet-700 hover:bg-violet-200 focus-visible:ring-violet-500",
     outline:
-      "border-3 border-violet-300 text-violet-700 hover:shadow-md hover:-translate-y-0.5 hover:border-violet-300 focus-visible:ring-violet-500",
+      "border-violet-300 text-violet-700 hover:shadow-md hover:-translate-y-0.5 hover:border-violet-300 focus-visible:ring-violet-500",
     ghost: "text-violet-700 hover:bg-violet-50 focus-visible:ring-violet-500",
     text: "text-violet-700 hover:text-violet-800 focus-visible:ring-violet-500",
   },
@@ -384,7 +390,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-sky-600 text-white shadow-lg shadow-sky-500/30 hover:bg-sky-700 hover:shadow-xl hover:shadow-sky-500/40 hover:-translate-y-0.5 focus-visible:ring-sky-500",
     soft: "bg-sky-100 text-sky-700 hover:bg-sky-200 focus-visible:ring-sky-500",
     outline:
-      "border-3 border-sky-300 text-sky-700 hover:shadow-md hover:-translate-y-0.5 hover:border-sky-300 focus-visible:ring-sky-500",
+      "border-sky-300 text-sky-700 hover:shadow-md hover:-translate-y-0.5 hover:border-sky-300 focus-visible:ring-sky-500",
     ghost: "text-sky-700 hover:bg-sky-50 focus-visible:ring-sky-500",
     text: "text-sky-700 hover:text-sky-800 focus-visible:ring-sky-500",
   },
@@ -395,7 +401,7 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-white text-slate-800 shadow-sm border border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:-translate-y-0.5 focus-visible:ring-slate-400",
     soft: "bg-slate-100 text-slate-700 hover:bg-slate-200 focus-visible:ring-slate-400",
     outline:
-      "border-3 border-slate-200 text-slate-800 hover:shadow-md hover:-translate-y-0.5 hover:border-slate-300 focus-visible:ring-slate-400",
+      "border-slate-200 text-slate-800 hover:shadow-md hover:-translate-y-0.5 hover:border-slate-300 focus-visible:ring-slate-400",
     ghost: "text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400",
     text: "text-slate-700 hover:text-slate-900 focus-visible:ring-slate-400",
   },
@@ -405,18 +411,12 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
       "bg-white text-slate-800 shadow-lg hover:shadow-xl hover:-translate-y-0.5 focus-visible:ring-white",
     soft: "bg-white/15 text-white hover:bg-white/25 focus-visible:ring-white",
     outline:
-      "border-3 border-white/40 text-white hover:shadow-md hover:-translate-y-0.5 hover:border-white-300 focus-visible:ring-white",
+      "border-white/40 text-white hover:shadow-md hover:-translate-y-0.5 hover:border-white-300 focus-visible:ring-white",
     ghost: "text-white hover:bg-white/10 focus-visible:ring-white",
     text: "text-white hover:text-white/80 focus-visible:ring-white",
   },
 };
 
-/**
- * Style áp dụng khi nút ở trạng thái "selected" (đang được chọn/active),
- * ví dụ trong nhóm toggle, tab dạng nút, hay filter chip.
- * Áp dụng cho MỌI `kind`, đè lên nền/màu chữ/viền mặc định — kể cả với
- * "ghost" và "text" (vốn không có nền), để trạng thái chọn luôn rõ ràng.
- */
 export const selectedStyles: Record<AccentColor, string> = {
   rose: "bg-rose-100 text-rose-800 border-rose-300 hover:bg-rose-100 hover:text-rose-800",
   red: "bg-red-100 text-red-800 border-red-300 hover:bg-red-100 hover:text-red-800",
@@ -480,6 +480,14 @@ export const iconOnlyPaddingStyles: Record<ComponentSpacing, string> = {
   md: "p-2.5",
   lg: "p-3.5",
   xl: "p-5",
+};
+
+export const borderWidthStyles: Record<ComponentBorderWidth, string> = {
+  none: "border-0",
+  thin: "border",
+  sm: "border-2",
+  md: "border-3",
+  lg: "border-4",
 };
 
 export const widthLayout = "w-full max-w-7xl px-4 sm:px-6 lg:px-8 grow mx-auto";

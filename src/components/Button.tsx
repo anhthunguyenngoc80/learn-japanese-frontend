@@ -15,11 +15,13 @@ import {
   radiusStyles,
   selectedStyles,
   textStyles,
+  borderWidthStyles,
   type AccentColor,
   type ComponentKind,
   type ComponentRadius,
   type ComponentSize,
   type ComponentSpacing,
+  type ComponentBorderWidth,
 } from "../constant";
 
 /* ------------------------------------------------------------------ */
@@ -32,6 +34,8 @@ interface BuildClassNameArgs {
   radius: ComponentRadius;
   size: ComponentSize;
   spacing: ComponentSpacing;
+  /** Độ dày viền — chỉ có tác dụng với kind "outline"/"text"/"ghost". Mặc định "md". */
+  borderWidth?: ComponentBorderWidth;
   fullWidth?: boolean;
   disabled?: boolean;
   iconOnly?: boolean;
@@ -45,19 +49,25 @@ function buildButtonClassName({
   radius,
   size,
   spacing,
+  borderWidth = "md",
   fullWidth,
   disabled,
   iconOnly,
   selected,
   className = "",
 }: BuildClassNameArgs) {
+  const borderClass =
+    kind === "outline"
+      ? borderWidthStyles[borderWidth]
+      : kind === "text" || kind === "ghost"
+        ? twMerge(borderWidthStyles[borderWidth], "border-transparent")
+        : "";
+
   return twMerge(
     "inline-flex items-center justify-center font-semibold transition-all",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
     colorStyles[color][kind],
-    // "text" và "ghost" vốn không có viền — thêm viền trong suốt để khi
-    // selected chuyển sang viền màu thì layout không bị nhảy (giữ nguyên kích thước).
-    (kind === "text" || kind === "ghost") && "border border-transparent",
+    borderClass,
     radiusStyles[radius],
     iconOnly ? iconOnlyPaddingStyles[spacing] : paddingStyles[spacing],
     !iconOnly && textStyles[size],
@@ -81,6 +91,8 @@ interface CommonButtonProps {
   radius?: ComponentRadius;
   size?: ComponentSize;
   spacing?: ComponentSpacing;
+  /** Độ dày viền cho kind "outline"/"text"/"ghost". Mặc định "md" (border-3). */
+  borderWidth?: ComponentBorderWidth;
   icon?: LucideIcon;
   iconPosition?: "left" | "right";
   fullWidth?: boolean;
@@ -114,6 +126,7 @@ export const Button = forwardRef<
       radius = "md",
       size = "md",
       spacing = "md",
+      borderWidth,
       icon: Icon,
       iconPosition = "left",
       fullWidth = false,
@@ -132,6 +145,7 @@ export const Button = forwardRef<
       radius,
       size,
       spacing,
+      borderWidth,
       fullWidth,
       disabled: disabled || loading,
       selected,
@@ -203,6 +217,8 @@ interface CommonIconButtonProps {
   size?: ComponentSize;
   /** Độ rộng rãi của padding quanh icon, độc lập với size. Mặc định "md". */
   spacing?: ComponentSpacing;
+  /** Độ dày viền cho kind "outline"/"text"/"ghost". Mặc định "md" (border-3). */
+  borderWidth?: ComponentBorderWidth;
   /** Đánh dấu nút đang ở trạng thái được chọn (vd: toggle, tab, filter chip). */
   selected?: boolean;
   className?: string;
@@ -232,6 +248,7 @@ export const IconButton = forwardRef<
       radius = "md",
       size = "md",
       spacing = "md",
+      borderWidth,
       selected,
       disabled,
       className = "",
@@ -246,6 +263,7 @@ export const IconButton = forwardRef<
       radius,
       size,
       spacing,
+      borderWidth,
       disabled,
       selected,
       iconOnly: true,
@@ -380,6 +398,7 @@ interface CommonActionButtonProps {
   color?: AccentColor;
   radius?: ComponentRadius;
   size?: ComponentSize;
+  borderWidth?: ComponentBorderWidth;
   fullWidth?: boolean;
   loading?: boolean;
   disabled?: boolean;
@@ -412,6 +431,7 @@ export const ActionButton = forwardRef<
       color = "rose",
       radius = "md",
       size = "lg",
+      borderWidth,
       fullWidth,
       loading,
       disabled,
@@ -425,11 +445,11 @@ export const ActionButton = forwardRef<
     const badgeSize = actionBadgeSizeStyles[size] ?? actionBadgeSizeStyles.md;
 
     const buttonProps = {
-      ref,
       kind: "outline" as const,
       color,
       radius,
       size,
+      borderWidth,
       fullWidth,
       loading,
       disabled,
@@ -439,10 +459,10 @@ export const ActionButton = forwardRef<
         className,
       ),
       ...rest,
-    };
+    } as ButtonProps;
 
     return (
-      <Button {...buttonProps}>
+      <Button ref={ref} {...buttonProps}>
         <div
           className={twMerge(
             "rounded-full grid place-items-center transition-transform group-hover:scale-110",

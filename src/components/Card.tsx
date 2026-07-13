@@ -7,15 +7,18 @@ import {
 } from "react";
 import { MoreVertical, type LucideIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
-import {
-  Button,
-  IconButton}
-  from "./Button";
+import { Button, IconButton } from "./Button";
 import {
   type ComponentKind,
   type ComponentRadius,
-  type ComponentSpacing, colorStyles, radiusStyles, type AccentColor, 
-  stripHoverClasses} from "../constant";
+  type ComponentSpacing,
+  type ComponentBorderWidth,
+  colorStyles,
+  radiusStyles,
+  borderWidthStyles,
+  type AccentColor,
+  stripHoverClasses,
+} from "../constant";
 
 /** Badge nền cho icon — mặc định dùng tông nhạt, riêng khi Card kind="solid" thì đổi sang lớp phủ trắng mờ. */
 const iconBadgeStyles: Record<AccentColor, string> = {
@@ -226,6 +229,8 @@ export interface CardProps extends Omit<
   radius?: ComponentRadius;
   spacing?: ComponentSpacing;
   fullWidth?: boolean;
+  /** Độ dày viền khi `kind="outline"`. Mặc định "md" (border-3), tái dùng chung với Button. */
+  borderWidth?: ComponentBorderWidth;
   selected?: boolean;
   /** Cho phép cả Card bấm được (vd: chọn thẻ), không chỉ nút bên trong. */
   onClick?: () => void;
@@ -236,7 +241,7 @@ export interface CardProps extends Omit<
   menuItems?: CardMenuItem[];
   menuButtonLabel?: string;
   className?: string;
-  hoverEffect: boolean
+  hoverEffect: boolean;
 }
 
 /* ------------------------------------------------------------------ */
@@ -252,6 +257,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       radius = "lg",
       spacing = "md",
       fullWidth = true,
+      borderWidth = "md",
       selected = false,
       onClick,
       buttonKind,
@@ -286,9 +292,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       ? colorStyles[color][kind]
       : stripHoverClasses(colorStyles[color][kind]);
 
+    const borderClass =
+      kind === "outline" ? borderWidthStyles[borderWidth] : "";
+
     const containerClassName = twMerge(
       "flex flex-col transition-all",
       colorClass,
+      borderClass,
       radiusStyles[radius],
       paddingStyles[spacing],
       fullWidth ? "w-full" : "",

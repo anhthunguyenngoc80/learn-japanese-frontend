@@ -7,4 +7,10 @@ export type {
   DeleteCollectionResponse,
   GetCollectionByIdLimitRequest,
 } from "./collectionInterface";
-export type { GetTopicsResponse, GetTopicByIdResponse, GetCollectionByIdRequest, DeleteTopicResponse } from "./topicInterface";
+export type {
+  GetTopicsResponse,
+  GetTopicByIdResponse,
+  GetCollectionByIdRequest,
+  DeleteTopicResponse,
+  GetFlashcardReviewResponse,
+} from "./topicInterface";

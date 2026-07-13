@@ -9,7 +9,8 @@ export const getTopics = async (
 };
 
 export const getTopicById = async (
-  topicId: string, data: topicI.GetCollectionByIdRequest
+  topicId: string,
+  data: topicI.GetCollectionByIdRequest,
 ): Promise<topicI.GetTopicByIdResponse> => {
   const response = await api.get(`/topics/${topicId}`, {
     params: data,
@@ -21,5 +22,15 @@ export const deleteTopic = async (
   topicId: string,
 ): Promise<topicI.DeleteTopicResponse> => {
   const response = await api.delete(`/topics/${topicId}`);
+  return response.data;
+};
+
+export const getFlashcardReview = async (
+  topicId: string,
+  data: topicI.GetCollectionByIdRequest,
+): Promise<topicI.GetFlashcardReviewResponse> => {
+  const response = await api.get(`/review/flashcard/${topicId}`, {
+    params: data,
+  });
   return response.data;
 };

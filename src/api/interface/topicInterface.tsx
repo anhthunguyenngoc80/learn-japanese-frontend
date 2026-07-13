@@ -13,6 +13,15 @@ export interface GetCollectionByIdRequest {
   limit: number;
 }
 
+export interface GetFlashcardReviewRequest {
+  limit: number;
+}
+
 export interface DeleteTopicResponse {
+  message: string;
+}
+
+export interface GetFlashcardReviewResponse {
+  data: models.Topic;
   message: string;
 }

@@ -115,7 +115,7 @@ export const Topic = () => {
               title: "" + topic?.name,
               subtitle:
                 (topic?.words.length || 0) > 0
-                  ? `Bạn có ${topic?.words.length} từ vựng`
+                  ? `Bạn có ${topic?.word_count} từ vựng`
                   : "Chưa có từ vựng nào",
               progress: 0,
               icon: Sparkles,
