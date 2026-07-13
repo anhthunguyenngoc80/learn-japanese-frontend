@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Eye, EyeOff, X, ArrowLeft, Undo2, Redo2, Eraser } from "lucide-react";
+import { Eye, EyeOff, X, Undo2, Redo2, Eraser } from "lucide-react";
 
 import { loadKanjiIndex, useKanjiVG } from "../utils";
 import { type PracticeBoardHandle, PracticeBoard } from "./PracticeBoard";
@@ -16,21 +15,17 @@ export type FlashcardSettings = {
 
 export type FlashcardAccent = "rose" | "indigo";
 
-export type FlashcardRenderFn<T> = (item: T, settings: FlashcardSettings, strokeDuration: number, charStartIndices: number[], wordIndex: number, isFlipped: boolean, animVersion: number) => {
+export type FlashcardRenderFn<T> = (item: T, settings: FlashcardSettings, strokeDuration: number, charStartIndices: number[], isFlipped: boolean, animVersion: number) => {
   front: ReactNode;
   back: ReactNode;
 };
 
 export type FlashcardProps<T> = {
-  items: T[];
-  settingsKey: string;
-  title: string;
-  subtitle: string;
+  item: T | null;
   accent: FlashcardAccent;
-  emptyTitle: string;
-  emptyDescription: string;
   renderFrontBack: FlashcardRenderFn<T>;
   getCharForStroke: (item: T) => string;
+  settings: FlashcardSettings;
 };
 
 /* ------------------------------------------------------------------ */
@@ -241,54 +236,6 @@ export const useKanjiIndexMap = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Inline Settings Controls                                          */
-/* ------------------------------------------------------------------ */
-const InlineSettings = ({ settings, onSettingsChange, accent }: { settings: FlashcardSettings; onSettingsChange: (s: FlashcardSettings) => void; accent: FlashcardAccent }) => {
-  const isRose = accent === "rose";
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      {/* Display Order Toggle */}
-      <button
-        onClick={() => onSettingsChange({ ...settings, displayOrder: settings.displayOrder === "word-first" ? "meaning-first" : "word-first" })}
-        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold border transition-all ${
-          isRose
-            ? "border-rose-200 bg-white text-rose-700 hover:bg-rose-50"
-            : "border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50"
-        }`}
-        title="Đổi thứ tự hiển thị"
-      >
-        {settings.displayOrder === "word-first" ? "T→N" : "N→T"}
-      </button>
-
-      {/* Stroke Speed Cycle */}
-      <button
-        onClick={() => {
-          const next = settings.strokeSpeed === "slow" ? "fast" : settings.strokeSpeed === "fast" ? "skip" : "slow";
-          onSettingsChange({ ...settings, strokeSpeed: next });
-        }}
-        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 transition-all"
-        title="Tốc độ nét"
-      >
-        {settings.strokeSpeed === "slow" ? "1x" : settings.strokeSpeed === "fast" ? "2x" : "✕"}
-      </button>
-
-      {/* Writing Practice Toggle */}
-      <button
-        onClick={() => onSettingsChange({ ...settings, enableWritingPractice: !settings.enableWritingPractice })}
-        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold border transition-all ${
-          settings.enableWritingPractice
-            ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-            : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-        }`}
-        title="Luyện viết"
-      >
-        {settings.enableWritingPractice ? <Eye size={12} /> : <EyeOff size={12} />}
-      </button>
-    </div>
-  );
-};
-
-/* ------------------------------------------------------------------ */
 /*  Writing Practice Panel                                             */
 /* ------------------------------------------------------------------ */
 type WritingPracticePanelProps = {
@@ -465,7 +412,6 @@ export const renderWordWithKanji = (
   textClassName: string,
   strokeDuration: number,
   charStartIndices: number[],
-  wordIndex: number,
   isFlipped: boolean,
   animVersion: number,
 ) => {
@@ -476,7 +422,7 @@ export const renderWordWithKanji = (
       <div className="inline-flex flex-wrap justify-center gap-1">
         {chars.map((c, i) => (
           <InlineKanjiChar
-            key={`${c}-${i}-${wordIndex}-${isFlipped}-${animVersion}`}
+            key={`${c}-${i}-${isFlipped}-${animVersion}`}
             char={c}
             strokeDurationMs={strokeDuration}
             className={textClassName}
@@ -515,58 +461,26 @@ const accentStyles: Record<FlashcardAccent, {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Main Flashcard Component                                          */
+/*  Main Flashcard Component - chỉ nhận 1 item                        */
 /* ------------------------------------------------------------------ */
 export const Flashcard = <T,>({
-  items,
-  settingsKey,
-  title,
-  subtitle,
+  item,
   accent,
-  emptyTitle,
-  emptyDescription,
   renderFrontBack,
   getCharForStroke,
+  settings,
 }: FlashcardProps<T>) => {
-  const navigate = useNavigate();
-
-  const [wordIndex, setWordIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showWritingPanel, setShowWritingPanel] = useState(true);
   const [strokeCounts, setStrokeCounts] = useState<number[]>([]);
   const [animVersion, setAnimVersion] = useState(0);
 
-  const [settings, setSettings] = useState<FlashcardSettings>(() => {
-    const saved = localStorage.getItem(settingsKey);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fall through
-      }
-    }
-    return {
-      displayOrder: "word-first",
-      strokeSpeed: "fast",
-      enableWritingPractice: false,
-    };
-  });
-
-  // Save settings when changed
-  useEffect(() => {
-    localStorage.setItem(settingsKey, JSON.stringify(settings));
-  }, [settings, settingsKey]);
-
-  // Reset flip state when word changes
+  // Reset flip and stroke animation when item changes
   useEffect(() => {
     setIsFlipped(false);
-  }, [wordIndex]);
-
-  // Reset stroke animation when word or flip state changes
-  useEffect(() => {
     setStrokeCounts([]);
     setAnimVersion((v) => v + 1);
-  }, [wordIndex, isFlipped]);
+  }, [item]);
 
   const handleStrokeCountsReady = useCallback((counts: number[]) => {
     setStrokeCounts(counts);
@@ -582,188 +496,71 @@ export const Flashcard = <T,>({
     return indices;
   }, [strokeCounts]);
 
-  const currentItem = items[wordIndex];
-  const totalItems = items.length;
-
-  const goNext = useCallback(() => {
-    setWordIndex((i) => Math.min(i + 1, totalItems - 1));
-  }, [totalItems]);
-
-  const goPrev = useCallback(() => {
-    setWordIndex((i) => Math.max(i - 1, 0));
-  }, []);
-
   const handleFlip = () => {
     setIsFlipped((prev) => !prev);
   };
 
   const strokeDuration = STROKE_DURATIONS[settings.strokeSpeed];
 
-  const { front: frontContent, back: backContent } = currentItem
-    ? renderFrontBack(currentItem, settings, strokeDuration, charStartIndices, wordIndex, isFlipped, animVersion)
+  const { front: frontContent, back: backContent } = item
+    ? renderFrontBack(item, settings, strokeDuration, charStartIndices, isFlipped, animVersion)
     : { front: null, back: null };
 
-  const strokeWord = currentItem ? getCharForStroke(currentItem) : "";
+  const strokeWord = item ? getCharForStroke(item) : "";
   const practiceChars = strokeWord ? Array.from(strokeWord) : [];
 
   const a = accentStyles[accent];
 
-  if (totalItems === 0) {
-    return (
-      <div className="grow flex flex-col items-center justify-center p-6">
-        <div className="rounded-2xl border border-rose-100 bg-rose-50/30 p-8 text-center max-w-md">
-          <p className="text-gray-600 font-medium">{emptyTitle}</p>
-          <p className="text-sm text-gray-400 mt-1">
-            {emptyDescription}
-          </p>
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 shadow-md hover:shadow-lg transition-all"
-          >
-            <ArrowLeft size={16} /> Quay lại
-          </button>
-        </div>
-      </div>
-    );
-  }
+  if (!item) return null;
 
   return (
-    <div className="grow flex flex-col gap-6 p-6 max-w-5xl mx-auto w-full">
-      {/* Header */}
-      <div className={`rounded-3xl border ${a.border} bg-gradient-to-br ${a.bgGradient} p-6 shadow-sm`}>
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div className="flex flex-col gap-2">
-            <div className={`flex items-center gap-2 text-xs uppercase tracking-[0.2em] ${a.text}`}>
-              <span>📚</span>
-              <span>{subtitle}</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-display text-start">
-              {title}
-            </h2>
-            <div className="flex items-center gap-2 flex-wrap">
-              <InlineSettings settings={settings} onSettingsChange={setSettings} accent={accent} />
-            </div>
-          </div>
-          <button
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-stone-600 bg-white border border-stone-200 hover:bg-stone-50 transition-all shadow-sm"
-          >
-            <ArrowLeft size={15} /> Quay lại
-          </button>
-        </div>
-
-        {/* Progress */}
-        <div className="mt-5 flex items-center gap-4">
-          <span className="text-sm font-semibold text-stone-700 whitespace-nowrap">
-            Từ <span className={accent === "rose" ? "text-rose-600" : "text-indigo-600"}>{wordIndex + 1}</span>
-            <span className="text-stone-400"> / {totalItems}</span>
-          </span>
-          <div className="grow flex gap-1.5">
-            {Array.from({ length: totalItems }, (_, index) => (
-              <div
-                key={index}
-                className={`flex-1 h-2 rounded-full transition-all duration-300 ${
-                  index === wordIndex
-                    ? `bg-gradient-to-r ${accent === "rose" ? "from-rose-500 to-rose-600" : "from-indigo-500 to-indigo-600"} shadow-sm`
-                    : index < wordIndex
-                    ? "bg-emerald-400"
-                    : "bg-stone-200"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Flashcard */}
-      <div className="grow flex flex-col items-center justify-center gap-6">
-        {strokeWord && (
-          <StrokeCounter word={strokeWord} onReady={handleStrokeCountsReady} />
-        )}
+    <div className="grow flex flex-col items-center justify-center gap-6 p-6 max-w-5xl mx-auto w-full">
+      {strokeWord && (
+        <StrokeCounter word={strokeWord} onReady={handleStrokeCountsReady} />
+      )}
+      <div
+        onClick={handleFlip}
+        className="relative w-full max-w-2xl aspect-[3/2] cursor-pointer perspective-1000"
+      >
         <div
-          onClick={handleFlip}
-          className="relative w-full max-w-2xl aspect-[3/2] cursor-pointer perspective-1000"
+          className={`relative w-full h-full transition-transform duration-500 preserve-3d ${
+            isFlipped ? "rotate-y-180" : ""
+          }`}
+          style={{
+            transformStyle: "preserve-3d",
+            transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          }}
         >
+          {/* Front */}
           <div
-            className={`relative w-full h-full transition-transform duration-500 preserve-3d ${
-              isFlipped ? "rotate-y-180" : ""
-            }`}
+            className={`absolute inset-0 rounded-3xl border-2 ${a.border2} bg-gradient-to-br from-white to-rose-50/30 shadow-lg p-8 backface-hidden`}
+            style={{ backfaceVisibility: "hidden" }}
+          >
+            <div className="h-full flex flex-col items-center justify-center">
+              {frontContent}
+            </div>
+          </div>
+
+          {/* Back */}
+          <div
+            className="absolute inset-0 rounded-3xl border-2 border-amber-200 bg-gradient-to-br from-amber-50/40 to-white shadow-lg p-8 backface-hidden"
             style={{
-              transformStyle: "preserve-3d",
-              transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
             }}
           >
-            {/* Front */}
-            <div
-              className={`absolute inset-0 rounded-3xl border-2 ${a.border2} bg-gradient-to-br from-white to-rose-50/30 shadow-lg p-8 backface-hidden`}
-              style={{ backfaceVisibility: "hidden" }}
-            >
-              <div className="h-full flex flex-col items-center justify-center">
-                {frontContent}
-              </div>
-            </div>
-
-            {/* Back */}
-            <div
-              className="absolute inset-0 rounded-3xl border-2 border-amber-200 bg-gradient-to-br from-amber-50/40 to-white shadow-lg p-8 backface-hidden"
-              style={{
-                backfaceVisibility: "hidden",
-                transform: "rotateY(180deg)",
-              }}
-            >
-              <div className="h-full flex flex-col items-center justify-center">
-                {backContent}
-              </div>
+            <div className="h-full flex flex-col items-center justify-center">
+              {backContent}
             </div>
           </div>
         </div>
-
-        {/* Navigation */}
-        <div className="flex items-center justify-center gap-4">
-          <button
-            onClick={goPrev}
-            disabled={wordIndex === 0}
-            className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold border transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed ${
-              a.border2
-            } ${
-              accent === "rose"
-                ? "text-rose-700 bg-white hover:bg-rose-50"
-                : "text-indigo-700 bg-white hover:bg-indigo-50"
-            }`}
-          >
-            <ChevronLeft size={18} /> Trước
-          </button>
-          <button
-            onClick={handleFlip}
-            className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white shadow-md hover:shadow-lg transition-all bg-gradient-to-r ${
-              accent === "rose"
-                ? "from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700"
-                : "from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700"
-            }`}
-          >
-            {isFlipped ? "Xem mặt trước" : "Xem mặt sau"}
-          </button>
-          <button
-            onClick={goNext}
-            disabled={wordIndex === totalItems - 1}
-            className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold border transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed ${
-              a.border2
-            } ${
-              accent === "rose"
-                ? "text-rose-700 bg-white hover:bg-rose-50"
-                : "text-indigo-700 bg-white hover:bg-indigo-50"
-            }`}
-          >
-            Sau <ChevronRight size={18} />
-          </button>
-        </div>
-
-        {/* Hint */}
-        <p className="text-sm text-gray-400">Nhấn vào thẻ để lật</p>
       </div>
 
+      {/* Hint */}
+      <p className="text-sm text-gray-400">Nhấn vào thẻ để lật</p>
+
       {/* Writing Practice Panel */}
-      {settings.enableWritingPractice && currentItem && (
+      {settings.enableWritingPractice && item && (
         <WritingPracticePanel
           chars={practiceChars}
           visible={showWritingPanel}

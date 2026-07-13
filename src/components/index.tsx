@@ -9,3 +9,5 @@ export {
   renderWordWithKanji,
   type FlashcardSettings,
 } from "./Flashcard";
+
+export { MultichoiceQuiz } from "./MultichoiceQuiz"
