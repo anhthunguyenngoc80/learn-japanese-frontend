@@ -173,7 +173,7 @@ export const Topic = () => {
       {/* Word list */}
       <div className="flex flex-wrap justify-between gap-6 gap-y-6">
         {topic?.words.map((word, index) => (
-          <WordCard key={index} word={word} progress={50} />
+          <WordCard key={index} word={word}/>
         ))}{" "}
       </div>
     </CollectionLayout>

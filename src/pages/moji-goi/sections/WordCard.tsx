@@ -78,14 +78,12 @@ export const WordCard = ({
   word,
   accent,
   topicIndex,
-  progress,
   onEdit,
   onDelete,
 }: {
   word: CreateWord | Word;
   accent?: AccentStyles;
   topicIndex?: number;
-  progress?: number;
   onEdit?: (word: CreateWord | Word) => void;
   onDelete?: (word: CreateWord | Word) => void;
 }) => {
@@ -173,9 +171,16 @@ export const WordCard = ({
 
         {/* Tiến độ hình tròn + nút hành động ở góc phải trên */}
         <div className="absolute right-3 top-3 flex items-center gap-2">
-          {progress != null && (
+          {/* Tag trạng thái - nằm bên trái tiến độ */}
+          <span
+            className={`rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap bg-gray-100 text-gray-500}`}
+          >
+            Chưa học
+          </span>
+
+          {word.overall_mastery != null && (
             <CircularProgress
-              progress={progress}
+              progress={word.overall_mastery}
               size={40}
               strokeWidth={4}
               progressClass={accent?.icon}

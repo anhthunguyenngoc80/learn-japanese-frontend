@@ -24,7 +24,7 @@ export interface Word {
   meaning: string;
   partOfSpeech?: string;
   examples?: Example[];
-  mastery?: boolean;
+  overall_mastery?: number;
 }
 
 export interface Example {
