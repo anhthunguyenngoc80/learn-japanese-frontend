@@ -16,6 +16,7 @@ import {
   selectedStyles,
   textStyles,
   borderWidthStyles,
+  stripHoverClasses,
   type AccentColor,
   type ComponentKind,
   type ComponentRadius,
@@ -40,6 +41,8 @@ interface BuildClassNameArgs {
   disabled?: boolean;
   iconOnly?: boolean;
   selected?: boolean;
+  /** Bật/tắt hiệu ứng hover. Mặc định true. */
+  isHover?: boolean;
   className?: string;
 }
 
@@ -54,6 +57,7 @@ function buildButtonClassName({
   disabled,
   iconOnly,
   selected,
+  isHover = true,
   className = "",
 }: BuildClassNameArgs) {
   const borderClass =
@@ -63,18 +67,26 @@ function buildButtonClassName({
         ? twMerge(borderWidthStyles[borderWidth], "border-transparent")
         : "";
 
+  const colorClass = isHover
+    ? colorStyles[color][kind]
+    : stripHoverClasses(colorStyles[color][kind]);
+
+  const selectedClass = selected
+    ? isHover
+      ? selectedStyles[color]
+      : stripHoverClasses(selectedStyles[color])
+    : "";
+
   return twMerge(
     "inline-flex items-center justify-center font-semibold transition-all",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-    colorStyles[color][kind],
+    colorClass,
     borderClass,
     radiusStyles[radius],
     iconOnly ? iconOnlyPaddingStyles[spacing] : paddingStyles[spacing],
     !iconOnly && textStyles[size],
     fullWidth ? "w-full" : "",
-    // selectedStyles được đặt SAU colorStyles để twMerge ưu tiên đè lên
-    // các class nền/màu chữ/viền mặc định của kind, áp dụng cho mọi kind.
-    selected ? selectedStyles[color] : "",
+    selectedClass,
     disabled ? "pointer-events-none opacity-50" : "",
     className,
   );
@@ -99,6 +111,8 @@ interface CommonButtonProps {
   loading?: boolean;
   /** Đánh dấu nút đang ở trạng thái được chọn (vd: toggle, tab, filter chip). */
   selected?: boolean;
+  /** Bật/tắt hiệu ứng hover. Mặc định true. */
+  isHover?: boolean;
   className?: string;
   href?: string;
   disabled?: boolean;
@@ -133,6 +147,7 @@ export const Button = forwardRef<
       loading = false,
       selected,
       disabled,
+      isHover = true,
       className = "",
       href,
       ...rest
@@ -149,6 +164,7 @@ export const Button = forwardRef<
       fullWidth,
       disabled: disabled || loading,
       selected,
+      isHover,
       className,
     });
 
@@ -221,6 +237,8 @@ interface CommonIconButtonProps {
   borderWidth?: ComponentBorderWidth;
   /** Đánh dấu nút đang ở trạng thái được chọn (vd: toggle, tab, filter chip). */
   selected?: boolean;
+  /** Bật/tắt hiệu ứng hover. Mặc định true. */
+  isHover?: boolean;
   className?: string;
   href?: string;
   disabled?: boolean;
@@ -251,6 +269,7 @@ export const IconButton = forwardRef<
       borderWidth,
       selected,
       disabled,
+      isHover = true,
       className = "",
       href,
       ...rest
@@ -266,6 +285,7 @@ export const IconButton = forwardRef<
       borderWidth,
       disabled,
       selected,
+      isHover,
       iconOnly: true,
       className,
     });
@@ -301,98 +321,13 @@ export const IconButton = forwardRef<
 );
 IconButton.displayName = "IconButton";
 
-const actionBadgeStyles: Record<string, { bg: string; icon: string }> = {
-  rose: {
-    bg: "bg-gradient-to-br from-rose-100 to-rose-200",
-    icon: "text-rose-600",
-  },
-  orange: {
-    bg: "bg-gradient-to-br from-orange-100 to-orange-200",
-    icon: "text-orange-600",
-  },
-  amber: {
-    bg: "bg-gradient-to-br from-amber-100 to-amber-200",
-    icon: "text-amber-600",
-  },
-  yellow: {
-    bg: "bg-gradient-to-br from-yellow-100 to-yellow-200",
-    icon: "text-yellow-600",
-  },
-  lime: {
-    bg: "bg-gradient-to-br from-lime-100 to-lime-200",
-    icon: "text-lime-600",
-  },
-  green: {
-    bg: "bg-gradient-to-br from-green-100 to-green-200",
-    icon: "text-green-600",
-  },
-  emerald: {
-    bg: "bg-gradient-to-br from-emerald-100 to-emerald-200",
-    icon: "text-emerald-600",
-  },
-  teal: {
-    bg: "bg-gradient-to-br from-teal-100 to-teal-200",
-    icon: "text-teal-600",
-  },
-  cyan: {
-    bg: "bg-gradient-to-br from-cyan-100 to-cyan-200",
-    icon: "text-cyan-600",
-  },
-  sky: {
-    bg: "bg-gradient-to-br from-sky-100 to-sky-200",
-    icon: "text-sky-600",
-  },
-  blue: {
-    bg: "bg-gradient-to-br from-blue-100 to-blue-200",
-    icon: "text-blue-600",
-  },
-  indigo: {
-    bg: "bg-gradient-to-br from-indigo-100 to-indigo-200",
-    icon: "text-indigo-600",
-  },
-  violet: {
-    bg: "bg-gradient-to-br from-violet-100 to-violet-200",
-    icon: "text-violet-600",
-  },
-  purple: {
-    bg: "bg-gradient-to-br from-purple-100 to-purple-200",
-    icon: "text-purple-600",
-  },
-  fuchsia: {
-    bg: "bg-gradient-to-br from-fuchsia-100 to-fuchsia-200",
-    icon: "text-fuchsia-600",
-  },
-  pink: {
-    bg: "bg-gradient-to-br from-pink-100 to-pink-200",
-    icon: "text-pink-600",
-  },
-  red: {
-    bg: "bg-gradient-to-br from-red-100 to-red-200",
-    icon: "text-red-600",
-  },
-  slate: {
-    bg: "bg-gradient-to-br from-slate-100 to-slate-200",
-    icon: "text-slate-600",
-  },
-  gray: {
-    bg: "bg-gradient-to-br from-gray-100 to-gray-200",
-    icon: "text-gray-600",
-  },
-};
-
-/** Kích thước badge tròn + icon bên trong, ăn theo ComponentSize. */
-const actionBadgeSizeStyles: Record<string, { badge: string; icon: string }> = {
-  sm: { badge: "w-9 h-9", icon: "w-4 h-4" },
-  md: { badge: "w-12 h-12", icon: "w-6 h-6" },
-  lg: { badge: "w-14 h-14", icon: "w-7 h-7" },
-};
-
 /* ------------------------------------------------------------------ */
-/*  ActionButton — nút dạng thẻ: icon tròn + tiêu đề + phụ đề          */
+/*  ActionButton — Button mở rộng: icon tròn + tiêu đề + phụ đề       */
 /* ------------------------------------------------------------------ */
 
 interface CommonActionButtonProps {
-  icon: ComponentType<{ className?: string }>;
+  kind?: ComponentKind;
+  icon?: ComponentType<{ className?: string }>;
   title: string;
   subtitle?: string;
   color?: AccentColor;
@@ -401,6 +336,8 @@ interface CommonActionButtonProps {
   borderWidth?: ComponentBorderWidth;
   fullWidth?: boolean;
   loading?: boolean;
+  /** Bật/tắt hiệu ứng hover. Mặc định true. */
+  isHover?: boolean;
   disabled?: boolean;
   className?: string;
 }
@@ -419,12 +356,23 @@ export type ActionButtonProps =
   | ActionButtonAsButtonProps
   | ActionButtonAsAnchorProps;
 
+// Cỡ chữ subtitle ăn theo ComponentSize, luôn nhỏ hơn 1 bậc so với title.
+const subtitleTextStyles: Record<ComponentSize, string> = {
+  sm: "text-[10px]",
+  md: "text-xs",
+  lg: "text-sm",
+  xl: "text-base",
+  '2xl': "text-base",
+  '4xl': "text-lg",
+};
+
 export const ActionButton = forwardRef<
   HTMLButtonElement | HTMLAnchorElement,
   ActionButtonProps
 >(
   (
     {
+      kind = "outline",
       icon: Icon,
       title,
       subtitle,
@@ -434,6 +382,7 @@ export const ActionButton = forwardRef<
       borderWidth,
       fullWidth,
       loading,
+      isHover = true,
       disabled,
       className = "",
       href,
@@ -441,17 +390,24 @@ export const ActionButton = forwardRef<
     },
     ref,
   ) => {
-    const badgeColor = actionBadgeStyles[color] ?? actionBadgeStyles.rose;
-    const badgeSize = actionBadgeSizeStyles[size] ?? actionBadgeSizeStyles.md;
+    const badgeWrapperSize: Record<ComponentSize, string> = {
+      sm: "w-9 h-9",
+      md: "w-11 h-11",
+      lg: "w-14 h-14",
+      xl: "w-20 h-20",
+      '2xl': "w-23 h-23",
+      '4xl': "w-26 h-26",
+    };
 
     const buttonProps = {
-      kind: "outline" as const,
+      kind,
       color,
       radius,
       size,
       borderWidth,
       fullWidth,
       loading,
+      isHover,
       disabled,
       href,
       className: twMerge(
@@ -463,17 +419,28 @@ export const ActionButton = forwardRef<
 
     return (
       <Button ref={ref} {...buttonProps}>
-        <div
-          className={twMerge(
-            "rounded-full grid place-items-center transition-transform group-hover:scale-110",
-            badgeSize.badge,
-            badgeColor.bg,
-          )}
-        >
-          <Icon className={twMerge(badgeSize.icon, badgeColor.icon)} />
-        </div>
-        <span className="font-semibold text-gray-800">{title}</span>
-        {subtitle && <span className="text-xs text-gray-400">{subtitle}</span>}
+        {Icon && (
+          <div
+            className={twMerge(
+              "rounded-full grid place-items-center bg-current/10 transition-transform",
+              isHover && "group-hover:scale-110",
+              badgeWrapperSize[size],
+            )}
+          >
+            <Icon className={twMerge(iconDimensionStyles[size], "text-current")} />
+          </div>
+        )}
+        <span className="font-semibold text-current">{title}</span>
+        {subtitle && (
+          <span
+            className={twMerge(
+              subtitleTextStyles[size],
+              "text-current opacity-60",
+            )}
+          >
+            {subtitle}
+          </span>
+        )}
       </Button>
     );
   },

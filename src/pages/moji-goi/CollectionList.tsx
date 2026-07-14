@@ -100,6 +100,7 @@ export const CollectionList = () => {
               disabled: false,
             },
           ]}
+          loading={collection === null}
         />
       ))}
     </CollectionLayout>

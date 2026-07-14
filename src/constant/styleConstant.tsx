@@ -10,7 +10,8 @@ export type AccentColor =
   | "violet"
   | "sky"
   | "slate"
-  | "white";
+  | "white"
+  | "green"
 
 export type ComponentKind =
   | "solid" // - solid: trơn
@@ -24,7 +25,7 @@ export type ComponentKind =
 export type ComponentRadius = "none" | "sm" | "md" | "lg" | "full";
 
 /** Cỡ chữ / icon / khoảng cách gap giữa icon và text — KHÔNG quyết định padding. */
-export type ComponentSize = "sm" | "md" | "lg" | "xl";
+export type ComponentSize = "sm" | "md" | "lg" | "xl" | "2xl" | "4xl";
 
 /** Độ "rộng rãi" của padding (px & py dùng chung 1 thang đo) — độc lập với size. */
 export type ComponentSpacing =
@@ -289,6 +290,24 @@ export const accentMap: Record<AccentColor, AccentStyles> = {
     exampleBar: "bg-white-300",
     exampleBg: "bg-white-50/40",
   },
+  green: {
+    border: "border-green-300",
+    bg: "bg-green-50/40",
+    ring: "ring-green-100",
+    headerBg: "bg-gradient-to-r from-green-50/50 to-transparent",
+    headerDivider: "border-green-100",
+    cardHoverBorder: "hover:border-green-400",
+    badgeBg: "bg-green-500",
+    badgeText: "text-white",
+    dot: "bg-green-500",
+    text: "text-green-700",
+    icon: "text-green-600",
+    chipBg: "bg-green-100",
+    chipText: "text-green-700",
+    chipHover: "hover:bg-green-200",
+    exampleBar: "bg-green-300",
+    exampleBg: "bg-green-50/40",
+  },
 };
 
 /* ------------------------------------------------------------------ */
@@ -415,6 +434,17 @@ export const colorStyles: Record<AccentColor, Record<ComponentKind, string>> = {
     ghost: "text-white hover:bg-white/10 focus-visible:ring-white",
     text: "text-white hover:text-white/80 focus-visible:ring-white",
   },
+  green: {
+    solid:
+      "bg-green-800 text-white hover:bg-green-900 focus-visible:ring-green-500",
+    elevated:
+      "bg-white text-green-800 shadow-sm border border-green-200 hover:border-green-300 hover:bg-green-50 hover:-trangreen-y-0.5 focus-visible:ring-green-400",
+    soft: "bg-green-100 text-green-700 hover:bg-green-200 focus-visible:ring-green-400",
+    outline:
+      "border-green-200 text-green-800 hover:shadow-md hover:-trangreen-y-0.5 hover:border-green-300 focus-visible:ring-green-400",
+    ghost: "text-green-700 hover:bg-green-100 focus-visible:ring-green-400",
+    text: "text-green-700 hover:text-green-900 focus-visible:ring-green-400",
+  },
 };
 
 export const selectedStyles: Record<AccentColor, string> = {
@@ -435,6 +465,7 @@ export const selectedStyles: Record<AccentColor, string> = {
     "bg-slate-200 text-slate-900 border-slate-300 hover:bg-slate-200 hover:text-slate-900",
   white:
     "bg-white/25 text-white border-white/60 hover:bg-white/25 hover:text-white",
+  green: "bg-green-100 text-green-800 border-green-300 hover:bg-green-100 hover:text-green-800",
 };
 
 export const radiusStyles: Record<ComponentRadius, string> = {
@@ -451,6 +482,8 @@ export const textStyles: Record<ComponentSize, string> = {
   md: "text-sm gap-3",
   lg: "text-base gap-4",
   xl: "text-lg gap-5",
+  '2xl': "text-2xl gap-5",
+  '4xl': "text-4xl gap-5"   
 };
 
 export const iconDimensionStyles: Record<ComponentSize, string> = {
@@ -458,13 +491,15 @@ export const iconDimensionStyles: Record<ComponentSize, string> = {
   md: "h-4 w-4",
   lg: "h-5 w-5",
   xl: "h-6 w-6",
+  '2xl': "h-7 w-7",
+  '4xl': "h-8 w-8"
 };
 
 /** Padding cho nút có text (px & py dùng chung 1 thang, từ ít → nhiều). */
 export const paddingStyles: Record<ComponentSpacing, string> = {
   none: "p-0",
   xxs: "px-2.5 py-1",
-  xs: "px-4 py-1",
+  xs: "px-4 py-2",
   sm: "px-5 py-2",
   md: "px-8 py-3",
   lg: "px-10 py-4",

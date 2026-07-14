@@ -121,8 +121,8 @@ export const Topic = () => {
               icon: Sparkles,
             }}
             menuItems={[
-              { icon: Pencil, label: "Chỉnh sửa", onClick: () => {} },
-              { icon: Share2, label: "Chia sẻ", onClick: () => {} },
+              { icon: Pencil, label: "Chỉnh sửa", onClick: () => { } },
+              { icon: Share2, label: "Chia sẻ", onClick: () => { } },
               {
                 icon: Trash2,
                 label: "Xoá",
@@ -131,6 +131,7 @@ export const Topic = () => {
                 disabled: false,
               },
             ]}
+            loading={topic === null}
           />
         ),
       }}
@@ -173,7 +174,7 @@ export const Topic = () => {
       {/* Word list */}
       <div className="flex flex-wrap justify-between gap-6 gap-y-6">
         {topic?.words.map((word, index) => (
-          <WordCard key={index} word={word}/>
+          <WordCard key={index} word={word} />
         ))}{" "}
       </div>
     </CollectionLayout>

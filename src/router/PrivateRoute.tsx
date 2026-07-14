@@ -24,7 +24,7 @@ export const PrivateRoute = ({ children }: PrivateRouteProps) => {
   
 
   return (
-  <div className={`${widthLayout} py-12`}>
+  <div className={`${widthLayout} min-h-screen py-12`}>
     {children}
     </div>
   );

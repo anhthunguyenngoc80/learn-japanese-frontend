@@ -33,6 +33,7 @@ const iconBadgeStyles: Record<AccentColor, string> = {
   sky: "bg-sky-100 text-sky-600",
   slate: "bg-slate-100 text-slate-600",
   white: "bg-white/15 text-white",
+  green: "bg-green-100 text-green-600",
 };
 
 const iconBadgeOnSolidStyles: Record<AccentColor, string> = {
@@ -47,6 +48,7 @@ const iconBadgeOnSolidStyles: Record<AccentColor, string> = {
   sky: "bg-white/15 text-white",
   slate: "bg-white/15 text-white",
   white: "bg-slate-800/10 text-slate-800",
+  green: "bg-white/15 text-white",
 };
 
 /** Track & fill cho thanh tiến độ, đổi theo màu — riêng "solid" dùng lớp phủ trắng mờ để nổi trên nền đặc. */
@@ -62,6 +64,7 @@ const progressStyles: Record<AccentColor, { track: string; fill: string }> = {
   sky: { track: "bg-sky-100", fill: "bg-sky-600" },
   slate: { track: "bg-slate-200", fill: "bg-slate-700" },
   white: { track: "bg-white/20", fill: "bg-white/80" },
+  green: { track: "bg-green-100", fill: "bg-green-600" },
 };
 
 const progressOnSolidStyles = { track: "bg-white", fill: "bg-white/90" };
@@ -79,6 +82,7 @@ const selectedRingStyles: Record<AccentColor, string> = {
   sky: "ring-2 ring-sky-500 ring-offset-2",
   slate: "ring-2 ring-slate-400 ring-offset-2",
   white: "ring-2 ring-white ring-offset-2",
+  green: "ring-2 ring-green-500 ring-offset-2",
 };
 
 /** Màu chữ + hover cho từng mục trong menu "...", dùng lại bảng màu chung. */
@@ -94,6 +98,7 @@ const menuItemTextStyles: Record<AccentColor, string> = {
   sky: "text-sky-700 hover:bg-sky-50",
   slate: "text-slate-700 hover:bg-slate-50",
   white: "text-slate-700 hover:bg-slate-50",
+  green: "text-green-700 hover:bg-green-50",
 };
 
 /** Padding cho toàn bộ nội dung Card — dùng chung thang đo với Button để nhất quán. */
@@ -229,19 +234,17 @@ export interface CardProps extends Omit<
   radius?: ComponentRadius;
   spacing?: ComponentSpacing;
   fullWidth?: boolean;
-  /** Độ dày viền khi `kind="outline"`. Mặc định "md" (border-3), tái dùng chung với Button. */
   borderWidth?: ComponentBorderWidth;
   selected?: boolean;
-  /** Cho phép cả Card bấm được (vd: chọn thẻ), không chỉ nút bên trong. */
   onClick?: () => void;
-  /** Ghi đè kind/color của nút hành động bên trong, mặc định tự chọn tương phản hợp lý theo `kind` của Card. */
   buttonKind?: ComponentKind;
   buttonColor?: AccentColor;
-  /** Danh sách hành động hiện trong menu "..." ở góc trên bên phải. Bỏ trống thì không hiện nút menu. */
   menuItems?: CardMenuItem[];
   menuButtonLabel?: string;
   className?: string;
   hoverEffect: boolean;
+  /** Hiện khung skeleton nhấp nháy thay cho nội dung thật, đồng thời khoá click/menu. */
+  loading?: boolean;
 }
 
 /* ------------------------------------------------------------------ */
@@ -266,12 +269,16 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       menuButtonLabel,
       className = "",
       hoverEffect = true,
+      loading = false,
       ...rest
     },
     ref,
   ) => {
     const isSolid = kind === "solid";
     const isOnDark = isSolid || color === "white";
+
+    // Màu skeleton: dịu hơn trên nền tối để không bị chói
+    const skeletonBaseClass = isOnDark ? "bg-white/25" : "bg-slate-200";
 
     const titleTextClass = isOnDark ? "text-white" : "text-foreground";
     const subtitleTextClass = isOnDark
@@ -288,12 +295,14 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     const resolvedButtonColor = buttonColor ?? (isOnDark ? "white" : color);
     const resolvedComponentKind = buttonKind ?? (isOnDark ? "soft" : "solid");
 
-    const colorClass = hoverEffect
+    const colorClass = hoverEffect && !loading
       ? colorStyles[color][kind]
       : stripHoverClasses(colorStyles[color][kind]);
 
     const borderClass =
       kind === "outline" ? borderWidthStyles[borderWidth] : "";
+
+    const isInteractive = !!onClick && !loading;
 
     const containerClassName = twMerge(
       "flex flex-col transition-all",
@@ -302,7 +311,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       radiusStyles[radius],
       paddingStyles[spacing],
       fullWidth ? "w-full" : "",
-      onClick ? "cursor-pointer" : "",
+      isInteractive ? "cursor-pointer" : "",
+      loading ? "cursor-wait select-none" : "",
       selected ? selectedRingStyles[color] : "",
       className,
     );
@@ -311,37 +321,70 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={containerClassName}
-        onClick={onClick}
-        role={onClick ? "button" : undefined}
-        tabIndex={onClick ? 0 : undefined}
-        aria-pressed={onClick ? selected : undefined}
+        onClick={isInteractive ? onClick : undefined}
+        aria-busy={loading || undefined}
+        role={isInteractive ? "button" : undefined}
+        tabIndex={isInteractive ? 0 : undefined}
+        aria-pressed={isInteractive ? selected : undefined}
         {...rest}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            {item.icon && (
-              <span
-                className={twMerge(
-                  "grid size-12 shrink-0 place-items-center rounded-2xl text-2xl",
-                  iconBadgeClass,
-                )}
-              >
-                <item.icon />
-              </span>
+            {loading ? (
+              item.icon && (
+                <span
+                  className={twMerge(
+                    "size-12 shrink-0 animate-pulse rounded-2xl",
+                    skeletonBaseClass,
+                  )}
+                />
+              )
+            ) : (
+              item.icon && (
+                <span
+                  className={twMerge(
+                    "grid size-12 shrink-0 place-items-center rounded-2xl text-2xl",
+                    iconBadgeClass,
+                  )}
+                >
+                  <item.icon />
+                </span>
+              )
             )}
-            <div className="min-w-0 text-start">
-              <h3 className={twMerge("truncate font-bold", titleTextClass)}>
-                {item.title}
-              </h3>
-              {item.subtitle && (
-                <p className={twMerge("truncate text-xs", subtitleTextClass)}>
-                  {item.subtitle}
-                </p>
+            <div className="min-w-0 flex-1 text-start">
+              {loading ? (
+                <div className="flex flex-col gap-2">
+                  <div
+                    className={twMerge(
+                      "h-4 w-2/3 animate-pulse rounded-md",
+                      skeletonBaseClass,
+                    )}
+                  />
+                  {item.subtitle !== undefined && (
+                    <div
+                      className={twMerge(
+                        "h-3 w-1/3 animate-pulse rounded-md",
+                        skeletonBaseClass,
+                      )}
+                    />
+                  )}
+                </div>
+              ) : (
+                <>
+                  <h3 className={twMerge("truncate font-bold", titleTextClass)}>
+                    {item.title}
+                  </h3>
+                  {item.subtitle && (
+                    <p className={twMerge("truncate text-xs", subtitleTextClass)}>
+                      {item.subtitle}
+                    </p>
+                  )}
+                </>
               )}
             </div>
           </div>
 
-          {menuItems.length > 0 && (
+          {!loading && menuItems.length > 0 && (
             <CardMenu
               items={menuItems}
               triggerColor={isOnDark ? "white" : "slate"}
@@ -352,54 +395,90 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
         {item.progress !== undefined && (
           <div className="mt-5">
-            <div
-              className={twMerge(
-                "mb-1.5 flex items-center justify-between text-xs font-semibold",
-                labelTextClass,
-              )}
-            >
-              <span>Tiến độ</span>
-              <span className={twMerge("font-bold", titleTextClass)}>
-                {item.progress}%
-              </span>
-            </div>
-            <div
-              className={twMerge(
-                "h-2 overflow-hidden rounded-full",
-                progress.track,
-              )}
-            >
-              <div
-                className={twMerge(
-                  "h-full rounded-full transition-all duration-700",
-                  progress.fill,
-                )}
-                style={{
-                  width: `${Math.min(100, Math.max(0, item.progress))}%`,
-                }}
-              />
-            </div>
+            {loading ? (
+              <>
+                <div className="mb-1.5 flex items-center justify-between">
+                  <div
+                    className={twMerge(
+                      "h-3 w-16 animate-pulse rounded-md",
+                      skeletonBaseClass,
+                    )}
+                  />
+                  <div
+                    className={twMerge(
+                      "h-3 w-8 animate-pulse rounded-md",
+                      skeletonBaseClass,
+                    )}
+                  />
+                </div>
+                <div
+                  className={twMerge(
+                    "h-2 w-full animate-pulse rounded-full",
+                    skeletonBaseClass,
+                  )}
+                />
+              </>
+            ) : (
+              <>
+                <div
+                  className={twMerge(
+                    "mb-1.5 flex items-center justify-between text-xs font-semibold",
+                    labelTextClass,
+                  )}
+                >
+                  <span>Tiến độ</span>
+                  <span className={twMerge("font-bold", titleTextClass)}>
+                    {item.progress}%
+                  </span>
+                </div>
+                <div
+                  className={twMerge(
+                    "h-2 overflow-hidden rounded-full",
+                    progress.track,
+                  )}
+                >
+                  <div
+                    className={twMerge(
+                      "h-full rounded-full transition-all duration-700",
+                      progress.fill,
+                    )}
+                    style={{
+                      width: `${Math.min(100, Math.max(0, item.progress))}%`,
+                    }}
+                  />
+                </div>
+              </>
+            )}
           </div>
         )}
 
         {item.buttonText && (
-          <Button
-            className="mt-5"
-            color={resolvedButtonColor}
-            kind={resolvedComponentKind}
-            fullWidth
-            href={item.buttonHref}
-            onClick={
-              item.buttonHref
-                ? undefined
-                : (e: { stopPropagation: () => void }) => {
-                    e.stopPropagation();
-                    item.onButtonClick?.();
-                  }
-            }
-          >
-            {item.buttonText}
-          </Button>
+          loading ? (
+            <div
+              className={twMerge(
+                "mt-5 h-10 w-full animate-pulse rounded-xl",
+                skeletonBaseClass,
+              )}
+            />
+          ) : (
+            <Button
+              className="mt-5"
+              color={resolvedButtonColor}
+              kind={resolvedComponentKind}
+              fullWidth
+              href={item.buttonHref}
+              onClick={
+                item.buttonHref
+                  ? undefined
+                  : (e: { stopPropagation: () => void }) => {
+                      e.stopPropagation();
+                      item.onButtonClick?.();
+                    }
+              }
+            >
+              {item.buttonText}
+            </Button>
+          )
         )}
       </div>
     );

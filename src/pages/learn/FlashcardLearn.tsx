@@ -8,10 +8,11 @@ import {
   renderWordWithKanji,
   type FlashcardSettings,
 } from "../../components";
-import { getFlashcardReview } from "../../api";
+import { getFlashcardReview, updateWordMastery } from "../../api";
 import type { Topic, Word } from "../../model";
 import { ChevronLeft, ChevronRight, Pencil, Share2, Sparkles } from "lucide-react";
 import { PATHS } from "../../constant";
+import { ActionButton } from "../../components/Button";
 
 const BATCH_SIZE = 4;
 const MAX_WRONG = 3; // số lần sai tối đa trước khi từ được coi là "hoàn thành"
@@ -314,9 +315,19 @@ export const FlashcardLearnPage = () => {
   }, []);
 
   const handleQuizComplete = useCallback(
-    (wrongWordIds: string[]) => {
+    async (wrongWordIds: string[]) => {
       const allWords = topic?.words || [];
       dispatch({ type: "QUIZ_COMPLETE", wrongWordIds, allWords });
+      // Cập nhật điểm cho các từ trả lời sai
+      try {
+        await Promise.all(
+          wrongWordIds.map((wordId) =>
+            updateWordMastery({ word_id: wordId, is_correct: false, response_time_ms: 0 }),
+          ),
+        );
+      } catch {
+        // Silent fail — không ảnh hưởng trải nghiệm học
+      }
     },
     [topic?.words],
   );
@@ -417,7 +428,7 @@ export const FlashcardLearnPage = () => {
     (viewIndex === combinedList.length - 1 && viewIndex !== frontierIndex);
 
   return (
-    <div className="grow flex flex-col max-w-5xl mx-auto w-full">
+    <div className="grow flex flex-col">
       <div className="w-full text-start"><Button
         kind="text"
         color="rose"
@@ -464,14 +475,86 @@ export const FlashcardLearnPage = () => {
             onClick: () => setSettings({ ...settings, enableWritingPractice: !settings.enableWritingPractice }),
           },
         ]}
+        loading={topic === null}
       />
 
-      {mode === "quiz" ? (
+      {mode === "done" ? (
+        <div className="grow flex flex-col items-center justify-center py-12">
+          <div className="max-w-lg w-full space-y-8">
+            {/* Header */}
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
+                <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Hoàn thành!</h2>
+              <p className="text-gray-500 dark:text-gray-400">
+                Bạn đã học xong tất cả các từ trong chủ đề này.
+              </p>
+            </div>
+
+            {/* Statistics Cards */}
+            <div className="grid grid-cols-2 grid-rows-2 gap-4">
+              <div className="row-span-2">
+                <ActionButton
+                  kind="soft"
+                  subtitle="Đã học flashcard"
+                  title={''+ learnedWordIds.size}
+                  size="4xl"
+                  color="rose"
+                  className="w-full h-full"
+                  isHover={false}
+                />
+              </div>
+                <ActionButton
+                  kind="soft"
+                  subtitle="Đã ghi nhớ tạm thời"
+                  title={''+ correctWordIds.size}
+                  size="4xl"
+                  color="green"
+                  className="w-full h-full"
+                  isHover={false}
+                />
+                <ActionButton
+                  kind="soft"
+                  subtitle="Chưa ghi nhớ"
+                  title={''+ wrongLimitWordIds.size}
+                  size="4xl"
+                  color="amber"
+                  className="w-full h-full"
+                  isHover={false}
+                />
+            </div>
+
+            {/* Back button */}
+            <div className="flex justify-center">
+              <Button
+                kind="solid"
+                color="rose"
+                size="xl"
+                spacing="lg"
+                icon={ChevronLeft}
+                iconPosition="left"
+                onClick={() => navigate(PATHS.topic(topic?.topic_id))}
+              >
+                Quay lại chủ đề
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : mode === "quiz" ? (
         <MultichoiceQuiz
           words={currentLearningBatch}
+          totalWords={combinedList}
           onComplete={handleQuizComplete}
-          onAnswer={(correct, wordId) => {
+          onAnswer={async (correct, wordId, timeMs) => {
             if (correct) dispatch({ type: "QUIZ_ANSWER", wordId, correct: true });
+            try {
+              await updateWordMastery({ word_id: wordId, is_correct: correct, response_time_ms: timeMs });
+            } catch {
+              // Silent fail — không ảnh hưởng trải nghiệm học
+            }
           }}
         />
       ) : (

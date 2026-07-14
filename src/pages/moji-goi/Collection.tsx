@@ -75,6 +75,7 @@ export const Collection = () => {
                 disabled: false,
               },
             ]}
+            loading={collection === null}
           />
         )
       }}
@@ -109,6 +110,7 @@ export const Collection = () => {
             buttonText: "Bắt đầu học",
             onButtonClick: () => navigate(PATHS.topic(topic.topic_id))
           }}
+          loading={topic === null}
         />
       ))}
     </CollectionLayout>

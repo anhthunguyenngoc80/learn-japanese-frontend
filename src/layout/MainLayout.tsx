@@ -8,7 +8,7 @@ type MainLayoutProps = {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
     return (
-        <div className="min-h-screen bg-white text-slate-900 antialiased">
+        <div className="bg-white text-slate-900 antialiased">
             <Header />
             <main className="">
                 {children}

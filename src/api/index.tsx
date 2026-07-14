@@ -12,3 +12,4 @@ export {
   deleteTopic,
   getFlashcardReview,
 } from "./topic";
+export { updateWordMastery } from "./word";
