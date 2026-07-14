@@ -78,7 +78,7 @@ export const Topic = () => {
     },
     {
       color: "sky" as const,
-      onclick: () => navigate(`/moji-goi/practice/${topic?.topic_id}`),
+      onclick: () => navigate(PATHS.practiceQuiz(topic?.topic_id)),
       icon: ListChecks,
       title: "Quiz",
       subtitle: "Kiểm tra kiến thức",

@@ -25,3 +25,8 @@ export interface GetFlashcardReviewResponse {
   data: models.Topic;
   message: string;
 }
+
+export interface GetPracticeWordsResponse {
+  data: models.Topic;
+  message: string;
+}

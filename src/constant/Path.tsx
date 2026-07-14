@@ -16,4 +16,6 @@ export const PATHS = {
     `/practice/write/${topicId ?? ":topicId"}`,
   topic: (topicId?: string) =>
     `/topics/${topicId ?? ":topicId"}`,
+  practiceQuiz: (topicId?: string) =>
+    `/practice/quiz/${topicId ?? ":topicId"}`,
 };

@@ -34,3 +34,10 @@ export const getFlashcardReview = async (
   });
   return response.data;
 };
+
+export const getPracticeWords = async (
+  topicId: string,
+): Promise<topicI.GetPracticeWordsResponse> => {
+  const response = await api.get(`/review/practice/${topicId}`);
+  return response.data;
+};

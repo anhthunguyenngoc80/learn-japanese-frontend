@@ -318,16 +318,6 @@ export const FlashcardLearnPage = () => {
     async (wrongWordIds: string[]) => {
       const allWords = topic?.words || [];
       dispatch({ type: "QUIZ_COMPLETE", wrongWordIds, allWords });
-      // Cập nhật điểm cho các từ trả lời sai
-      try {
-        await Promise.all(
-          wrongWordIds.map((wordId) =>
-            updateWordMastery({ word_id: wordId, is_correct: false, response_time_ms: 0 }),
-          ),
-        );
-      } catch {
-        // Silent fail — không ảnh hưởng trải nghiệm học
-      }
     },
     [topic?.words],
   );
@@ -500,31 +490,31 @@ export const FlashcardLearnPage = () => {
                 <ActionButton
                   kind="soft"
                   subtitle="Đã học flashcard"
-                  title={''+ learnedWordIds.size}
+                  title={'' + learnedWordIds.size}
                   size="4xl"
                   color="rose"
                   className="w-full h-full"
                   isHover={false}
                 />
               </div>
-                <ActionButton
-                  kind="soft"
-                  subtitle="Đã ghi nhớ tạm thời"
-                  title={''+ correctWordIds.size}
-                  size="4xl"
-                  color="green"
-                  className="w-full h-full"
-                  isHover={false}
-                />
-                <ActionButton
-                  kind="soft"
-                  subtitle="Chưa ghi nhớ"
-                  title={''+ wrongLimitWordIds.size}
-                  size="4xl"
-                  color="amber"
-                  className="w-full h-full"
-                  isHover={false}
-                />
+              <ActionButton
+                kind="soft"
+                subtitle="Đã ghi nhớ tạm thời"
+                title={'' + correctWordIds.size}
+                size="4xl"
+                color="green"
+                className="w-full h-full"
+                isHover={false}
+              />
+              <ActionButton
+                kind="soft"
+                subtitle="Chưa ghi nhớ"
+                title={'' + wrongLimitWordIds.size}
+                size="4xl"
+                color="amber"
+                className="w-full h-full"
+                isHover={false}
+              />
             </div>
 
             {/* Back button */}
@@ -549,9 +539,10 @@ export const FlashcardLearnPage = () => {
           totalWords={combinedList}
           onComplete={handleQuizComplete}
           onAnswer={async (correct, wordId, timeMs) => {
-            if (correct) dispatch({ type: "QUIZ_ANSWER", wordId, correct: true });
+            if (correct)
+              dispatch({ type: "QUIZ_ANSWER", wordId, correct: true });
             try {
-              await updateWordMastery({ word_id: wordId, is_correct: correct, response_time_ms: timeMs });
+              await updateWordMastery({ word_id: wordId, is_correct: correct, response_time_ms: timeMs, skill: "recognition" });
             } catch {
               // Silent fail — không ảnh hưởng trải nghiệm học
             }

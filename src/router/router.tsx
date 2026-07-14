@@ -72,6 +72,12 @@ const PRIVATE_ROUTER: RouteType[] = [
     path: PATHS.practicePaper(),
     element: <pages.PracticePaperPage />,
   },
+  {
+    key: "practiceQuiz",
+    name: "Practice Quiz",
+    path: PATHS.practiceQuiz(),
+    element: <pages.PracticeQuizPage />,
+  },
     {
     key: "topic",
     name: "topic",

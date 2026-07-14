@@ -11,5 +11,6 @@ export {
   getTopicById,
   deleteTopic,
   getFlashcardReview,
+  getPracticeWords,
 } from "./topic";
 export { updateWordMastery } from "./word";

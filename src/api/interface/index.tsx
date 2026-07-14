@@ -13,4 +13,5 @@ export type {
   GetCollectionByIdRequest,
   DeleteTopicResponse,
   GetFlashcardReviewResponse,
+  GetPracticeWordsResponse
 } from "./topicInterface";

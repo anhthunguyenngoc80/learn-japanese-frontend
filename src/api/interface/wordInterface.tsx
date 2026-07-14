@@ -1,9 +1,12 @@
 import * as models from "../../model";
 
+type skillType = "recognition"
+
 export interface UpdateWordMasteryRequest {
   word_id: string;
   is_correct: boolean;
-  response_time_ms: number
+  response_time_ms: number;
+  skill: skillType
 }
 
 export interface UpdateWordMasteryResponse {
