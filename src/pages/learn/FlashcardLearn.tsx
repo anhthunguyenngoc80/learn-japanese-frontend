@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useMemo, useReducer, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Button,
   Card,
@@ -10,12 +10,13 @@ import {
 } from "../../components";
 import { getFlashcardReview, updateWordMastery } from "../../api";
 import type { Topic, Word } from "../../model";
-import { ChevronLeft, ChevronRight, Pencil, Share2, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, Share2, Sparkles, Play, RotateCcw } from "lucide-react";
 import { PATHS } from "../../constant";
 import { ActionButton } from "../../components/Button";
 
-const BATCH_SIZE = 4;
-const MAX_WRONG = 3; // số lần sai tối đa trước khi từ được coi là "hoàn thành"
+/* ------------------------------------------------------------------ */
+/*  Session types & helpers (local — backend update later)            */
+/* ------------------------------------------------------------------ */
 
 type Mode = "flashcard" | "quiz" | "done";
 
@@ -25,195 +26,242 @@ type ReviewEntry = {
   readyAt: number;
 };
 
-type LearnState = {
-  currentBatch: Word[];
+interface FlashcardSession {
+  topicId: string;
+  shuffledWordIds: string[];
+  currentBatchIds: string[];
   reviewQueue: ReviewEntry[];
   nextWordIndex: number;
   learnedCount: number;
   mode: Mode;
   round: number;
-  historyWords: Word[];
-  learnedWordIds: Set<string>;     // từ đã xem qua flashcard (duy nhất)
-  correctWordIds: Set<string>;     // từ đã trả lời đúng trong quiz (duy nhất)
-  wrongLimitWordIds: Set<string>;  // từ đã sai đủ MAX_WRONG lần, coi như hoàn thành
-};
+  historyWordIds: string[];
+  learnedWordIds: string[];
+  correctWordIds: string[];
+  wrongLimitWordIds: string[];
+  completed: boolean;
+  startedAt: string;
+  updatedAt: string;
+}
 
-type LearnAction =
-  | { type: "INIT"; words: Word[] }
-  | { type: "LEARN_WORD" }
-  | { type: "QUIZ_ANSWER"; wordId: string; correct: boolean }
-  | { type: "QUIZ_COMPLETE"; wrongWordIds: string[]; allWords: Word[] };
+function shuffleArray<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
-const initialLearnState: LearnState = {
-  currentBatch: [],
-  reviewQueue: [],
-  nextWordIndex: 0,
-  learnedCount: 0,
-  mode: "flashcard",
-  round: 0,
-  historyWords: [],
-  learnedWordIds: new Set(),
-  correctWordIds: new Set(),
-  wrongLimitWordIds: new Set(),
-};
+const SESSION_PREFIX = "flashcard-session-";
+
+function sessionKey(topicId: string) {
+  return `${SESSION_PREFIX}${topicId}`;
+}
+
+function loadSession(topicId: string): FlashcardSession | null {
+  try {
+    const raw = localStorage.getItem(sessionKey(topicId));
+    return raw ? (JSON.parse(raw) as FlashcardSession) : null;
+  } catch {
+    return null;
+  }
+}
+
+function persistSession(session: FlashcardSession) {
+  session.updatedAt = new Date().toISOString();
+  localStorage.setItem(sessionKey(session.topicId), JSON.stringify(session));
+}
+
+function clearSession(topicId: string) {
+  localStorage.removeItem(sessionKey(topicId));
+}
+
+/* ------------------------------------------------------------------ */
+/*  Constants                                                         */
+/* ------------------------------------------------------------------ */
+
+const BATCH_SIZE = 4;
+const MAX_WRONG = 3;
+
+/* ------------------------------------------------------------------ */
+/*  Batch building (pure function, same logic)                        */
+/* ------------------------------------------------------------------ */
 
 function buildNextBatch(
-  allWords: Word[],
+  allWordIds: string[],
   nextWordIndex: number,
   reviewQueue: ReviewEntry[],
   buildRound: number,
 ) {
-  const batch: Word[] = [];
+  const batchIds: string[] = [];
   const usedReviewIds = new Set<string>();
-  const usedNotReadyIds = new Set<string>();
 
   const readyEntries = reviewQueue
     .filter((r) => r.readyAt <= buildRound)
     .sort((a, b) => b.wrongCount - a.wrongCount);
 
   for (const entry of readyEntries) {
-    if (batch.length >= BATCH_SIZE) break;
-    const word = allWords.find((w) => w.word_id === entry.wordId);
-    if (word) {
-      batch.push(word);
-      usedReviewIds.add(entry.wordId);
-    }
+    if (batchIds.length >= BATCH_SIZE) break;
+    batchIds.push(entry.wordId);
+    usedReviewIds.add(entry.wordId);
   }
 
   let idx = nextWordIndex;
-  while (batch.length < BATCH_SIZE && idx < allWords.length) {
-    batch.push(allWords[idx]);
+  while (batchIds.length < BATCH_SIZE && idx < allWordIds.length) {
+    batchIds.push(allWordIds[idx]);
     idx++;
   }
 
-  const noFreshLeft = idx >= allWords.length;
+  const noFreshLeft = idx >= allWordIds.length;
 
-  if (batch.length < BATCH_SIZE && noFreshLeft) {
+  if (batchIds.length < BATCH_SIZE && noFreshLeft) {
     const notReadyEntries = reviewQueue
       .filter((r) => !usedReviewIds.has(r.wordId))
       .sort((a, b) => b.wrongCount - a.wrongCount);
 
     for (const entry of notReadyEntries) {
-      if (batch.length >= BATCH_SIZE) break;
-      const word = allWords.find((w) => w.word_id === entry.wordId);
-      if (word) {
-        batch.push(word);
-        usedNotReadyIds.add(entry.wordId);
-      }
+      if (batchIds.length >= BATCH_SIZE) break;
+      batchIds.push(entry.wordId);
     }
   }
 
-  // Chỉ xóa các entry đã sẵn sàng khỏi queue (đã được review đúng hạn),
-  // giữ lại các entry not-ready để bảo toàn wrongCount qua các vòng lặp
   const remainingQueue = reviewQueue.filter((r) => !usedReviewIds.has(r.wordId));
 
-  return { batch, newNextIndex: idx, remainingQueue };
+  return { batchIds, newNextIndex: idx, remainingQueue };
 }
 
-function learnReducer(state: LearnState, action: LearnAction): LearnState {
-  switch (action.type) {
-    case "INIT": {
-      const { batch, newNextIndex, remainingQueue } = buildNextBatch(action.words, 0, [], 1);
-      return {
-        ...initialLearnState,
-        currentBatch: batch,
-        nextWordIndex: newNextIndex,
-        reviewQueue: remainingQueue,
-        round: 0,
-        mode: batch.length > 0 ? "flashcard" : "done",
-      };
-    }
+/* ------------------------------------------------------------------ */
+/*  Create a new session from word IDs                                */
+/* ------------------------------------------------------------------ */
 
-    case "LEARN_WORD": {
-      const word = state.currentBatch[state.learnedCount];
-      const newLearnedWordIds = word
-        ? new Set(state.learnedWordIds).add(word.word_id)
-        : state.learnedWordIds;
+function createNewSession(topicId: string, wordIds: string[]): FlashcardSession {
+  const shuffled = shuffleArray(wordIds);
+  const { batchIds, newNextIndex, remainingQueue } = buildNextBatch(shuffled, 0, [], 1);
 
-      const newLearnedCount = state.learnedCount + 1;
-      if (newLearnedCount >= state.currentBatch.length && state.currentBatch.length > 0) {
-        return { ...state, learnedCount: 0, mode: "quiz", learnedWordIds: newLearnedWordIds };
-      }
-      return { ...state, learnedCount: newLearnedCount, learnedWordIds: newLearnedWordIds };
-    }
+  return {
+    topicId,
+    shuffledWordIds: shuffled,
+    currentBatchIds: batchIds,
+    reviewQueue: remainingQueue,
+    nextWordIndex: newNextIndex,
+    learnedCount: 0,
+    mode: batchIds.length > 0 ? "flashcard" : "done",
+    round: 0,
+    historyWordIds: [],
+    learnedWordIds: [],
+    correctWordIds: [],
+    wrongLimitWordIds: [],
+    completed: batchIds.length === 0,
+    startedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
 
-    case "QUIZ_ANSWER": {
-      if (!action.correct) return state; // trả lời sai: không cộng tiến độ ở đây,
-      // việc xử lý review/giới hạn sai đã có ở QUIZ_COMPLETE
-      const newCorrectWordIds = new Set(state.correctWordIds);
-      newCorrectWordIds.add(action.wordId);
-      return { ...state, correctWordIds: newCorrectWordIds };
-    }
+/* ------------------------------------------------------------------ */
+/*  Apply actions to a session (returns new session object)           */
+/* ------------------------------------------------------------------ */
 
-    case "QUIZ_COMPLETE": {
-      const { wrongWordIds, allWords } = action;
-      const completedRound = state.round + 1;
-
-      const currentBatchIds = state.currentBatch.map((w) => w.word_id);
-      const correctIds = currentBatchIds.filter((id) => !wrongWordIds.includes(id));
-
-      const newCorrectWordIds = new Set(state.correctWordIds);
-      correctIds.forEach((id) => newCorrectWordIds.add(id));
-
-      let updatedQueue = state.reviewQueue.filter((r) => !correctIds.includes(r.wordId));
-
-      const newWrongLimitWordIds = new Set(state.wrongLimitWordIds);
-
-      for (const id of wrongWordIds) {
-        const existing = updatedQueue.find((r) => r.wordId === id);
-        if (existing) {
-          existing.wrongCount += 1;
-          existing.readyAt = completedRound + 2;
-          if (existing.wrongCount >= MAX_WRONG) {
-            newWrongLimitWordIds.add(id);
-            updatedQueue = updatedQueue.filter((r) => r.wordId !== id);
-          }
-        } else {
-          updatedQueue.push({ wordId: id, wrongCount: 1, readyAt: completedRound + 2 });
-        }
-      }
-
-      const buildRound = completedRound + 1;
-      const { batch, newNextIndex, remainingQueue } = buildNextBatch(
-        allWords,
-        state.nextWordIndex,
-        updatedQueue,
-        buildRound,
-      );
-
-      const newHistory = [...state.historyWords, ...state.currentBatch];
-
-      if (batch.length === 0 && remainingQueue.length === 0) {
-        return {
-          ...state,
-          currentBatch: [],
-          reviewQueue: [],
-          mode: "done",
-          historyWords: newHistory,
-          round: completedRound,
-          correctWordIds: newCorrectWordIds,
-          wrongLimitWordIds: newWrongLimitWordIds,
-        };
-      }
-
-      return {
-        ...state,
-        currentBatch: batch,
-        reviewQueue: remainingQueue,
-        nextWordIndex: newNextIndex,
-        learnedCount: 0,
-        mode: "flashcard",
-        historyWords: newHistory,
-        round: completedRound,
-        correctWordIds: newCorrectWordIds,
-        wrongLimitWordIds: newWrongLimitWordIds,
-      };
-    }
-
-    default:
-      return state;
+function applyLearnWord(session: FlashcardSession): FlashcardSession {
+  const newLearnedWordIds = [...session.learnedWordIds];
+  const currentWordId = session.currentBatchIds[session.learnedCount];
+  if (currentWordId && !newLearnedWordIds.includes(currentWordId)) {
+    newLearnedWordIds.push(currentWordId);
   }
+
+  const newLearnedCount = session.learnedCount + 1;
+  if (newLearnedCount >= session.currentBatchIds.length && session.currentBatchIds.length > 0) {
+    return {
+      ...session,
+      learnedCount: 0,
+      mode: "quiz",
+      learnedWordIds: newLearnedWordIds,
+    };
+  }
+  return {
+    ...session,
+    learnedCount: newLearnedCount,
+    learnedWordIds: newLearnedWordIds,
+  };
 }
+
+function applyQuizAnswer(session: FlashcardSession, wordId: string, correct: boolean): FlashcardSession {
+  if (!correct) return session;
+  const newCorrectWordIds = session.correctWordIds.includes(wordId)
+    ? session.correctWordIds
+    : [...session.correctWordIds, wordId];
+  return { ...session, correctWordIds: newCorrectWordIds };
+}
+
+function applyQuizComplete(session: FlashcardSession, wrongWordIds: string[]): FlashcardSession {
+  const completedRound = session.round + 1;
+
+  const currentBatchIds = session.currentBatchIds;
+  const correctIds = currentBatchIds.filter((id) => !wrongWordIds.includes(id));
+
+  const newCorrectWordIds = [...session.correctWordIds];
+  correctIds.forEach((id) => {
+    if (!newCorrectWordIds.includes(id)) newCorrectWordIds.push(id);
+  });
+
+  let updatedQueue = session.reviewQueue.filter((r) => !correctIds.includes(r.wordId));
+  const newWrongLimitWordIds = [...session.wrongLimitWordIds];
+
+  for (const id of wrongWordIds) {
+    const existing = updatedQueue.find((r) => r.wordId === id);
+    if (existing) {
+      existing.wrongCount += 1;
+      existing.readyAt = completedRound + 2;
+      if (existing.wrongCount >= MAX_WRONG) {
+        newWrongLimitWordIds.push(id);
+        updatedQueue = updatedQueue.filter((r) => r.wordId !== id);
+      }
+    } else {
+      updatedQueue.push({ wordId: id, wrongCount: 1, readyAt: completedRound + 2 });
+    }
+  }
+
+  const buildRound = completedRound + 1;
+  const { batchIds, newNextIndex, remainingQueue } = buildNextBatch(
+    session.shuffledWordIds,
+    session.nextWordIndex,
+    updatedQueue,
+    buildRound,
+  );
+
+  const newHistoryWordIds = [...session.historyWordIds, ...session.currentBatchIds];
+
+  if (batchIds.length === 0 && remainingQueue.length === 0) {
+    return {
+      ...session,
+      currentBatchIds: [],
+      reviewQueue: [],
+      mode: "done",
+      historyWordIds: newHistoryWordIds,
+      round: completedRound,
+      correctWordIds: newCorrectWordIds,
+      wrongLimitWordIds: newWrongLimitWordIds,
+      completed: true,
+    };
+  }
+
+  return {
+    ...session,
+    currentBatchIds: batchIds,
+    reviewQueue: remainingQueue,
+    nextWordIndex: newNextIndex,
+    learnedCount: 0,
+    mode: "flashcard",
+    historyWordIds: newHistoryWordIds,
+    round: completedRound,
+    correctWordIds: newCorrectWordIds,
+    wrongLimitWordIds: newWrongLimitWordIds,
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/*  FlashcardLearnPage                                                 */
+/* ------------------------------------------------------------------ */
 
 export const FlashcardLearnPage = () => {
   const { topicId } = useParams();
@@ -221,24 +269,11 @@ export const FlashcardLearnPage = () => {
   const [topic, setTopic] = useState<Topic | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [initializing, setInitializing] = useState(true);
 
-  const [learnState, dispatch] = useReducer(learnReducer, initialLearnState);
-  const {
-    currentBatch: currentLearningBatch,
-    mode,
-    historyWords,
-    learnedCount,
-    learnedWordIds,
-    correctWordIds,
-    wrongLimitWordIds,
-  } = learnState;
-
-  const combinedList = useMemo(
-    () => [...historyWords, ...currentLearningBatch],
-    [historyWords, currentLearningBatch],
-  );
-
-  const frontierIndex = historyWords.length + learnedCount;
+  // Session state
+  const [session, setSession] = useState<FlashcardSession | null>(null);
+  const [canResume, setCanResume] = useState(false);
 
   const [viewIndex, setViewIndex] = useState(0);
 
@@ -263,6 +298,7 @@ export const FlashcardLearnPage = () => {
     localStorage.setItem(settingsKey, JSON.stringify(settings));
   }, [settings, settingsKey]);
 
+  /* ---------- Load topic data ---------- */
   useEffect(() => {
     if (!topicId) return;
     let cancelled = false;
@@ -273,11 +309,35 @@ export const FlashcardLearnPage = () => {
       try {
         const response = await getFlashcardReview(topicId, { limit: 20 });
         if (!cancelled) {
-          setTopic(response.data);
-          const words = response.data.words || [];
-          dispatch({ type: "INIT", words });
+          const data = response.data;
+          setTopic(data);
+
+          const words = data.words || [];
+          if (words.length === 0) {
+            setInitializing(false);
+            return;
+          }
+
+          const existing = loadSession(topicId);
+
+          // ═══════════════════════════════════════════════
+          //  TODO: sau này lưu session lên server thay vì localStorage
+          // ═══════════════════════════════════════════════
+          if (existing && !existing.completed && existing.topicId === topicId) {
+            setSession(existing);
+            setCanResume(true);
+          } else {
+            const newSession = createNewSession(
+              topicId,
+              words.map((w: Word) => w.word_id),
+            );
+            persistSession(newSession);
+            setSession(newSession);
+          }
+
+          setInitializing(false);
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           setError("Không thể tải dữ liệu flashcard. Vui lòng thử lại sau.");
         }
@@ -292,34 +352,114 @@ export const FlashcardLearnPage = () => {
     };
   }, [topicId]);
 
-  useEffect(() => {
-    setViewIndex(historyWords.length);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLearningBatch]);
+  /* ---------- Derived data from session ---------- */
+
+  const wordMap = useMemo(() => {
+    const map = new Map<string, Word>();
+    (topic?.words || []).forEach((w) => map.set(w.word_id, w));
+    return map;
+  }, [topic?.words]);
+
+  const currentBatch = useMemo(
+    () => (session?.currentBatchIds || []).map((id) => wordMap.get(id)).filter(Boolean) as Word[],
+    [session?.currentBatchIds, wordMap],
+  );
+
+  const historyWords = useMemo(
+    () => (session?.historyWordIds || []).map((id) => wordMap.get(id)).filter(Boolean) as Word[],
+    [session?.historyWordIds, wordMap],
+  );
+
+  const combinedList = useMemo(
+    () => [...historyWords, ...currentBatch],
+    [historyWords, currentBatch],
+  );
+
+  const frontierIndex = historyWords.length + (session?.learnedCount || 0);
+
+  const learnedWordIds = new Set(session?.learnedWordIds || []);
+  const correctWordIds = new Set(session?.correctWordIds || []);
+  const wrongLimitWordIds = new Set(session?.wrongLimitWordIds || []);
+
+  const mode = session?.mode || "flashcard";
+
+  /* ---------- Handlers ---------- */
+
+  const handleResume = useCallback(() => {
+    setCanResume(false);
+  }, []);
+
+  const handleRestart = useCallback(() => {
+    if (!topicId || !topic) return;
+    const newSession = createNewSession(
+      topicId,
+      topic.words.map((w) => w.word_id),
+    );
+    persistSession(newSession);
+    setSession(newSession);
+    setCanResume(false);
+    setViewIndex(0);
+  }, [topicId, topic]);
 
   const handleNext = useCallback(() => {
-    if (mode !== "flashcard") return;
+    if (mode !== "flashcard" || !session) return;
     if (viewIndex >= combinedList.length) return;
 
     const isAtFrontier = viewIndex === frontierIndex;
     if (isAtFrontier) {
-      dispatch({ type: "LEARN_WORD" });
+      const updated = applyLearnWord(session);
+      // ═══════════════════════════════════════════════
+      //  TODO: sau này gửi session lên server
+      // ═══════════════════════════════════════════════
+      persistSession(updated);
+      setSession(updated);
     }
     if (viewIndex < combinedList.length - 1) {
       setViewIndex((i) => i + 1);
     }
-  }, [mode, viewIndex, frontierIndex, combinedList.length]);
+  }, [mode, viewIndex, frontierIndex, combinedList.length, session]);
 
   const handlePrev = useCallback(() => {
     setViewIndex((i) => Math.max(i - 1, 0));
   }, []);
 
+  const handleQuizAnswer = useCallback(
+    async (correct: boolean, wordId: string, timeMs: number) => {
+      if (!session) return;
+      if (correct) {
+        const updated = applyQuizAnswer(session, wordId, true);
+        // ═══════════════════════════════════════════════
+        //  TODO: sau này gửi session lên server
+        // ═══════════════════════════════════════════════
+        persistSession(updated);
+        setSession(updated);
+      }
+      try {
+        await updateWordMastery({
+          word_id: wordId,
+          is_correct: correct,
+          response_time_ms: timeMs,
+          skill: "recognition",
+        });
+      } catch {
+        // Silent fail
+      }
+    },
+    [session],
+  );
+
   const handleQuizComplete = useCallback(
     async (wrongWordIds: string[]) => {
-      const allWords = topic?.words || [];
-      dispatch({ type: "QUIZ_COMPLETE", wrongWordIds, allWords });
+      if (!session) return;
+      const updated = applyQuizComplete(session, wrongWordIds);
+      // ═══════════════════════════════════════════════
+      //  TODO: sau này gửi session lên server
+      // ═══════════════════════════════════════════════
+      persistSession(updated);
+      setSession(updated);
+      setViewIndex(0);
     },
-    [topic?.words],
+    [session],
   );
 
   const renderFrontBack = (
@@ -392,6 +532,11 @@ export const FlashcardLearnPage = () => {
   const completedRatio = (correctWordIds.size + wrongLimitWordIds.size) / totalWords;
   const progressPercent = Math.min(100, Math.round(((learnedRatio + completedRatio) / 2) * 100));
 
+  const answered = session?.learnedWordIds.length || 0;
+  const totalQuestions = session?.shuffledWordIds.length || 0;
+
+  /* ---------- Render ---------- */
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -408,6 +553,28 @@ export const FlashcardLearnPage = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center space-y-4">
           <p className="text-red-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const words = topic?.words || [];
+
+  if (!initializing && words.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center space-y-4">
+          <p className="text-gray-500">Chưa có từ vựng để học.</p>
+          <Button
+            kind="text"
+            color="rose"
+            size="lg"
+            icon={ChevronLeft}
+            iconPosition="left"
+            onClick={() => navigate(PATHS.topic(topic?.topic_id))}
+          >
+            Quay lại
+          </Button>
         </div>
       </div>
     );
@@ -468,7 +635,49 @@ export const FlashcardLearnPage = () => {
         loading={topic === null}
       />
 
-      {mode === "done" ? (
+      {/* Resume prompt */}
+      {canResume && session ? (
+        <div className="grow flex flex-col items-center justify-center py-12">
+          <div className="max-w-md w-full space-y-6 text-center">
+            <div className="rounded-3xl border border-rose-100 bg-gradient-to-br from-white via-rose-50/30 to-amber-50/20 p-8 shadow-sm">
+              <p className="text-sm uppercase tracking-[0.2em] text-rose-500/80 font-medium mb-2">
+                Tiếp tục học flashcard
+              </p>
+              <p className="text-gray-600 mb-2">
+                Bạn đã học <strong>{answered}</strong> / {totalQuestions} từ.
+              </p>
+              <p className="text-sm text-gray-400 mb-6">
+                Bạn có muốn tiếp tục từ vị trí đã dừng không?
+              </p>
+
+              <div className="flex gap-3 justify-center">
+                <Button
+                  kind="solid"
+                  color="rose"
+                  size="xl"
+                  spacing="lg"
+                  icon={Play}
+                  iconPosition="left"
+                  onClick={handleResume}
+                >
+                  Tiếp tục
+                </Button>
+                <Button
+                  kind="outline"
+                  color="rose"
+                  size="xl"
+                  spacing="lg"
+                  icon={RotateCcw}
+                  iconPosition="left"
+                  onClick={handleRestart}
+                >
+                  Làm lại
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : mode === "done" ? (
         <div className="grow flex flex-col items-center justify-center py-12">
           <div className="max-w-lg w-full space-y-8">
             {/* Header */}
@@ -535,18 +744,10 @@ export const FlashcardLearnPage = () => {
         </div>
       ) : mode === "quiz" ? (
         <MultichoiceQuiz
-          words={currentLearningBatch}
+          words={currentBatch}
           totalWords={combinedList}
           onComplete={handleQuizComplete}
-          onAnswer={async (correct, wordId, timeMs) => {
-            if (correct)
-              dispatch({ type: "QUIZ_ANSWER", wordId, correct: true });
-            try {
-              await updateWordMastery({ word_id: wordId, is_correct: correct, response_time_ms: timeMs, skill: "recognition" });
-            } catch {
-              // Silent fail — không ảnh hưởng trải nghiệm học
-            }
-          }}
+          onAnswer={handleQuizAnswer}
         />
       ) : (
         <>
