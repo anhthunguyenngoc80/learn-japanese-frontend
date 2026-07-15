@@ -1,4 +1,4 @@
-export { Button, IconButton } from "./Button";
+export { Button, IconButton, ActionButton } from "./Button";
 export { Logo } from "./Logo";
 export { InputField } from "./InputField";
 export { UploadExcel } from "./UploadExcel";

@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Button,
+  ActionButton,
   Card,
   Flashcard,
   MultichoiceQuiz,
@@ -12,7 +13,6 @@ import { getFlashcardReview, updateWordMastery } from "../../api";
 import type { Topic, Word } from "../../model";
 import { ChevronLeft, ChevronRight, Pencil, Share2, Sparkles, Play, RotateCcw } from "lucide-react";
 import { PATHS } from "../../constant";
-import { ActionButton } from "../../components/Button";
 
 /* ------------------------------------------------------------------ */
 /*  Session types & helpers (local — backend update later)            */

@@ -120,7 +120,7 @@ export const WordCard = ({
           </span>
 
           {word.overall_mastery != null && (
-            <LevelBadge level="mastered" score={word.overall_mastery} size={50}></LevelBadge>
+            <LevelBadge level={1} score={word.overall_mastery} size={40}></LevelBadge>
           )}
 
           <div className="flex items-center gap-1 opacity-70 transition-opacity group-hover:opacity-100">
