@@ -9,6 +9,7 @@ import {
   type AccentColor,
 } from "../../../constant/styleConstant";
 import { WordCard } from "./WordCard";
+import type { CreateWord } from "../../../model";
 
 export const VocabFirstMode = ({
   words,
@@ -159,7 +160,7 @@ export const VocabFirstMode = ({
                 accent={s}
                 topicIndex={resolvedTopicIndex}
                 onEdit={(word) => {
-                  onEditWord?.(index, word);
+                  onEditWord?.(index, word as CreateWord);
                 }}
                 onDelete={() => {
                   onDeleteWord?.(index);
