@@ -11,4 +11,3 @@ export {
 } from "./Flashcard";
 
 export { MultichoiceQuiz } from "./MultichoiceQuiz"
-export { LevelBadge } from "./LevelBadge"
