@@ -34,15 +34,15 @@ export const CollectionList = () => {
 
   const handleDelete = async (collectionId: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    if (!window.confirm("Bạn có chắc chắn muốn xóa bộ từ vựng này?")) return;
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bài học này?")) return;
 
     try {
       await api.deleteCollection(collectionId);
       await fetchCollections(); // Refresh the collection list after deletion
-      alert("Xóa bộ từ vựng thành công!");
+      alert("Xóa bài học thành công!");
     } catch (error) {
       console.error("Failed to delete collection:", error);
-      alert("Có lỗi xảy ra khi xóa bộ từ vựng. Vui lòng thử lại.");
+      alert("Có lỗi xảy ra khi xóa bài học. Vui lòng thử lại.");
     }
   };
 
@@ -52,21 +52,21 @@ export const CollectionList = () => {
       header={{
         type: "simple",
         icon: Library,
-        title: "Danh sách bộ từ vựng",
+        title: "Danh sách bài học",
         subtitle:
           collections.length > 0
-            ? `Bạn có ${collections.length} bộ từ vựng`
-            : "Chưa có bộ từ vựng nào",
+            ? `Bạn có ${collections.length} bài học`
+            : "Chưa có bài học nào",
       }}
       emptyState={{
         icon: BookOpen,
         message:
-          "Bạn chưa có bộ từ vựng nào. Hãy tạo bộ từ vựng đầu tiên để bắt đầu học!",
-        buttonText: "Tạo bộ từ vựng mới",
+          "Bạn chưa có bài học nào. Hãy tạo bài học đầu tiên để bắt đầu học!",
+        buttonText: "Tạo bài học mới",
         onButtonClick: () => navigate(PATHS.createCollection),
       }}
       addButton={{
-        label: "Thêm bộ từ vựng",
+        label: "Thêm bài học",
         onClick: () => navigate(PATHS.createCollection),
         color: "rose",
       }}
