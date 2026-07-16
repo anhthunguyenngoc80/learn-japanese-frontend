@@ -4,6 +4,7 @@ export const PATHS = {
   login: "/login",
   collections: "/collections",
   createCollection: "/collections/create",
+  createListeningCollection: "/collections/create-listening",
   collection: (collectionId?: string) =>
     `/collections/${collectionId ?? ":collectionId"}`,
   editCollection: (collectionId?: string) =>

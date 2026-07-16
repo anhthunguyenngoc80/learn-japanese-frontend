@@ -11,3 +11,8 @@ export {
 } from "./Flashcard";
 
 export { MultichoiceQuiz } from "./MultichoiceQuiz"
+export {
+  SelectionModal,
+  type SelectionOption,
+  type SelectionModalProps,
+} from "./SelectionModal";

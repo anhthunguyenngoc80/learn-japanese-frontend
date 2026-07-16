@@ -7,16 +7,21 @@ import {
   Sparkles,
   Pencil,
   Share2,
+  ListOrdered,
+  Headphones,
 } from "lucide-react";
 
 import { PATHS } from "../../constant/Path";
 import * as api from "../../api";
 import * as models from "../../model";
 import { CollectionLayout } from "./sections";
-import { Card } from "../../components";
+import { Card, SelectionModal, type SelectionOption } from "../../components";
+import { useAppDispatch } from "../../store/typedHooks";
+import { openModal, closeModal } from "../../store/reducer/modalReducer";
 
 export const CollectionList = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [collections, setCollections] = useState<models.Collection[]>([]);
 
   const fetchCollections = async () => {
@@ -38,12 +43,53 @@ export const CollectionList = () => {
 
     try {
       await api.deleteCollection(collectionId);
-      await fetchCollections(); // Refresh the collection list after deletion
+      await fetchCollections();
       alert("Xóa bài học thành công!");
     } catch (error) {
       console.error("Failed to delete collection:", error);
       alert("Có lỗi xảy ra khi xóa bài học. Vui lòng thử lại.");
     }
+  };
+
+  const handleShowAddModal = () => {
+    const options: SelectionOption[] = [
+      {
+        icon: ListOrdered,
+        label: "Tạo bài học từ vựng",
+        subtitle: "Nhập từ vựng và chia chủ đề",
+        iconBg: "from-amber-100 to-amber-200",
+        iconColor: "text-amber-600",
+        onClick: () => {
+          dispatch(closeModal());
+          navigate(PATHS.createCollection);
+        },
+      },
+      {
+        icon: Headphones,
+        label: "Tạo bài học luyện nghe",
+        subtitle: "Luyện nghe tiếng Nhật",
+        iconBg: "from-sky-100 to-sky-200",
+        iconColor: "text-sky-600",
+        onClick: () => {
+          dispatch(closeModal());
+          navigate(PATHS.createListeningCollection);
+        },
+      },
+    ];
+
+    dispatch(
+      openModal({
+        type: "custom",
+        content: (
+          <SelectionModal
+            title="Chọn loại bài học"
+            description="Bạn muốn tạo bài học gì?"
+            options={options}
+            onCancel={() => dispatch(closeModal())}
+          />
+        ),
+      }),
+    );
   };
 
   return (
@@ -63,11 +109,11 @@ export const CollectionList = () => {
         message:
           "Bạn chưa có bài học nào. Hãy tạo bài học đầu tiên để bắt đầu học!",
         buttonText: "Tạo bài học mới",
-        onButtonClick: () => navigate(PATHS.createCollection),
+        onButtonClick: handleShowAddModal,
       }}
       addButton={{
         label: "Thêm bài học",
-        onClick: () => navigate(PATHS.createCollection),
+        onClick: handleShowAddModal,
         color: "rose",
       }}
       isEmptyState={collections.length === 0}
