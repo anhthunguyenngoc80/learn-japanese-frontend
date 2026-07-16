@@ -54,7 +54,7 @@ export const ExcelColumnMappingModal = ({
 }: ExcelColumnMappingModalProps) => {
   const dispatch = useAppDispatch();
 
-  const handleOpen = () => {
+  const _handleOpen = () => {
     dispatch(
       openModal({
         type: "excelColumnMapping",
@@ -72,6 +72,7 @@ export const ExcelColumnMappingModal = ({
 
   // This component doesn't render anything itself
   // It just provides the handleOpen method
+  void _handleOpen;
   return null;
 };
 

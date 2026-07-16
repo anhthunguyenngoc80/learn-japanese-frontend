@@ -13,8 +13,8 @@ export interface Topic {
   topic_id: string;
   name: string;
   words: Word[];
-  word_count: number
-  progress: number
+  word_count?: number
+  progress?: number
 }
 
 export interface Word {

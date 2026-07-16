@@ -15,8 +15,6 @@ export const TopicOverview = ({
   accent,
   topic,
   topicIndex,
-  onEditWord,
-  onDeleteWord,
 }: {
   topics: CreateTopic[];
   words: CreateWord[];

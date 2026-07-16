@@ -1,11 +1,6 @@
 import * as XLSX from "xlsx";
-import type { Example, Word } from "../model";
-import { DEFAULT_WORD_FIELDS, parseArrayPath, type TargetFieldOption } from "../constant";
-
-type CreateExample = Omit<Example, "example_id" | "word_id">;
-type CreateWord = Omit<Word, "word_id" | "topic_id" | "examples"> & {
-  examples: CreateExample[];
-};
+import type { CreateWord } from "../model";
+import { DEFAULT_WORD_FIELDS, parseArrayPath } from "../constant";
 
 export interface ColumnMapping {
   excelColumn: string;
@@ -19,7 +14,6 @@ export interface ColumnMapping {
 const buildWordFromRow = (
   row: Record<string, unknown>,
   mapping: ColumnMapping[],
-  fields: TargetFieldOption[] = DEFAULT_WORD_FIELDS
 ): CreateWord => {
   const flat: Record<string, string> = {};
   const arrayGroups: Record<string, Record<string, string[]>> = {};

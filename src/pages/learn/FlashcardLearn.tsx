@@ -73,10 +73,6 @@ function persistSession(session: FlashcardSession) {
   localStorage.setItem(sessionKey(session.topicId), JSON.stringify(session));
 }
 
-function clearSession(topicId: string) {
-  localStorage.removeItem(sessionKey(topicId));
-}
-
 /* ------------------------------------------------------------------ */
 /*  Constants                                                         */
 /* ------------------------------------------------------------------ */
