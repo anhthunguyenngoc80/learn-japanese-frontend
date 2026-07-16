@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { AccentStyles } from "../../../constant/styleConstant";
 import type { CreateExample, CreateWord, Word } from "../../../model";
-import { Button, IconButton, LevelBadge } from "../../../components";
+import { Button, IconButton } from "../../../components";
 
 import {
   ChevronDown,
@@ -21,27 +21,33 @@ export const WordCard = ({
   topicIndex,
   onEdit,
   onDelete,
+  loading = false,
 }: {
-  word: CreateWord | Word;
+  word?: CreateWord | Word;
   accent?: AccentStyles;
   topicIndex?: number;
   onEdit?: (word: CreateWord | Word) => void;
   onDelete?: (word: CreateWord | Word) => void;
+  loading?: boolean;
 }) => {
+  if (loading) {
+    return <WordCardSkeleton />;
+  }
+
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [draft, setDraft] = useState<CreateWord | Word>(word);
+  const [draft, setDraft] = useState<CreateWord | Word>(word ?? ({} as CreateWord));
   const exampleCount =
-    (isEditing ? draft.examples?.length : word.examples?.length) ?? 0;
+    (isEditing ? draft.examples?.length : word!.examples?.length) ?? 0;
 
   const startEdit = () => {
-    setDraft(word);
+    setDraft(word ?? ({} as CreateWord));
     setIsEditing(true);
     setOpen(true);
   };
 
   const cancelEdit = () => {
-    setDraft(word);
+    setDraft(word ?? ({} as CreateWord));
     setIsEditing(false);
   };
 
@@ -119,10 +125,6 @@ export const WordCard = ({
             Chưa học
           </span>
 
-          {word.overall_mastery != null && (
-            <LevelBadge level={1} score={word.overall_mastery} size={40}></LevelBadge>
-          )}
-
           <div className="flex items-center gap-1 opacity-70 transition-opacity group-hover:opacity-100">
             {isEditing ? (
               <>
@@ -165,7 +167,7 @@ export const WordCard = ({
                     spacing="xs"
                     color="slate"
                     size="sm"
-                    onClick={() => onDelete(word)}
+                    onClick={() => onDelete(word!)}
                     aria-label="Xóa từ"
                   />
                 )}
@@ -188,7 +190,7 @@ export const WordCard = ({
               />
             ) : (
               <h4 className="text-start text-2xl font-bold tracking-tight text-gray-900 leading-tight">
-                {word.text}
+                {word!.text}
               </h4>
             )}
 
@@ -219,21 +221,21 @@ export const WordCard = ({
                 </>
               ) : (
                 <>
-                  {word.reading && (
+                  {word!.reading && (
                     <span
                       className={`rounded-md px-2 py-0.5 text-sm font-medium ${accent?.chipBg} ${accent?.chipText}`}
                     >
-                      {word.reading}
+                      {word!.reading}
                     </span>
                   )}
-                  {word.sv_word && (
+                  {word!.sv_word && (
                     <span className="text-xs font-medium text-gray-400">
-                      · {word.sv_word}
+                      · {word!.sv_word}
                     </span>
                   )}
-                  {word.partOfSpeech && !isEditing && (
+                  {word!.partOfSpeech && !isEditing && (
                     <span className="rounded-md border border-gray-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
-                      {word.partOfSpeech}
+                      {word!.partOfSpeech}
                     </span>
                   )}
                 </>
@@ -256,9 +258,9 @@ export const WordCard = ({
                 }}
               />
             ) : (
-              word.meaning && (
+              word!.meaning && (
                 <div className="mt-3 text-start text-base font-medium leading-relaxed text-gray-800">
-                  {word.meaning}
+                  {word!.meaning}
                 </div>
               )
             )}
@@ -304,7 +306,7 @@ export const WordCard = ({
 
             {(open || (isEditing && exampleCount === 0)) && (
               <ul className="mt-3 space-y-2">
-                {(isEditing ? draft.examples : word.examples)?.map(
+                {(isEditing ? draft.examples : word!.examples)?.map(
                   (ex: CreateExample, i: number) => (
                     <li
                       key={i}
@@ -393,6 +395,50 @@ export const WordCard = ({
             )}
           </div>
         )}
+      </div>
+    </div>
+  );
+};
+
+const WordCardSkeleton = () => {
+  return (
+    <div className="w-70 relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm animate-pulse">
+      {/* Dải màu accent giả */}
+      <div className="absolute inset-y-0 left-0 w-1.5 bg-gray-200" aria-hidden />
+
+      <div className="relative p-5 pl-7">
+        {/* Badge số thứ tự giả */}
+        <div className="absolute -left-3 -top-3 h-9 w-9 rounded-full bg-gray-200 ring-4 ring-white" />
+
+        {/* Góc phải trên: tag + progress */}
+        <div className="absolute right-3 top-3 flex items-center gap-2">
+          <div className="h-4 w-16 rounded-full bg-gray-200" />
+          <div className="h-10 w-10 rounded-full bg-gray-200" />
+        </div>
+
+        {/* Header */}
+        <div className="pr-14">
+          <div className="h-7 w-3/4 rounded-md bg-gray-200" />
+
+          <div className="mt-2 flex items-center gap-1.5">
+            <div className="h-5 w-14 rounded-md bg-gray-200" />
+            <div className="h-4 w-10 rounded-md bg-gray-200" />
+          </div>
+
+          <div className="mt-3 space-y-1.5">
+            <div className="h-4 w-full rounded-md bg-gray-200" />
+            <div className="h-4 w-2/3 rounded-md bg-gray-200" />
+          </div>
+        </div>
+
+        {/* Section ví dụ giả */}
+        <div className="mt-4">
+          <div className="flex items-center gap-2">
+            <div className="h-0.5 flex-1 rounded-full bg-gray-200" />
+            <div className="h-6 w-20 rounded-full bg-gray-200" />
+            <div className="h-0.5 flex-1 rounded-full bg-gray-200" />
+          </div>
+        </div>
       </div>
     </div>
   );

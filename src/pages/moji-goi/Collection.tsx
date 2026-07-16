@@ -52,16 +52,19 @@ export const Collection = () => {
       header={{
         type: "card",
         children: (
-          <Card
+          (collection === null) ? <Card item={{
+            id: '',
+            title: '',
+          }} hoverEffect={false} loading={true} /> : <Card
             kind="solid"
             color="rose"
             className="mb-8"
             hoverEffect={false}
             item={{
-              id: '' + collection?.collection_id,
-              title: '' + collection?.name,
-              subtitle: topics.length > 0 ? `Bạn có ${topics.length} chủ đề` : "Chưa có chủ đề nào",
-              progress: 0,
+              id: '' + collection!.collection_id,
+              title: '' + collection!.name,
+              subtitle: collection!.topic_count > 0 ? `Bạn có ${collection!.topic_count} chủ đề` : "Chưa có chủ đề nào",
+              progress: collection!.progress,
               icon: Sparkles,
             }}
             menuItems={[
@@ -71,11 +74,11 @@ export const Collection = () => {
                 icon: Trash2,
                 label: "Xoá",
                 color: "red",
-                onClick: () => handleDelete(collection?.collection_id),
+                onClick: () => handleDelete(collection!.collection_id),
                 disabled: false,
               },
             ]}
-            loading={collection === null}
+
           />
         )
       }}
@@ -93,26 +96,28 @@ export const Collection = () => {
       goBackPath={PATHS.collections}
       isEmptyState={topics.length === 0}
     >
-      {topics.map((topic) => (
-        <Card
-          key={topic.topic_id}
-          kind="outline"
-          onClick={() => navigate(PATHS.topic(topic.topic_id))}
-          className="w-70"
-          hoverEffect={true}
-          color="rose"
-          item={{
-            id: topic.topic_id,
-            title: topic.name,
-            subtitle: topic.word_count + " từ",
-            progress: 0,
-            icon: Sparkles,
-            buttonText: "Bắt đầu học",
-            onButtonClick: () => navigate(PATHS.topic(topic.topic_id))
-          }}
-          loading={topic === null}
-        />
-      ))}
-    </CollectionLayout>
+      {
+        topics.map((topic) => (
+          <Card
+            key={topic.topic_id}
+            kind="outline"
+            onClick={() => navigate(PATHS.topic(topic.topic_id))}
+            className="w-70"
+            hoverEffect={true}
+            color="rose"
+            item={{
+              id: topic.topic_id,
+              title: topic.name,
+              subtitle: topic.word_count + " từ",
+              progress: topic.progress,
+              icon: Sparkles,
+              buttonText: "Bắt đầu học",
+              onButtonClick: () => navigate(PATHS.topic(topic.topic_id))
+            }}
+            loading={topic === null}
+          />
+        ))
+      }
+    </CollectionLayout >
   );
 };

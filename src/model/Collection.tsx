@@ -4,7 +4,8 @@ export interface Collection {
   collection_id: string;
   name: string;
   topics: Topic[];
-  topic_count: number
+  topic_count: number;
+  progress: number
 }
 
 export interface Topic {
@@ -13,6 +14,7 @@ export interface Topic {
   name: string;
   words: Word[];
   word_count: number
+  progress: number
 }
 
 export interface Word {

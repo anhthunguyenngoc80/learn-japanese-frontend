@@ -84,7 +84,7 @@ export const CollectionList = () => {
             id: collection.collection_id,
             title: collection.name,
             subtitle: collection.topic_count + " chủ đề",
-            progress: 0,
+            progress: collection.progress,
             icon: Sparkles,
             buttonText: "Bắt đầu học",
             onButtonClick: () => navigate(PATHS.collection(collection.collection_id)),

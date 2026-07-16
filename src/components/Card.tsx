@@ -67,7 +67,7 @@ const progressStyles: Record<AccentColor, { track: string; fill: string }> = {
   green: { track: "bg-green-100", fill: "bg-green-600" },
 };
 
-const progressOnSolidStyles = { track: "bg-white", fill: "bg-white/90" };
+const progressOnSolidStyles = { track: "bg-white/25", fill: "bg-white" };
 
 /** Style trạng thái "selected" — dùng khi Card đóng vai trò lựa chọn (vd: chọn gói, chọn hạng mục). */
 const selectedRingStyles: Record<AccentColor, string> = {
@@ -428,7 +428,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
                 >
                   <span>Tiến độ</span>
                   <span className={twMerge("font-bold", titleTextClass)}>
-                    {item.progress}%
+                    {Math.round(item.progress)}%
                   </span>
                 </div>
                 <div

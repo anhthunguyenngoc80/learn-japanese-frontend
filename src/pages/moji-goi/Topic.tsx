@@ -117,7 +117,7 @@ export const Topic = () => {
                 (topic?.words.length || 0) > 0
                   ? `Bạn có ${topic?.word_count} từ vựng`
                   : "Chưa có từ vựng nào",
-              progress: 0,
+              progress: topic?.progress,
               icon: Sparkles,
             }}
             menuItems={[
@@ -173,9 +173,16 @@ export const Topic = () => {
 
       {/* Word list */}
       <div className="flex flex-wrap justify-between gap-6 gap-y-6">
-        {topic?.words.map((word, index) => (
-          <WordCard key={index} word={word} />
-        ))}{" "}
+        {topic === null
+          ? Array.from({ length: 4 }).map((_, index) => (
+            <WordCard key={index} loading />
+          ))
+          : topic.words.map((word) => (
+            <WordCard
+              key={word.word_id}
+              word={word}
+            />
+          ))}
       </div>
     </CollectionLayout>
   );
