@@ -84,6 +84,12 @@ const PRIVATE_ROUTER: RouteType[] = [
     path: PATHS.topic(),
     element: <pages.Topic />,
   },
+  {
+    key: "roadmap",
+    name: "Roadmap",
+    path: PATHS.roadmap(),
+    element: <pages.LearningRoadmap />
+  }
 ];
 
 export { PUBLIC_ROUTER, PRIVATE_HEADER_ROUTER, PRIVATE_ROUTER, AUTH_ROUTER };

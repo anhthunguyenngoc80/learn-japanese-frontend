@@ -34,13 +34,13 @@ export function PrivateHeader() {
             to={PATHS.collections}
             className={`text-sm font-medium transition-colors hover:text-rose-600 ${isJLPTActive ? "text-rose-600 font-semibold" : "text-slate-700"}`}
           >
-            JLPT
+            Thư viện
           </Link>
           <Link
-            to="/kaiwa"
+            to={PATHS.roadmap()}
             className="text-sm font-medium text-slate-700 transition-colors hover:text-rose-600"
           >
-            Kaiwa
+            Học tập
           </Link>
         </nav>
 

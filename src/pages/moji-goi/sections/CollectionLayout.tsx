@@ -84,17 +84,17 @@ const PageHeader: React.FC<{ header: HeaderConfig }> = ({ header }) => {
 };
 
 /** Thanh có đường kẻ + nút thêm mới, nằm ngay trên danh sách */
-const AddButtonBar: React.FC<{ addButton: AddButtonConfig }> = ({
+const AddButtonBar: React.FC<{ addButton?: AddButtonConfig }> = ({
   addButton,
 }) => {
-  const color = addButton.color ?? "rose";
+  const color = addButton?.color ?? "rose";
   return (
     <div className="w-full flex items-center justify-end mb-4 gap-5">
       <div
         className={`border-3 border-dashed border-${color}-200 rounded-full flex-1`}
         aria-hidden
       />
-      <Button
+      {addButton && <Button
         size="md"
         kind="elevated"
         color={color}
@@ -105,7 +105,7 @@ const AddButtonBar: React.FC<{ addButton: AddButtonConfig }> = ({
         radius="full"
       >
         {addButton.label}
-      </Button>
+      </Button>}
     </div>
   );
 };
@@ -176,7 +176,7 @@ export const CollectionLayout: React.FC<EntityListPageProps> = ({
         <EmptyState emptyState={emptyState} />
       ) : (
         <>
-          {addButton && <AddButtonBar addButton={addButton} />}
+          <AddButtonBar addButton={addButton} />
 
           <div className="w-full flex flex-wrap gap-3">
             {children}
