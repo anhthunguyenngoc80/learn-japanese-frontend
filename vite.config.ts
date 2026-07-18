@@ -11,7 +11,9 @@ export default defineConfig({
     tailwindcss(),
     babel({ presets: [reactCompilerPreset()] }),
     legacy({
-      targets: ["defaults", "not IE 11"],
+      targets: ["defaults", "not IE 11", "iOS >= 12"],
+      modernPolyfills: true,
+      renderLegacyChunks: true,
     }),
   ],
   build: {
