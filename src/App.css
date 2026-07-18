@@ -210,6 +210,9 @@
  */
 
 @theme inline {
+  --font-sans: 'Zen Maru Gothic', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Zen Maru Gothic', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, Consolas, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

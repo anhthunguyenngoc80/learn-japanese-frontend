@@ -2,4 +2,23 @@ export const PATHS = {
   dashboard: "/",
   register: "/register",
   login: "/login",
-}
+  collections: "/collections",
+  createCollection: "/collections/create",
+  createListeningCollection: "/collections/create-listening",
+  collection: (collectionId?: string) =>
+    `/collections/${collectionId ?? ":collectionId"}`,
+  editCollection: (collectionId?: string) =>
+    `/collections/edit/${collectionId ?? ":collectionId"}`,
+  flashcardLearn: (topicId?: string) =>
+    `/flashcard/learn/${topicId ?? ":topicId"}`,
+  practicePaper: (topicId?: string) =>
+    `/practice/paper/${topicId ?? ":topicId"}`,
+  practiceWrite: (topicId?: string) =>
+    `/practice/write/${topicId ?? ":topicId"}`,
+  topic: (topicId?: string) =>
+    `/topics/${topicId ?? ":topicId"}`,
+  practiceQuiz: (topicId?: string) =>
+    `/practice/quiz/${topicId ?? ":topicId"}`,
+  roadmap: (roadmapId?: string) =>
+    `/roadmap/${roadmapId ?? ":roadmapId"}`,
+};

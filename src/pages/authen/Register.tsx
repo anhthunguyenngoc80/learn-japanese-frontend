@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Button, InputField } from "../../components";
 import * as api from "../../api";
+import * as constant from "../../constant";
 
 export const RegisterPage = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -17,7 +20,8 @@ export const RegisterPage = () => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.username.trim()) newErrors.username = "Vui lòng nhập tên đăng nhập";
+    if (!formData.username.trim())
+      newErrors.username = "Vui lòng nhập tên đăng nhập";
     else if (formData.username.trim().length < 3)
       newErrors.username = "Tên đăng nhập phải có ít nhất 3 ký tự";
 
@@ -29,7 +33,8 @@ export const RegisterPage = () => {
     else if (formData.password.length < 6)
       newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
 
-    if (!formData.confirmPassword) newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
+    if (!formData.confirmPassword)
+      newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
     else if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
 
@@ -63,9 +68,11 @@ export const RegisterPage = () => {
         password: formData.password,
       });
 
-      setSuccess("Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...");
+      setSuccess(
+        "Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...",
+      );
       console.log("Registered user:", formData.username, formData.email);
-      setTimeout(() => (window.location.href = "/login"), 1500);
+      setTimeout(() => navigate(constant.PATHS.collections), 1500);
     } catch (error) {
       console.error("Registration failed:", error);
       setErrors((prev) => ({
@@ -169,13 +176,22 @@ export const RegisterPage = () => {
             onChange={(e) => setAgreed(e.target.checked)}
             className="mt-1 w-4 h-4 text-rose-600 border-slate-300 rounded focus:ring-rose-500"
           />
-          <label htmlFor="terms" className="text-sm text-slate-600 leading-snug">
+          <label
+            htmlFor="terms"
+            className="text-sm text-slate-600 leading-snug"
+          >
             Tôi đồng ý với{" "}
-            <a href="#" className="text-rose-600 hover:text-rose-700 hover:underline font-medium">
+            <a
+              href="#"
+              className="text-rose-600 hover:text-rose-700 hover:underline font-medium"
+            >
               Điều khoản dịch vụ
             </a>{" "}
             và{" "}
-            <a href="#" className="text-rose-600 hover:text-rose-700 hover:underline font-medium">
+            <a
+              href="#"
+              className="text-rose-600 hover:text-rose-700 hover:underline font-medium"
+            >
               Chính sách bảo mật
             </a>
             .
@@ -184,7 +200,6 @@ export const RegisterPage = () => {
 
         <Button
           type="submit"
-          variant="primary"
           className="w-full py-3 text-base font-semibold bg-rose-600 hover:bg-rose-700"
           disabled={!agreed}
         >

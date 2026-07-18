@@ -1,131 +1,448 @@
-import { type ReactNode, type ComponentType } from "react";
-import { type LucideIcon } from "lucide-react";
+import {
+  forwardRef,
+  type ReactNode,
+  type ButtonHTMLAttributes,
+  type AnchorHTMLAttributes,
+  type ComponentType,
+} from "react";
+import { type LucideIcon, Loader2 } from "lucide-react";
+import { twMerge } from "tailwind-merge";
+import {
+  colorStyles,
+  iconDimensionStyles,
+  iconOnlyPaddingStyles,
+  paddingStyles,
+  radiusStyles,
+  selectedStyles,
+  textStyles,
+  borderWidthStyles,
+  stripHoverClasses,
+  type AccentColor,
+  type ComponentKind,
+  type ComponentRadius,
+  type ComponentSize,
+  type ComponentSpacing,
+  type ComponentBorderWidth,
+} from "../constant";
 
-type ButtonVariant = "primary" | "secondary" | "tertiary" | "ghost";
-type ButtonSize = "sm" | "md" | "lg";
+/* ------------------------------------------------------------------ */
+/*  Shared class builder                                               */
+/* ------------------------------------------------------------------ */
 
-interface ButtonProps {
-  children: ReactNode;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
+interface BuildClassNameArgs {
+  color: AccentColor;
+  kind: ComponentKind;
+  radius: ComponentRadius;
+  size: ComponentSize;
+  spacing: ComponentSpacing;
+  /** Độ dày viền — chỉ có tác dụng với kind "outline"/"text"/"ghost". Mặc định "md". */
+  borderWidth?: ComponentBorderWidth;
+  fullWidth?: boolean;
+  disabled?: boolean;
+  iconOnly?: boolean;
+  selected?: boolean;
+  /** Bật/tắt hiệu ứng hover. Mặc định true. */
+  isHover?: boolean;
+  className?: string;
+}
+
+function buildButtonClassName({
+  color,
+  kind,
+  radius,
+  size,
+  spacing,
+  borderWidth = "md",
+  fullWidth,
+  disabled,
+  iconOnly,
+  selected,
+  isHover = true,
+  className = "",
+}: BuildClassNameArgs) {
+  const borderClass =
+    kind === "outline"
+      ? borderWidthStyles[borderWidth]
+      : kind === "text" || kind === "ghost"
+        ? twMerge(borderWidthStyles[borderWidth], "border-transparent")
+        : "";
+
+  const colorClass = isHover
+    ? colorStyles[color][kind]
+    : stripHoverClasses(colorStyles[color][kind]);
+
+  const selectedClass = selected
+    ? isHover
+      ? selectedStyles[color]
+      : stripHoverClasses(selectedStyles[color])
+    : "";
+
+  return twMerge(
+    "inline-flex items-center justify-center font-semibold transition-all",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+    colorClass,
+    borderClass,
+    radiusStyles[radius],
+    iconOnly ? iconOnlyPaddingStyles[spacing] : paddingStyles[spacing],
+    !iconOnly && textStyles[size],
+    fullWidth ? "w-full" : "",
+    selectedClass,
+    disabled ? "pointer-events-none opacity-50" : "",
+    className,
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Button — text-only, icon+text, hoặc render như <a> nếu có href     */
+/* ------------------------------------------------------------------ */
+
+interface CommonButtonProps {
+  children?: ReactNode;
+  color?: AccentColor;
+  kind?: ComponentKind;
+  radius?: ComponentRadius;
+  size?: ComponentSize;
+  spacing?: ComponentSpacing;
+  /** Độ dày viền cho kind "outline"/"text"/"ghost". Mặc định "md" (border-3). */
+  borderWidth?: ComponentBorderWidth;
   icon?: LucideIcon;
   iconPosition?: "left" | "right";
   fullWidth?: boolean;
+  loading?: boolean;
+  /** Đánh dấu nút đang ở trạng thái được chọn (vd: toggle, tab, filter chip). */
+  selected?: boolean;
+  /** Bật/tắt hiệu ứng hover. Mặc định true. */
+  isHover?: boolean;
   className?: string;
-  onClick?: () => void;
-  type?: "button" | "submit" | "reset";
+  href?: string;
   disabled?: boolean;
 }
 
-const variantStyles: Record<ButtonVariant, string> = {
-  primary:
-    "rounded-xl bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-lg shadow-rose-500/30 transition-all hover:bg-rose-700 hover:shadow-xl hover:shadow-rose-500/40 hover:-translate-y-0.5",
-  secondary:
-    "inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-2 text-sm font-semibold text-slate-800 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50",
-  tertiary:
-    "rounded-xl bg-white px-6 py-2 text-sm font-semibold text-rose-700 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl",
-  ghost:
-    "rounded-lg px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100",
-};
+type ButtonAsButtonProps = CommonButtonProps &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, "color"> & { href?: undefined };
 
-const sizeStyles: Record<ButtonSize, string> = {
-  sm: "px-4 py-2 text-xs",
-  md: "px-6 py-3 text-sm",
-  lg: "px-8 py-4 text-base",
-};
+type ButtonAsAnchorProps = CommonButtonProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "color" | "href"> & {
+    href: string;
+  };
 
-export function Button({
-  children,
-  variant = "primary",
-  size = "md",
-  icon,
-  iconPosition = "left",
-  fullWidth = false,
-  className = "",
-  onClick,
-  type = "button",
-  disabled = false,
-}: ButtonProps) {
-  const IconComponent = icon;
+export type ButtonProps = ButtonAsButtonProps | ButtonAsAnchorProps;
 
-  const baseStyles = "inline-flex items-center justify-center gap-2 font-semibold transition-all";
-  const widthStyles = fullWidth ? "w-full" : "";
-  const disabledStyles = disabled ? "opacity-50 cursor-not-allowed" : "";
+export const Button = forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  ButtonProps
+>(
+  (
+    {
+      children,
+      color = "rose",
+      kind = "solid",
+      radius = "md",
+      size = "md",
+      spacing = "md",
+      borderWidth,
+      icon: Icon,
+      iconPosition = "left",
+      fullWidth = false,
+      loading = false,
+      selected,
+      disabled,
+      isHover = true,
+      className = "",
+      href,
+      ...rest
+    },
+    ref,
+  ) => {
+    const combinedClassName = buildButtonClassName({
+      color,
+      kind,
+      radius,
+      size,
+      spacing,
+      borderWidth,
+      fullWidth,
+      disabled: disabled || loading,
+      selected,
+      isHover,
+      className,
+    });
 
-  const combinedClassName = [
-    baseStyles,
-    variantStyles[variant],
-    sizeStyles[size],
-    widthStyles,
-    disabledStyles,
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+    const content = (
+      <>
+        {loading ? (
+          <Loader2 className={`${iconDimensionStyles[size]} animate-spin`} />
+        ) : (
+          Icon &&
+          iconPosition === "left" && (
+            <Icon className={iconDimensionStyles[size]} />
+          )
+        )}
+        {children}
+        {!loading && Icon && iconPosition === "right" && (
+          <Icon className={iconDimensionStyles[size]} />
+        )}
+      </>
+    );
 
-  return (
-    <button
-      type={type}
-      className={combinedClassName}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {IconComponent && iconPosition === "left" && (
-        <IconComponent className="h-4 w-4" />
-      )}
-      {children}
-      {IconComponent && iconPosition === "right" && (
-        <IconComponent className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-      )}
-    </button>
-  );
-}
+    if (href) {
+      return (
+        <a
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          href={href}
+          className={combinedClassName}
+          aria-disabled={disabled || loading}
+          aria-pressed={selected}
+          {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
+        >
+          {content}
+        </a>
+      );
+    }
 
-// Specialized button for gradient backgrounds
-interface GradientButtonProps {
-  children: ReactNode;
-  icon?: LucideIcon;
+    return (
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type="button"
+        className={combinedClassName}
+        disabled={disabled || loading}
+        aria-pressed={selected}
+        {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
+      >
+        {content}
+      </button>
+    );
+  },
+);
+Button.displayName = "Button";
+
+/* ------------------------------------------------------------------ */
+/*  IconButton — chỉ chứa icon, bắt buộc có aria-label để hỗ trợ tiếp cận */
+/* ------------------------------------------------------------------ */
+interface IconProps {
+  size?: number | string;
   className?: string;
-  onClick?: () => void;
 }
 
-export function GradientButton({
-  children,
-  icon,
-  className = "",
-  onClick,
-}: GradientButtonProps) {
-  const IconComponent = icon;
-
-  return (
-    <button
-      className={`mt-8 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-rose-700 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl ${className}`}
-      onClick={onClick}
-    >
-      {IconComponent && <IconComponent className="h-4 w-4" />}
-      {children}
-    </button>
-  );
-}
-
-// Social icon button
-interface SocialIconButtonProps {
-  icon: ComponentType<{ className?: string }>;
+interface CommonIconButtonProps {
+  icon: ComponentType<IconProps>;
+  "aria-label": string;
+  color?: AccentColor;
+  kind?: ComponentKind;
+  radius?: ComponentRadius;
+  size?: ComponentSize;
+  /** Độ rộng rãi của padding quanh icon, độc lập với size. Mặc định "md". */
+  spacing?: ComponentSpacing;
+  /** Độ dày viền cho kind "outline"/"text"/"ghost". Mặc định "md" (border-3). */
+  borderWidth?: ComponentBorderWidth;
+  /** Đánh dấu nút đang ở trạng thái được chọn (vd: toggle, tab, filter chip). */
+  selected?: boolean;
+  /** Bật/tắt hiệu ứng hover. Mặc định true. */
+  isHover?: boolean;
+  className?: string;
   href?: string;
+  disabled?: boolean;
+}
+
+type IconButtonAsButtonProps = CommonIconButtonProps &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, "color"> & { href?: undefined };
+
+type IconButtonAsAnchorProps = CommonIconButtonProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "color" | "href"> & {
+    href: string;
+  };
+
+export type IconButtonProps = IconButtonAsButtonProps | IconButtonAsAnchorProps;
+
+export const IconButton = forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  IconButtonProps
+>(
+  (
+    {
+      icon: Icon,
+      color = "slate",
+      kind = "ghost",
+      radius = "md",
+      size = "md",
+      spacing = "md",
+      borderWidth,
+      selected,
+      disabled,
+      isHover = true,
+      className = "",
+      href,
+      ...rest
+    },
+    ref,
+  ) => {
+    const combinedClassName = buildButtonClassName({
+      color,
+      kind,
+      radius,
+      size,
+      spacing,
+      borderWidth,
+      disabled,
+      selected,
+      isHover,
+      iconOnly: true,
+      className,
+    });
+
+    if (href) {
+      return (
+        <a
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          href={href}
+          className={combinedClassName}
+          aria-disabled={disabled}
+          aria-pressed={selected}
+          {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
+        >
+          <Icon className={iconDimensionStyles[size]} />
+        </a>
+      );
+    }
+
+    return (
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type="button"
+        className={combinedClassName}
+        disabled={disabled}
+        aria-pressed={selected}
+        {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
+      >
+        <Icon className={iconDimensionStyles[size]} />
+      </button>
+    );
+  },
+);
+IconButton.displayName = "IconButton";
+
+/* ------------------------------------------------------------------ */
+/*  ActionButton — Button mở rộng: icon tròn + tiêu đề + phụ đề       */
+/* ------------------------------------------------------------------ */
+
+interface CommonActionButtonProps {
+  kind?: ComponentKind;
+  icon?: ComponentType<{ className?: string }>;
+  title: string;
+  subtitle?: string;
+  color?: AccentColor;
+  radius?: ComponentRadius;
+  size?: ComponentSize;
+  borderWidth?: ComponentBorderWidth;
+  fullWidth?: boolean;
+  loading?: boolean;
+  /** Bật/tắt hiệu ứng hover. Mặc định true. */
+  isHover?: boolean;
+  disabled?: boolean;
   className?: string;
 }
 
-export function SocialIconButton({
-  icon: Icon,
-  href = "#",
-  className = "",
-}: SocialIconButtonProps) {
-  return (
-    <a
-      href={href}
-      className={`flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 ${className}`}
-    >
-      <Icon className="h-4 w-4" />
-    </a>
-  );
-}
+type ActionButtonAsButtonProps = CommonActionButtonProps &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, "color" | "title"> & {
+    href?: undefined;
+  };
+
+type ActionButtonAsAnchorProps = CommonActionButtonProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "color" | "title" | "href"> & {
+    href: string;
+  };
+
+export type ActionButtonProps =
+  | ActionButtonAsButtonProps
+  | ActionButtonAsAnchorProps;
+
+// Cỡ chữ subtitle ăn theo ComponentSize, luôn nhỏ hơn 1 bậc so với title.
+const subtitleTextStyles: Record<ComponentSize, string> = {
+  sm: "text-[10px]",
+  md: "text-xs",
+  lg: "text-sm",
+  xl: "text-base",
+  '2xl': "text-base",
+  '4xl': "text-lg",
+};
+
+export const ActionButton = forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  ActionButtonProps
+>(
+  (
+    {
+      kind = "outline",
+      icon: Icon,
+      title,
+      subtitle,
+      color = "rose",
+      radius = "md",
+      size = "lg",
+      borderWidth,
+      fullWidth,
+      loading,
+      isHover = true,
+      disabled,
+      className = "",
+      href,
+      ...rest
+    },
+    ref,
+  ) => {
+    const badgeWrapperSize: Record<ComponentSize, string> = {
+      sm: "w-9 h-9",
+      md: "w-11 h-11",
+      lg: "w-14 h-14",
+      xl: "w-20 h-20",
+      '2xl': "w-23 h-23",
+      '4xl': "w-26 h-26",
+    };
+
+    const buttonProps = {
+      kind,
+      color,
+      radius,
+      size,
+      borderWidth,
+      fullWidth,
+      loading,
+      isHover,
+      disabled,
+      href,
+      className: twMerge(
+        "group flex flex-col items-center gap-3 p-6 h-auto",
+        className,
+      ),
+      ...rest,
+    } as ButtonProps;
+
+    return (
+      <Button ref={ref} {...buttonProps}>
+        {Icon && (
+          <div
+            className={twMerge(
+              "rounded-full grid place-items-center bg-current/10 transition-transform",
+              isHover && "group-hover:scale-110",
+              badgeWrapperSize[size],
+            )}
+          >
+            <Icon className={twMerge(iconDimensionStyles[size], "text-current")} />
+          </div>
+        )}
+        <span className="font-semibold text-current">{title}</span>
+        {subtitle && (
+          <span
+            className={twMerge(
+              subtitleTextStyles[size],
+              "text-current opacity-60",
+            )}
+          >
+            {subtitle}
+          </span>
+        )}
+      </Button>
+    );
+  },
+);
+ActionButton.displayName = "ActionButton";

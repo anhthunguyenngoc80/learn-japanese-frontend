@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Button, InputField } from "../../components";
 import * as api from "../../api";
+import * as constant from "../../constant";
+import { loginSuccess, useAppDispatch } from "../../store";
 
 export const LoginPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -44,17 +48,28 @@ export const LoginPage = () => {
 
     setLoading(true);
     try {
-      await api.login({
+      const response = await api.login({
         email: formData.email,
         password: formData.password,
       });
 
-      window.location.href = "/";
-    } catch (error) {
+      // Assuming API returns { user: { id, username, email }, token: string }
+      dispatch(loginSuccess({ user: response.data }));
+      navigate(constant.PATHS.collections);
+    } catch (error: any) {
       console.error("Login failed:", error);
+      
+      // Kiểm tra nếu là lỗi timeout/server không phản hồi (Render free tier sleep)
+      let errorMessage = "Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.";
+      if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+        errorMessage = "Máy chủ đang khởi động, vui lòng đợi 30-60 giây và thử lại.";
+      } else if (error.message?.includes("Network Error") || !error.response) {
+        errorMessage = "Không thể kết nối đến máy chủ. Máy chủ có thể đang ở chế độ ngủ, vui lòng thử lại sau 1 phút.";
+      }
+      
       setErrors((prev) => ({
         ...prev,
-        general: "Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.",
+        general: errorMessage,
       }));
     } finally {
       setLoading(false);
@@ -131,7 +146,7 @@ export const LoginPage = () => {
 
         <Button
           type="submit"
-          variant="primary"
+          
           className="w-full py-3 text-base font-semibold bg-rose-600 hover:bg-rose-700"
           disabled={loading}
         >
