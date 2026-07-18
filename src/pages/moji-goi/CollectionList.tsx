@@ -17,7 +17,12 @@ import { PATHS } from "../../constant/Path";
 import * as api from "../../api";
 import * as models from "../../model";
 import { CollectionLayout } from "./sections";
-import { Button, Card, SelectionModal, type SelectionOption } from "../../components";
+import {
+  Button,
+  Card,
+  SelectionModal,
+  type SelectionOption,
+} from "../../components";
 import { useAppDispatch } from "../../store/typedHooks";
 import { openModal, closeModal } from "../../store/reducer/modalReducer";
 
@@ -36,7 +41,7 @@ export const CollectionList = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [collections, setCollections] = useState<models.Collection[]>([]);
-  const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
+  const [roadmaps] = useState<Roadmap[]>([]);
 
   const fetchCollections = async () => {
     try {
@@ -140,7 +145,9 @@ export const CollectionList = () => {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Route className="w-5 h-5 text-rose-500" />
-            <h2 className="text-lg font-bold text-gray-800">Danh sách lộ trình</h2>
+            <h2 className="text-lg font-bold text-gray-800">
+              Danh sách lộ trình
+            </h2>
           </div>
           <Button
             size="sm"
@@ -183,7 +190,8 @@ export const CollectionList = () => {
           <div className="flex flex-col items-center gap-3 py-8 rounded-2xl border-2 border-dashed border-rose-200 bg-rose-50/30">
             <Route className="w-8 h-8 text-rose-300" />
             <p className="text-sm text-gray-400 text-center max-w-xs">
-              Bạn chưa có lộ trình học nào. Hãy tạo lộ trình để theo dõi tiến độ học tập!
+              Bạn chưa có lộ trình học nào. Hãy tạo lộ trình để theo dõi tiến độ
+              học tập!
             </p>
             <Button
               size="sm"
@@ -213,7 +221,9 @@ export const CollectionList = () => {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Route className="w-5 h-5 text-rose-500" />
-            <h2 className="text-lg font-bold text-gray-800">Danh sách bài học</h2>
+            <h2 className="text-lg font-bold text-gray-800">
+              Danh sách bài học
+            </h2>
           </div>
           <Button
             size="sm"
@@ -234,7 +244,9 @@ export const CollectionList = () => {
               key={collection.collection_id}
               kind="outline"
               color="rose"
-              onClick={() => navigate(PATHS.collection(collection.collection_id))}
+              onClick={() =>
+                navigate(PATHS.collection(collection.collection_id))
+              }
               className="w-70"
               hoverEffect={true}
               item={{
@@ -244,11 +256,12 @@ export const CollectionList = () => {
                 progress: collection.progress,
                 icon: Sparkles,
                 buttonText: "Bắt đầu học",
-                onButtonClick: () => navigate(PATHS.collection(collection.collection_id)),
+                onButtonClick: () =>
+                  navigate(PATHS.collection(collection.collection_id)),
               }}
               menuItems={[
-                { icon: Pencil, label: "Chỉnh sửa", onClick: () => { } },
-                { icon: Share2, label: "Chia sẻ", onClick: () => { } },
+                { icon: Pencil, label: "Chỉnh sửa", onClick: () => {} },
+                { icon: Share2, label: "Chia sẻ", onClick: () => {} },
                 {
                   icon: Trash2,
                   label: "Xoá",
@@ -263,5 +276,5 @@ export const CollectionList = () => {
         </div>
       </div>
     </CollectionLayout>
-  )
+  );
 };

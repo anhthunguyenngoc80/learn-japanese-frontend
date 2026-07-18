@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Card } from "../../components"; 
+import { Card } from "../../components";
 import {
   colorStyles,
   selectedStyles,
@@ -7,14 +7,13 @@ import {
   textStyles,
   paddingStyles,
   iconOnlyPaddingStyles,
-  borderWidthStyles,
   type AccentColor,
   type ComponentKind,
   type ComponentRadius,
   type ComponentSize,
   type ComponentSpacing,
   type ComponentBorderWidth,
-} from "../../constant"; 
+} from "../../constant";
 import { twMerge } from "tailwind-merge";
 import { Check, LockKeyhole } from "lucide-react";
 
@@ -65,19 +64,43 @@ export interface LearningRoadmapProps {
  *  bạn chỉnh số theo ý thích)
  * =======================================================*/
 const NODE_OUTER: Record<ComponentSize, number> = {
-  sm: 48, md: 56, lg: 64, xl: 72, "2xl": 84, "4xl": 100,
+  sm: 48,
+  md: 56,
+  lg: 64,
+  xl: 72,
+  "2xl": 84,
+  "4xl": 100,
 };
 const ROW_GAP: Record<ComponentSize, number> = {
-  sm: 120, md: 140, lg: 160, xl: 180, "2xl": 200, "4xl": 220,
+  sm: 120,
+  md: 140,
+  lg: 160,
+  xl: 180,
+  "2xl": 200,
+  "4xl": 220,
 };
 const COLUMN_AMP: Record<ComponentSize, number> = {
-  sm: 90, md: 110, lg: 130, xl: 150, "2xl": 170, "4xl": 190,
+  sm: 90,
+  md: 110,
+  lg: 130,
+  xl: 150,
+  "2xl": 170,
+  "4xl": 190,
 };
 const ICON_PX: Record<ComponentSize, number> = {
-  sm: 16, md: 20, lg: 24, xl: 28, "2xl": 32, "4xl": 40,
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 28,
+  "2xl": 32,
+  "4xl": 40,
 };
 const LINE_WIDTH: Record<ComponentBorderWidth, number> = {
-  none: 0, thin: 2, sm: 3, md: 4, lg: 6,
+  none: 0,
+  thin: 2,
+  sm: 3,
+  md: 4,
+  lg: 6,
 };
 
 /** Stroke class cho đường đã đi qua (completed path) — viết đủ literal để Tailwind bắt được class. */
@@ -119,14 +142,10 @@ function Icon({ lesson, size = 20 }: { lesson: Lesson; size?: number }) {
     strokeLinejoin: "round" as const,
   };
   if (lesson.status === "locked") {
-    return (
-      <LockKeyhole />
-    );
+    return <LockKeyhole />;
   }
   if (lesson.status === "completed") {
-    return (
-      <Check />
-    );
+    return <Check />;
   }
   if (lesson.type === "boss") {
     return (
@@ -169,7 +188,6 @@ interface LessonNodeProps {
   radius: ComponentRadius;
   size: ComponentSize;
   spacing: ComponentSpacing;
-  borderWidth: ComponentBorderWidth;
   disabled?: boolean;
   iconOnly?: boolean;
   selected?: boolean;
@@ -177,8 +195,18 @@ interface LessonNodeProps {
 }
 
 function LessonNode({
-  lesson, x, y, color, kind, radius, size, spacing, borderWidth,
-  disabled, iconOnly, selected, isHover,
+  lesson,
+  x,
+  y,
+  color,
+  kind,
+  radius,
+  size,
+  spacing,
+  disabled,
+  iconOnly,
+  selected,
+  isHover,
 }: LessonNodeProps) {
   const [hover, setHover] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -196,9 +224,13 @@ function LessonNode({
         ? "elevated"
         : kind;
 
-  const nodeColorClass = isLocked ? colorStyles.slate.soft : colorStyles.slate.soft;
+  const nodeColorClass = isLocked
+    ? colorStyles.slate.soft
+    : colorStyles.slate.soft;
   const useSelectedEmphasis = isCurrent && selected;
-  const nodeClass = useSelectedEmphasis ? selectedStyles[color] : nodeColorClass;
+  const nodeClass = useSelectedEmphasis
+    ? selectedStyles[color]
+    : nodeColorClass;
 
   // Màu icon: nền đậm (solid/elevated) -> icon trắng, nền nhạt (soft/outline/ghost/text) -> icon theo tông màu.
   const solidLikeKind = resolvedKind === "solid" || resolvedKind === "elevated";
@@ -216,12 +248,18 @@ function LessonNode({
   const ringRadius = outer / 2 + ringGap;
   const ringCircumference = 2 * Math.PI * ringRadius;
   const progress = lesson.progress ?? 0;
-  const progressOffset = ringCircumference - (progress / 100) * ringCircumference;
+  const progressOffset =
+    ringCircumference - (progress / 100) * ringCircumference;
 
   return (
     <div
       className="absolute flex flex-col items-center"
-      style={{ left: x, top: y, transform: "translate(-50%, -50%)", width: 200 }}
+      style={{
+        left: x,
+        top: y,
+        transform: "translate(-50%, -50%)",
+        width: 200,
+      }}
     >
       <div
         className="relative transition-all duration-200"
@@ -287,7 +325,9 @@ function LessonNode({
             "relative flex items-center justify-center rounded-full transition-none",
             nodeClass,
             iconOnlyPaddingStyles[spacing],
-            isLocked ? "cursor-not-allowed grayscale opacity-60" : "cursor-pointer",
+            isLocked
+              ? "cursor-not-allowed grayscale opacity-60"
+              : "cursor-pointer",
           )}
           style={{
             width: outer,
@@ -303,7 +343,12 @@ function LessonNode({
               )}
             />
           )}
-          <span className={twMerge("relative flex items-center justify-center", iconToneClass)}>
+          <span
+            className={twMerge(
+              "relative flex items-center justify-center",
+              iconToneClass,
+            )}
+          >
             <Icon lesson={lesson} size={ICON_PX[size]} />
           </span>
         </button>
@@ -324,11 +369,19 @@ function LessonNode({
             "bg-white shadow-sm dark:bg-slate-900",
           )}
           style={{
-            transform: hover && !isLocked && isHover ? "translateY(-2px)" : "translateY(0)",
+            transform:
+              hover && !isLocked && isHover
+                ? "translateY(-2px)"
+                : "translateY(0)",
             transition: "transform 200ms ease, opacity 200ms ease",
           }}
         >
-          <div className={twMerge("font-extrabold leading-tight", textStyles[size])}>
+          <div
+            className={twMerge(
+              "font-extrabold leading-tight",
+              textStyles[size],
+            )}
+          >
             {lesson.title}
           </div>
           {lesson.subtitle && (
@@ -340,11 +393,19 @@ function LessonNode({
             <div className="mt-2">
               <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
                 <div
-                  className={twMerge("h-full rounded-full transition-all duration-500", colorStyles[color].solid)}
+                  className={twMerge(
+                    "h-full rounded-full transition-all duration-500",
+                    colorStyles[color].solid,
+                  )}
                   style={{ width: `${lesson.progress ?? 0}%` }}
                 />
               </div>
-              <div className={twMerge("mt-1 text-[10px] font-bold tracking-wide", colorStyles[color].text.split(" ")[0])}>
+              <div
+                className={twMerge(
+                  "mt-1 text-[10px] font-bold tracking-wide",
+                  colorStyles[color].text.split(" ")[0],
+                )}
+              >
                 {lesson.progress ?? 0}% IN PROGRESS
               </div>
             </div>
@@ -430,18 +491,35 @@ export function LearningRoadmap({
   return (
     <div className={twMerge(className)}>
       <Card
-        item={{ id: "roadmap", title, subtitle: `Đã hoàn thành ${completed}/${total}`, progress: pct }}
+        item={{
+          id: "roadmap",
+          title,
+          subtitle: `Đã hoàn thành ${completed}/${total}`,
+          progress: pct,
+        }}
         hoverEffect={false}
         kind={kind}
         color={color}
       />
 
-      <div className={twMerge("flex justify-center px-4 pb-24 pt-10", fullWidth ? "w-full" : "mx-auto")}>
+      <div
+        className={twMerge(
+          "flex justify-center px-4 pb-24 pt-10",
+          fullWidth ? "w-full" : "mx-auto",
+        )}
+      >
         <div
           className="relative"
-          style={{ width: fullWidth ? "100%" : totalWidth, height: totalHeight }}
+          style={{
+            width: fullWidth ? "100%" : totalWidth,
+            height: totalHeight,
+          }}
         >
-          <svg className="pointer-events-none absolute inset-0" width="100%" height={totalHeight}>
+          <svg
+            className="pointer-events-none absolute inset-0"
+            width="100%"
+            height={totalHeight}
+          >
             <path
               d={pathD}
               fill="none"
@@ -472,7 +550,6 @@ export function LearningRoadmap({
               radius={radius}
               size={size}
               spacing={spacing}
-              borderWidth={borderWidth}
               disabled={disabled}
               iconOnly={iconOnly}
               selected={selected}
