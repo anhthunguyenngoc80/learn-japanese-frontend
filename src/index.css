@@ -17,15 +17,17 @@
 
   font: 600 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
 
-  @media (max-width: 1024px) {
+/* iOS 12 doesn't support nested @media and prefers-color-scheme inside selectors */
+@media (max-width: 1024px) {
+  :root {
     font-size: 16px;
   }
 }
@@ -53,7 +55,9 @@
 #root {
   max-width: 100%;
   text-align: center;
-  min-height: 100svh;
+  /* 100svh fallback for iOS 12 */
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
