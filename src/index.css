@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -15,49 +19,86 @@
   --heading: 'Nunito', 'Zen Maru Gothic', system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 600 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --radius: 0.625rem;
+  --background: #ffffff;
+  --foreground: #1c1b2e;
+  --card: #ffffff;
+  --card-foreground: #1c1b2e;
+  --popover: #ffffff;
+  --popover-foreground: #1c1b2e;
+  --primary: #2a2744;
+  --primary-foreground: #fbfbfb;
+  --secondary: #f4f5f9;
+  --secondary-foreground: #2a2744;
+  --muted: #f4f5f9;
+  --muted-foreground: #7a7591;
+  --accent: #f4f5f9;
+  --accent-foreground: #2a2744;
+  --destructive: #c73a3a;
+  --destructive-foreground: #fbfbfb;
+  --border: #e8e7ed;
+  --input: #e8e7ed;
+  --ring: #a8a5c0;
+  --chart-1: #c75a3a;
+  --chart-2: #3a9e8c;
+  --chart-3: #4a6a8e;
+  --chart-4: #e8c84a;
+  --chart-5: #d4a84a;
+  --sidebar: #fbfbfb;
+  --sidebar-foreground: #1c1b2e;
+  --sidebar-primary: #2a2744;
+  --sidebar-primary-foreground: #fbfbfb;
+  --sidebar-accent: #f4f5f9;
+  --sidebar-accent-foreground: #2a2744;
+  --sidebar-border: #e8e7ed;
+  --sidebar-ring: #a8a5c0;
 }
 
-/* iOS 12 doesn't support nested @media and prefers-color-scheme inside selectors */
+.dark {
+  --background: #1c1b2e;
+  --foreground: #fbfbfb;
+  --card: #2a2744;
+  --card-foreground: #fbfbfb;
+  --popover: #2a2744;
+  --popover-foreground: #fbfbfb;
+  --primary: #e8e7ed;
+  --primary-foreground: #2a2744;
+  --secondary: #3a3860;
+  --secondary-foreground: #fbfbfb;
+  --muted: #3a3860;
+  --muted-foreground: #a8a5c0;
+  --accent: #3a3860;
+  --accent-foreground: #fbfbfb;
+  --destructive: #c73a3a;
+  --destructive-foreground: #fbfbfb;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #7a7591;
+  --chart-1: #7a5ac7;
+  --chart-2: #5ab8a0;
+  --chart-3: #d4a84a;
+  --chart-4: #b07ad4;
+  --chart-5: #c75a5a;
+  --sidebar: #2a2744;
+  --sidebar-foreground: #fbfbfb;
+  --sidebar-primary: #7a5ac7;
+  --sidebar-primary-foreground: #fbfbfb;
+  --sidebar-accent: #3a3860;
+  --sidebar-accent-foreground: #fbfbfb;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #7a7591;
+}
+
 @media (max-width: 1024px) {
   :root {
     font-size: 16px;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
 #root {
   max-width: 100%;
   text-align: center;
-  /* 100svh fallback for iOS 12 */
   min-height: 100vh;
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -69,19 +110,4 @@ body {
 
 p {
   margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }
