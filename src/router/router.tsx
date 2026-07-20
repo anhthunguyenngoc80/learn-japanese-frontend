@@ -78,7 +78,7 @@ const PRIVATE_ROUTER: RouteType[] = [
     path: PATHS.practiceQuiz(),
     element: <pages.PracticeQuizPage />,
   },
-    {
+  {
     key: "topic",
     name: "topic",
     path: PATHS.topic(),
@@ -88,14 +88,26 @@ const PRIVATE_ROUTER: RouteType[] = [
     key: "roadmap",
     name: "Roadmap",
     path: PATHS.roadmap(),
-    element: <pages.LearningRoadmap />
+    element: <pages.LearningRoadmap />,
   },
   {
     key: "createRoadmap",
     name: "Create Roadmap",
     path: PATHS.createRoadmap,
-    element: <pages.CreateLearningRoadmap />
-  }
+    element: <pages.CreateLearningRoadmap />,
+  },
+  {
+    key: "wordMatchGame",
+    name: "Word Match Game",
+    path: PATHS.wordMatchGame(),
+    element: <pages.WordMatchGamePage />,
+  },
+  {
+    key: "wordSearchGrid",
+    name: "Word Search Grid",
+    path: PATHS.wordSearchGrid(),
+    element: <pages.WordSearchGridPage />,
+  },
 ];
 
 export { PUBLIC_ROUTER, PRIVATE_HEADER_ROUTER, PRIVATE_ROUTER, AUTH_ROUTER };

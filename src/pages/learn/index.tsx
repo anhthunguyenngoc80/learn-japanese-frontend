@@ -4,3 +4,5 @@ export { PracticePaperPage } from "./PracticePaper";
 export { PracticeQuizPage } from "./PracticeQuiz";
 export { CreateLearningRoadmap } from "./CreateLearningRoadmap";
 export { LearningRoadmap } from "./LearningRoadMap";
+export { WordMatchGamePage } from "./WordMatchGame";
+export { WordSearchGridPage } from "./WordSearchGrid";

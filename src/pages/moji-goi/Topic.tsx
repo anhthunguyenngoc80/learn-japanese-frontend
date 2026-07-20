@@ -1,19 +1,22 @@
 import { useNavigate, useParams } from "react-router-dom";
 import {
   BookOpen,
+  Gamepad2,
   ListChecks,
   Pencil,
   PenLine,
   Share2,
   Sparkles,
   Trash2,
+  Puzzle,
+  Keyboard,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Button, Card } from "../../components";
+import { Button, Card, SelectionModal } from "../../components";
 import { PATHS } from "../../constant";
 import * as models from "../../model";
-import { openModal, useAppDispatch } from "../../store";
+import { closeModal, openModal, useAppDispatch } from "../../store";
 import { WriteTypeModalContent } from "../learn/sections/WriteTypeModalContent";
 import { WordCard } from "./sections/WordCard";
 import * as api from "../../api";
@@ -62,6 +65,47 @@ export const Topic = () => {
     }
   };
 
+  const handleOpenGameModes = () => {
+    if (!topic) return;
+    dispatch(
+      openModal({
+        type: "custom",
+        content: (
+          <SelectionModal
+            title="Chọn chế độ chơi"
+            description="Chọn một chế độ chơi ghép chữ phù hợp với bạn"
+            options={[
+              {
+                icon: Keyboard,
+                label: "Điền từ vào chỗ trống",
+                subtitle: "Chọn các ký tự hiragana và sắp xếp thành từ đúng",
+                onClick: () => {
+                  dispatch(closeModal());
+                  navigate(PATHS.wordMatchGame(topic.topic_id));
+                },
+                iconBg: "from-emerald-100 to-emerald-200",
+                iconColor: "text-emerald-600",
+              },
+              {
+                icon: Puzzle,
+                label: "Bảng nối chữ",
+                subtitle: "Tìm các từ trong bảng chữ cái hiragana",
+                onClick: () => {
+                  dispatch(closeModal());
+                  navigate(PATHS.wordSearchGrid(topic.topic_id));
+                },
+                iconBg: "from-violet-100 to-violet-200",
+                iconColor: "text-violet-600",
+              },
+            ]}
+            onCancel={() => dispatch(closeModal())}
+            cancelLabel="Huỷ"
+          />
+        ),
+      }),
+    );
+  };
+
   const actionCards = [
     {
       color: "rose" as const,
@@ -98,6 +142,13 @@ export const Topic = () => {
       title: "Luyện viết",
       subtitle: "Luyện viết kanji",
     },
+    {
+      color: "emerald" as const,
+      onclick: handleOpenGameModes,
+      icon: Gamepad2,
+      title: "Game ghép chữ",
+      subtitle: "Ghép chữ hiragana",
+    },
   ];
 
   return (
@@ -121,8 +172,8 @@ export const Topic = () => {
               icon: Sparkles,
             }}
             menuItems={[
-              { icon: Pencil, label: "Chỉnh sửa", onClick: () => { } },
-              { icon: Share2, label: "Chia sẻ", onClick: () => { } },
+              { icon: Pencil, label: "Chỉnh sửa", onClick: () => {} },
+              { icon: Share2, label: "Chia sẻ", onClick: () => {} },
               {
                 icon: Trash2,
                 label: "Xoá",
@@ -151,9 +202,10 @@ export const Topic = () => {
       isEmptyState={topic?.words.length === 0}
     >
       {/* Action cards */}
-      <div className="w-4xl h-50 mx-auto grid grid-cols-3 gap-10 mb-8">
+      <div className="grid grid-cols-4 gap-10 mb-8">
         {actionCards.map((card) => (
           <Button
+            key={card.title}
             kind="outline"
             size="lg"
             color={card.color}
@@ -175,14 +227,11 @@ export const Topic = () => {
       <div className="flex flex-wrap justify-between gap-6 gap-y-6">
         {topic === null
           ? Array.from({ length: 4 }).map((_, index) => (
-            <WordCard key={index} loading />
-          ))
+              <WordCard key={index} loading />
+            ))
           : topic.words.map((word) => (
-            <WordCard
-              key={word.word_id}
-              word={word}
-            />
-          ))}
+              <WordCard key={word.word_id} word={word} />
+            ))}
       </div>
     </CollectionLayout>
   );

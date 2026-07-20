@@ -15,11 +15,12 @@ export const PATHS = {
     `/practice/paper/${topicId ?? ":topicId"}`,
   practiceWrite: (topicId?: string) =>
     `/practice/write/${topicId ?? ":topicId"}`,
-  topic: (topicId?: string) =>
-    `/topics/${topicId ?? ":topicId"}`,
-  practiceQuiz: (topicId?: string) =>
-    `/practice/quiz/${topicId ?? ":topicId"}`,
-  roadmap: (roadmapId?: string) =>
-    `/roadmap/${roadmapId ?? ":roadmapId"}`,
+  topic: (topicId?: string) => `/topics/${topicId ?? ":topicId"}`,
+  practiceQuiz: (topicId?: string) => `/practice/quiz/${topicId ?? ":topicId"}`,
+  wordMatchGame: (topicId?: string) =>
+    `/game/word-match/${topicId ?? ":topicId"}`,
+  wordSearchGrid: (topicId?: string) =>
+    `/game/word-search/${topicId ?? ":topicId"}`,
+  roadmap: (roadmapId?: string) => `/roadmap/${roadmapId ?? ":roadmapId"}`,
   createRoadmap: "/roadmap/create",
 };
