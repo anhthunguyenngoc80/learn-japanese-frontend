@@ -31,7 +31,6 @@ export const VocabFirstMode = ({
 }) => {
   const [showMappingConfig, setShowMappingConfig] = useState(false);
   const [expandedSteps, setExpandedSteps] = useState<(1 | 2 | 3)[]>([1]);
-  const [newTopicName, setNewTopicName] = useState("");
   const [rangeFrom, setRangeFrom] = useState<Record<number, string>>({});
   const [rangeTo, setRangeTo] = useState<Record<number, string>>({});
   const [multiTopicInput, setMultiTopicInput] = useState("");
@@ -45,9 +44,7 @@ export const VocabFirstMode = ({
 
   const handleStepToggle = (step: 1 | 2 | 3) => {
     setExpandedSteps((prev) =>
-      prev.includes(step)
-        ? prev.filter((s) => s !== step)
-        : [...prev, step],
+      prev.includes(step) ? prev.filter((s) => s !== step) : [...prev, step],
     );
   };
 
