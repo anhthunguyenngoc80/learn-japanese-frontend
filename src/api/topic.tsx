@@ -41,3 +41,11 @@ export const getPracticeWords = async (
   const response = await api.get(`/review/practice/${topicId}`);
   return response.data;
 };
+
+export const createTopic = async (
+  collectionId: string,
+  data: topicI.CreateTopicRequest,
+): Promise<topicI.CreateTopicResponse> => {
+  const response = await api.post(`/collections/${collectionId}/topics`, data);
+  return response.data;
+};

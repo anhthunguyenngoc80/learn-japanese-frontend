@@ -12,5 +12,6 @@ export {
   deleteTopic,
   getFlashcardReview,
   getPracticeWords,
+  createTopic,
 } from "./topic";
-export { updateWordMastery } from "./word";
+export { updateWordMastery, updateWords } from "./word";

@@ -57,7 +57,6 @@ export interface EntityListPageProps {
 /* ========================================================================
  * SUB-COMPONENTS
  * ===================================================================== */
-
 /** Header dùng chung - tự chọn render kiểu "simple" hay "card" */
 const PageHeader: React.FC<{ header: HeaderConfig }> = ({ header }) => {
   if (header.type === "card") {
@@ -71,7 +70,7 @@ const PageHeader: React.FC<{ header: HeaderConfig }> = ({ header }) => {
   return (
     <div className="flex flex-col items-center gap-3 mb-10">
       <div
-        className={`w-14 h-14 rounded-2xl bg-gradient-to-br from-${color}-400 to-${color}-600 grid place-items-center shadow-lg shadow-${color}-200`}
+        className={`w-14 h-14 rounded-2xl bg-gradient-to-br from-${color}-400 to-${color}-600 shadow-${color}-200 grid place-items-center shadow-lg`}
       >
         <Icon className="w-7 h-7 text-white" />
       </div>
@@ -116,12 +115,14 @@ const EmptyState: React.FC<{ emptyState: EmptyStateConfig }> = ({
 }) => {
   const Icon = emptyState.icon;
   const color = emptyState.color ?? "rose";
+  const stateColors = `bg-${color}-50 border-${color}-200 text-${color}-300`;
+  const [stateBg, stateBorder, stateText] = stateColors.split(" ");
   return (
     <div className="flex flex-col items-center gap-6">
       <div
-        className={`w-24 h-24 rounded-full bg-${color}-50 border-2 border-dashed border-${color}-200 grid place-items-center`}
+        className={`w-24 h-24 rounded-full ${stateBg} border-2 border-dashed ${stateBorder} grid place-items-center`}
       >
-        <Icon className={`w-10 h-10 text-${color}-300`} />
+        <Icon className={`w-10 h-10 ${stateText}`} />
       </div>
       <p className="text-sm text-gray-400 text-center max-w-xs">
         {emptyState.message}
@@ -131,7 +132,7 @@ const EmptyState: React.FC<{ emptyState: EmptyStateConfig }> = ({
         icon={undefined}
         iconPosition="left"
         onClick={emptyState.onButtonClick}
-        className={`bg-gradient-to-r from-${color}-500 to-${color}-600 hover:from-${color}-600 hover:to-${color}-700`}
+        className={`bg-gradient-to-r from-${color}-500 to-${color}-600 hover:from-${color}-600 hover:to-${color}-700 text-white`}
       >
         {emptyState.buttonText}
       </Button>

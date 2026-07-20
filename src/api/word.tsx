@@ -7,3 +7,11 @@ export const updateWordMastery = async (
   const response = await api.put("/review/update-mastery", data);
   return response.data;
 };
+
+export const updateWords = async (
+  topicId: string,
+  data: wordI.UpdateWordsRequest,
+): Promise<wordI.UpdateWordsResponse> => {
+  const response = await api.post(`/words/${topicId}/bulk`, data);
+  return response.data;
+};

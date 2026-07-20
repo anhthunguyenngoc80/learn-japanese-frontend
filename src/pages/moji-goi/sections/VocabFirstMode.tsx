@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Settings2, ChevronDown } from "lucide-react";
+import { Plus, Settings2, ChevronDown, X } from "lucide-react";
 import { Button, IconButton } from "../../../components";
 import { WordEntryPanel, StepHeader, TopicCard } from "../sections";
 import type { ModeContentProps } from "../../../model";
@@ -30,20 +30,25 @@ export const VocabFirstMode = ({
   topicIndex?: number;
 }) => {
   const [showMappingConfig, setShowMappingConfig] = useState(false);
-  const [expandedStep, setExpandedStep] = useState<1 | 2 | 3>(1);
+  const [expandedSteps, setExpandedSteps] = useState<(1 | 2 | 3)[]>([1]);
   const [newTopicName, setNewTopicName] = useState("");
   const [rangeFrom, setRangeFrom] = useState<Record<number, string>>({});
   const [rangeTo, setRangeTo] = useState<Record<number, string>>({});
+  const [multiTopicInput, setMultiTopicInput] = useState("");
 
-  // Auto-advance from step 1 to step 2 when words are entered
+  // Auto-open step 2 when words are entered
   useEffect(() => {
-    if (words.length > 0 && expandedStep === 1) {
-      setExpandedStep(2);
+    if (words.length > 0 && !expandedSteps.includes(2)) {
+      setExpandedSteps((prev) => [...prev, 2]);
     }
   }, [words.length]);
 
   const handleStepToggle = (step: 1 | 2 | 3) => {
-    setExpandedStep(step);
+    setExpandedSteps((prev) =>
+      prev.includes(step)
+        ? prev.filter((s) => s !== step)
+        : [...prev, step],
+    );
   };
 
   const handleMappingConfigClose = () => {
@@ -91,39 +96,54 @@ export const VocabFirstMode = ({
     content: React.ReactNode,
     rightAction?: React.ReactNode,
   ) => {
-    const isExpanded = expandedStep === step;
+    const isExpanded = expandedSteps.includes(step);
 
-    return (
-      <div
-        className={`rounded-2xl border p-4 flex flex-col transition-all duration-300 ${
-          isExpanded
-            ? "border-amber-200 bg-amber-50/30 flex-1 lg:h-[600px]"
-            : "border-gray-200 bg-gray-50 w-20 shrink-0 lg:h-[600px] cursor-pointer hover:bg-gray-100"
-        }`}
-        onClick={() => !isExpanded && handleStepToggle(step)}
-      >
-        <StepHeader
-          step={step}
-          title={title}
-          hint={isExpanded ? hint : undefined}
-          done={done}
-          rightAction={isExpanded ? rightAction : undefined}
-          className={isExpanded ? "items-start" : "flex-col items-center"}
-        />
-        {isExpanded && (
-          <div className="overflow-y-auto pr-1 grow">{content}</div>
-        )}
-        {!isExpanded && (
-          <div className="flex items-center justify-center mt-1">
+    if (!isExpanded) {
+      return (
+        <div
+          className="rounded-2xl border border-gray-200 bg-gray-50 w-20 shrink-0 lg:h-[600px] cursor-pointer hover:bg-gray-100 flex flex-col items-center justify-center p-2 transition-all duration-300"
+          onClick={() => handleStepToggle(step)}
+        >
+          <span className="text-xs font-medium text-gray-600 text-center leading-tight">
+            {title}
+          </span>
+          <div className="flex items-center justify-center mt-2">
             <ChevronDown size={14} className="text-gray-400" />
           </div>
-        )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="rounded-2xl border border-amber-200 bg-amber-50/30 flex-1 lg:h-[600px] flex flex-col transition-all duration-300">
+        <div className="flex items-center justify-between">
+          <StepHeader
+            step={step}
+            title={title}
+            hint={hint}
+            done={done}
+            className="items-start"
+          />
+          <div className="flex items-center gap-1">
+            {rightAction}
+            <IconButton
+              aria-label={`Đóng bước ${step}`}
+              icon={X}
+              size="sm"
+              kind="ghost"
+              color="slate"
+              onClick={() => handleStepToggle(step)}
+              className="!p-1"
+            />
+          </div>
+        </div>
+        <div className="overflow-y-auto pr-1 grow">{content}</div>
       </div>
     );
   };
 
   return (
-    <div className="flex gap-4 mb-6 items-start">
+    <div className="flex flex-wrap gap-4 mb-6 items-start">
       {renderStep(
         1,
         "Nhập từ vựng",
@@ -191,33 +211,69 @@ export const VocabFirstMode = ({
         "Tạo chủ đề, gán theo khoảng số thứ tự, hoặc chỉ định trực tiếp cho từng từ.",
         false,
         <div className="flex flex-col gap-4">
-          <div className="flex gap-2">
-            <input
-              placeholder="Tên chủ đề mới"
-              value={newTopicName}
-              onChange={(e) => setNewTopicName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && newTopicName.trim() && onAddTopic) {
-                  onAddTopic(newTopicName.trim());
-                  setNewTopicName("");
-                }
-              }}
-              className="flex-1 px-3 py-2 rounded-xl border border-amber-200 bg-white text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition"
+          <div className="flex flex-col gap-2">
+            <textarea
+              placeholder="Nhập nhiều chủ đề, mỗi chủ đề trên 1 dòng. Ví dụ:&#10;Bài 1 - Chào hỏi | 1-50&#10;Bài 2 - Tự giới thiệu | 51-80&#10;Bài 3 - Gia đình"
+              value={multiTopicInput}
+              onChange={(e) => setMultiTopicInput(e.target.value)}
+              rows={4}
+              className="w-full px-4 py-3 rounded-xl border border-amber-200 bg-white text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition resize-y"
             />
-            <IconButton
-              aria-label="Thêm chủ đề"
-              icon={Plus}
-              size="md"
-              spacing="md"
-              kind="solid"
-              color="amber"
-              onClick={() => {
-                if (newTopicName.trim() && onAddTopic) {
-                  onAddTopic(newTopicName.trim());
-                  setNewTopicName("");
-                }
-              }}
-            />
+            <div className="flex gap-2">
+              <Button
+                kind="solid"
+                color="amber"
+                size="sm"
+                spacing="md"
+                radius="full"
+                onClick={() => {
+                  const lines = multiTopicInput
+                    .split("\n")
+                    .map((l) => l.trim())
+                    .filter((l) => l.length > 0);
+
+                  if (lines.length > 0 && onAddTopic) {
+                    let nextTopicIndex = topics.length; // vị trí topic tiếp theo sẽ được thêm vào
+
+                    lines.forEach((line) => {
+                      // Split by "|" để lấy tên chủ đề và khoảng (tuỳ chọn)
+                      const parts = line.split("|").map((p) => p.trim());
+                      const topicName = parts[0];
+
+                      if (!topicName) return;
+
+                      const topicIndex = nextTopicIndex;
+                      nextTopicIndex += 1; // chỉ tăng khi thực sự thêm topic
+
+                      // Thêm topic trước
+                      onAddTopic(topicName);
+
+                      // Nếu có khoảng, gán từ vựng theo khoảng đó
+                      if (parts.length > 1 && parts[1] && onUpdateTopic) {
+                        const rangeParts = parts[1].split("-");
+                        const from = parseInt(rangeParts[0], 10);
+                        const to = parseInt(rangeParts[1], 10);
+                        if (!isNaN(from) && !isNaN(to)) {
+                          const indices: number[] = [];
+                          for (let i = from; i <= to; i++) {
+                            if (i >= 1 && i <= words.length) {
+                              indices.push(i - 1); // chuyển sang 0-based
+                            }
+                          }
+                          if (indices.length > 0) {
+                            onUpdateTopic(topicIndex, indices);
+                          }
+                        }
+                      }
+                    });
+                    setMultiTopicInput("");
+                  }
+                }}
+              >
+                <Plus size={16} />
+                Thêm tất cả
+              </Button>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">

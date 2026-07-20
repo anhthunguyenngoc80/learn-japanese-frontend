@@ -7,6 +7,7 @@ export interface GetCollectionsResponse {
 
 export interface CreateCollectionRequest {
   name: string;
+  visibility: "public" | "private";
   topics: {
     name: string;
     words: {

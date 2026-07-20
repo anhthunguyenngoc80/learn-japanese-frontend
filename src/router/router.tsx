@@ -89,6 +89,12 @@ const PRIVATE_ROUTER: RouteType[] = [
     name: "Roadmap",
     path: PATHS.roadmap(),
     element: <pages.LearningRoadmap />
+  },
+  {
+    key: "createRoadmap",
+    name: "Create Roadmap",
+    path: PATHS.createRoadmap,
+    element: <pages.CreateLearningRoadmap />
   }
 ];
 

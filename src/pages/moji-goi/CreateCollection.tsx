@@ -18,7 +18,7 @@ import {
 } from "./sections";
 import type * as models from "../../model";
 import { parseExcel, parseCSV, mergeWordsAndTopics } from "../../utils";
-import { createCollection } from "../../api";
+import * as api from "../../api";
 import { PATHS } from "../../constant";
 
 const MODE_CARDS: models.ModeCard[] = [
@@ -124,54 +124,82 @@ export const CreateCollection = () => {
   };
 
   const handleSave = async () => {
-    if (!collectionName.trim()) {
-      alert("Vui lòng nhập tên bộ sưu tập");
+  if (!collectionName.trim()) {
+    alert("Vui lòng nhập tên bộ sưu tập");
+    return;
+  }
+
+  setIsSaving(true);
+  try {
+    // 1. Build danh sách topic đầy đủ: topics hiện có + từ chưa phân loại (nếu có)
+    const allTopics = [...topics];
+    if (words.length > 0) {
+      allTopics.push({ name: "Chưa phân loại", words: [...words] });
+    }
+
+    if (allTopics.length === 0) {
+      alert("Chưa có dữ liệu từ vựng để lưu");
+      setIsSaving(false);
       return;
     }
 
-    setIsSaving(true);
-    try {
-      // Build topics array: existing topics + unclassified words as one topic
-      const allTopics = [...topics];
+    // 2. Tạo collection + topics RỖNG (chỉ gửi tên topic, không gửi words)
+    const { data: createdCollection } = await api.createCollection({
+      name: collectionName.trim(),
+      visibility: "public",
+      topics: allTopics.map((t) => ({ name: t.name, words: [] })),
+    });
 
-      // Add unclassified words as a topic if there are any
-      if (words.length > 0) {
-        allTopics.push({
-          name: "Chưa phân loại",
-          words: [...words],
-        });
+    // 3. Lấy danh sách topics từ collection vừa tạo
+    const { data: fetchedTopics } = await api.getTopics(createdCollection.collection_id);
+
+    // 4. Map tên topic -> topic_id
+    const topicIdByName = new Map(
+      fetchedTopics.map((t) => [t.name, t.topic_id]),
+    );
+
+    // 4. Chia words của từng topic thành batch nhỏ
+    const BATCH_SIZE = 50;
+    const batchJobs: { topicId: string; words: models.CreateWord[] }[] = [];
+
+    allTopics.forEach((topic) => {
+      const topicId = topicIdByName.get(topic.name);
+      if (!topicId) {
+        console.warn(`Không tìm thấy topic_id cho topic "${topic.name}"`);
+        return;
       }
 
-      const payload = {
-        name: collectionName.trim(),
-        topics: allTopics.map((t) => ({
-          name: t.name,
-          words: t.words.map((w) => ({
-            text: w.text,
-            sv_word: w.sv_word,
-            reading: w.reading,
-            meaning: w.meaning,
-            partOfSpeech: w.partOfSpeech,
-            examples: w.examples.map((e) => ({
-              content: e.content,
-              meaning: e.meaning,
-            })),
+      for (let i = 0; i < topic.words.length; i += BATCH_SIZE) {
+        const batchWords = topic.words.slice(i, i + BATCH_SIZE).map((w) => ({
+          text: w.text,
+          sv_word: w.sv_word,
+          reading: w.reading,
+          meaning: w.meaning,
+          partOfSpeech: w.partOfSpeech,
+          examples: w.examples.map((e) => ({
+            content: e.content,
+            meaning: e.meaning,
           })),
-        })),
-      };
+        }));
+        batchJobs.push({ topicId, words: batchWords });
+      }
+    });
 
-      const response = await createCollection(payload);
-      console.log("Collection created:", response);
-      alert("Lưu bộ từ vựng thành công!");
-      navigate(PATHS.collections);
-    } catch (err) {
-      console.error("Error saving collection:", err);
-      alert("Có lỗi xảy ra khi lưu bộ từ vựng. Vui lòng thử lại.");
-    } finally {
-      setIsSaving(false);
+    // 5. Gửi TUẦN TỰ từng batch vào đúng topic
+    for (let i = 0; i < batchJobs.length; i++) {
+      const { topicId, words: batchWords } = batchJobs[i];
+      await api.updateWords(topicId, { words: batchWords });
     }
-  };
 
+    alert("Lưu bộ từ vựng thành công!");
+    navigate(PATHS.collections);
+  } catch (err) {
+    console.error("Error saving collection:", err);
+    alert("Có lỗi xảy ra khi lưu bộ từ vựng. Vui lòng thử lại.");
+  } finally {
+    setIsSaving(false);
+  }
+};
   useEffect(() => {
     console.log("Current words:", words);
   }, [words]);
@@ -223,7 +251,7 @@ export const CreateCollection = () => {
         </div>
       )}
 
-      {/* ============================ SCREEN 1 — vocab-first ============================ */}
+      {/* ============================ SCREEN 1 — selected mode ============================ */}
       {screen === 1 &&
         MODE_CARDS.map((card) => {
           return (

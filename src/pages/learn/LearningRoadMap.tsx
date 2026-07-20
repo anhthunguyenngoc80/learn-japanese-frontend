@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "../../components";
 import {
   colorStyles,
@@ -13,9 +14,10 @@ import {
   type ComponentSize,
   type ComponentSpacing,
   type ComponentBorderWidth,
+  PATHS,
 } from "../../constant";
 import { twMerge } from "tailwind-merge";
-import { Check, LockKeyhole } from "lucide-react";
+import { Check, LockKeyhole, Plus } from "lucide-react";
 
 /* =========================================================
  * LESSON TYPE
@@ -435,6 +437,7 @@ export function LearningRoadmap({
   isHover = true,
   className,
 }: LearningRoadmapProps) {
+  const navigate = useNavigate();
   const positions = useMemo(() => {
     const amp = COLUMN_AMP[size];
     const centerX = amp + 100;
@@ -501,6 +504,16 @@ export function LearningRoadmap({
         kind={kind}
         color={color}
       />
+
+      <div className="mt-5 flex justify-end">
+        <button
+          onClick={() => navigate(PATHS.createRoadmap)}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition"
+        >
+          <Plus size={18} />
+          Tạo lộ trình
+        </button>
+      </div>
 
       <div
         className={twMerge(

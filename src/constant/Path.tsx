@@ -21,4 +21,5 @@ export const PATHS = {
     `/practice/quiz/${topicId ?? ":topicId"}`,
   roadmap: (roadmapId?: string) =>
     `/roadmap/${roadmapId ?? ":roadmapId"}`,
+  createRoadmap: "/roadmap/create",
 };

@@ -113,8 +113,7 @@ export const CollectionList = () => {
   };
 
   const handleCreateRoadmap = () => {
-    // TODO: navigate to create roadmap page when available
-    navigate(PATHS.createCollection);
+    navigate(PATHS.createRoadmap);
   };
 
   return (
@@ -271,6 +270,7 @@ export const CollectionList = () => {
                 },
               ]}
               loading={collection === null}
+              borderWidth="sm"
             />
           ))}
         </div>

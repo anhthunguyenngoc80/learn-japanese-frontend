@@ -6,6 +6,7 @@ export default {
     extend: {
       fontFamily: {
         sans: [
+          '"Nunito"',
           '"Zen Maru Gothic"',
           "system-ui",
           '"Segoe UI"',
@@ -13,6 +14,7 @@ export default {
           "sans-serif",
         ],
         heading: [
+          '"Nunito"',
           '"Zen Maru Gothic"',
           "system-ui",
           '"Segoe UI"',
@@ -20,6 +22,18 @@ export default {
           "sans-serif",
         ],
         mono: ["ui-monospace", "Consolas", "monospace"],
+      },
+      width: {
+        70: "17.5rem",
+        23: "5.75rem",
+        26: "6.5rem",
+        "4xl": "56rem",
+      },
+      height: {
+        50: "12.5rem",
+      },
+      borderWidth: {
+        3: "3px",
       },
       borderRadius: {
         sm: "calc(var(--radius) - 4px)",

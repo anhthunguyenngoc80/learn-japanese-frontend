@@ -115,6 +115,7 @@ export const Collection = () => {
               onButtonClick: () => navigate(PATHS.topic(topic.topic_id))
             }}
             loading={topic === null}
+            borderWidth="sm"
           />
         ))
       }

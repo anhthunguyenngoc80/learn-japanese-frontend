@@ -30,3 +30,12 @@ export interface GetPracticeWordsResponse {
   data: models.Topic;
   message: string;
 }
+
+export interface CreateTopicRequest {
+  name: string;
+}
+
+export interface CreateTopicResponse {
+  data: models.Topic;
+  message: string;
+}

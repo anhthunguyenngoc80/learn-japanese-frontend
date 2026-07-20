@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Plus, X, Check } from "lucide-react";
-import { Button, IconButton } from "../../../components";
+import { X, Check, ListPlus } from "lucide-react";
+import { Button } from "../../../components";
 import { WordEntryPanel } from "../sections";
 import type { ModeContentProps } from "../../../model";
 import { WordCard } from "./WordCard";
 import type { AccentColor } from "../../../constant";
 import { accentFromTopic, accentMap } from "../../../constant/styleConstant";
 
-export const TopicFirstMode = ({ words, topics, onFileUpload, isUploading, onAddTopic, onDeleteTopic, accent,
+export const TopicFirstMode = ({ words, topics, onFileUpload, isUploading, onAddTopic, onDeleteTopic, onUpdateTopic, accent,
   topic,
   topicIndex
 }: ModeContentProps & {
@@ -15,7 +15,7 @@ export const TopicFirstMode = ({ words, topics, onFileUpload, isUploading, onAdd
   topic?: string | number;
   topicIndex?: number;
 }) => {
-  const [newTopicName, setNewTopicName] = useState("");
+  const [multiTopicInput, setMultiTopicInput] = useState("");
 
   const resolvedAccent: AccentColor =
     accent ?? (topic != null ? accentFromTopic(topic) : "amber");
@@ -29,30 +29,68 @@ export const TopicFirstMode = ({ words, topics, onFileUpload, isUploading, onAdd
         <h3 className="font-semibold text-gray-800 mb-3">
           Danh sách chủ đề
         </h3>
-        <div className="flex gap-2 mb-3">
-          <input
-            placeholder="Ví dụ: Bài 1 - Chào hỏi"
-            value={newTopicName}
-            onChange={(e) => setNewTopicName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && newTopicName.trim() && onAddTopic) {
-                onAddTopic(newTopicName.trim());
-                setNewTopicName("");
-              }
-            }}
-            className="flex-1 px-4 py-2.5 rounded-xl border border-amber-200 bg-white text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition"
+        <div className="flex flex-col gap-2 mb-3">
+          <textarea
+            placeholder="Nhập nhiều chủ đề, mỗi chủ đề trên 1 dòng. Ví dụ:&#10;Bài 1 - Chào hỏi | 1-50&#10;Bài 2 - Tự giới thiệu | 51-80&#10;Bài 3 - Gia đình"
+            value={multiTopicInput}
+            onChange={(e) => setMultiTopicInput(e.target.value)}
+            rows={4}
+            className="w-full px-4 py-3 rounded-xl border border-amber-200 bg-white text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition resize-y"
           />
-          <IconButton 
-            aria-label="Thêm chủ đề" 
-            icon={Plus} 
-            size="sm" 
-            onClick={() => {
-              if (newTopicName.trim() && onAddTopic) {
-                onAddTopic(newTopicName.trim());
-                setNewTopicName("");
-              }
-            }}
-          />
+          <div className="flex gap-2">
+              <Button
+                kind="solid"
+                color="amber"
+                size="sm"
+                spacing="md"
+                radius="full"
+                onClick={() => {
+                  const lines = multiTopicInput
+                    .split("\n")
+                    .map((l) => l.trim())
+                    .filter((l) => l.length > 0);
+                  if (lines.length > 0 && onAddTopic) {
+                    let topicIndex = topics.length;
+                    lines.forEach((line) => {
+                      // Split by "|" to get topic name and optional range
+                      const parts = line.split("|").map((p) => p.trim());
+                      const topicName = parts[0];
+
+                      if (!topicName) return;
+
+                      // Use current counter, then increment
+                      const currentIndex = topicIndex;
+                      topicIndex += 1;
+
+                      // Add topic first
+                      onAddTopic(topicName);
+
+                      // If range is provided, assign words
+                      if (parts.length > 1 && parts[1] && onUpdateTopic) {
+                        const rangeParts = parts[1].split("-");
+                        const from = parseInt(rangeParts[0], 10);
+                        const to = parseInt(rangeParts[1], 10);
+                        if (!isNaN(from) && !isNaN(to)) {
+                          const indices: number[] = [];
+                          for (let i = from; i <= to; i++) {
+                            if (i >= 1 && i <= words.length) {
+                              indices.push(i - 1); // Convert to 0-based
+                            }
+                          }
+                          if (indices.length > 0) {
+                            onUpdateTopic(currentIndex, indices);
+                          }
+                        }
+                      }
+                    });
+                    setMultiTopicInput("");
+                  }
+                }}
+              >
+                <ListPlus size={16} />
+                Thêm tất cả
+              </Button>
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           {topics.map((t, i) => (
