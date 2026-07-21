@@ -15,6 +15,7 @@ import {
   type BankChar,
   type PickedChar,
 } from "../utils/wordMatchGame";
+import { Button } from "./Button";
 
 /* ────────────────────────────────────────────────────────────────── */
 /*  Types                                                             */
@@ -62,7 +63,10 @@ export const WordMatchGameBoard = forwardRef<
 
   /* ── Build a new puzzle from a word ── */
   const nextWord = useCallback(() => {
-    if (remainingWords.length === 0) return;
+    if (remainingWords.length === 0) {
+      setPuzzle(null);
+      return;
+    }
 
     const [next, ...rest] = remainingWords;
     setRemainingWords(rest);
@@ -217,13 +221,28 @@ export const WordMatchGameBoard = forwardRef<
         <div className="flex flex-wrap items-center justify-center gap-3 min-h-24 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/30 p-6">
           {Array.from({ length: targetChars.length }).map((_, i) =>
             puzzle.picked[i] ? (
-              <button
-                key={i}
-                onClick={() => handleUnpick(i)}
-                className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-emerald-500 text-white text-2xl font-bold shadow-md hover:bg-emerald-600 transition-colors cursor-pointer"
-              >
-                {puzzle.picked[i].char}
-              </button>
+              // <button
+              //   key={i}
+              //   onClick={() => handleUnpick(i)}
+              //   className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-emerald-500 text-white text-2xl font-bold shadow-md hover:bg-emerald-600 transition-colors cursor-pointer"
+              // >
+              //   {puzzle.picked[i].char}
+              // </button>
+              <Button
+              key={i}
+              kind="soft"
+              color={isUsed || isFull ? "slate" : "rose"}
+              size="2xl"
+              spacing="xs"
+              onClick={() => handleUnpick(i)}
+              disabled={isUsed || isFull}
+              className={`border-b-4 ${isUsed || isFull
+                ? "cursor-not-allowed"
+                : "border-rose-300"
+                }`}
+            >
+              {puzzle.picked[i].char}
+            </Button>
             ) : (
               <span
                 key={i}
@@ -246,13 +265,29 @@ export const WordMatchGameBoard = forwardRef<
                 {item.char}
               </span>
             ) : (
-              <button
-                key={`${item.char}-${i}`}
-                onClick={() => handlePick(i)}
-                className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-emerald-100 text-emerald-700 text-lg font-semibold hover:bg-emerald-200 hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-sm"
-              >
-                {item.char}
-              </button>
+              // <button
+              //   key={`${item.char}-${i}`}
+              //   onClick={() => handlePick(i)}
+              //   className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-emerald-100 text-emerald-700 text-lg font-semibold hover:bg-emerald-200 hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-sm"
+              // >
+              //   {item.char}
+              // </button>
+
+              <Button
+              key={`${item.char}-${i}`}
+              kind="soft"
+              color={isUsed || isFull ? "slate" : "rose"}
+              size="2xl"
+              spacing="xs"
+              onClick={() => handlePick(i)}
+              disabled={isUsed || isFull}
+              className={`border-b-4 ${isUsed || isFull
+                ? "cursor-not-allowed"
+                : "border-rose-300"
+                }`}
+            >
+              {item.char}
+            </Button>
             ),
           )}
         </div>
