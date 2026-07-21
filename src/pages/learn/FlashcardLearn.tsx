@@ -453,7 +453,7 @@ export const FlashcardLearnPage = () => {
       // ═══════════════════════════════════════════════
       persistSession(updated);
       setSession(updated);
-      setViewIndex(0);
+      setViewIndex(updated.historyWordIds.length);
     },
     [session],
   );

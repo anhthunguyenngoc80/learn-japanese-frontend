@@ -10,7 +10,12 @@ export {
   type FlashcardSettings,
 } from "./Flashcard";
 
-export { MultichoiceQuiz } from "./MultichoiceQuiz"
+export { MultichoiceQuiz } from "./MultichoiceQuiz";
+export { PageOneQuiz } from "./PageOneQuiz";
+export { PageTwoQuiz } from "./PageTwoQuiz";
+export { PageThreeQuiz } from "./PageThreeQuiz";
+export { FeedbackBar } from "./FeedbackBar";
+export { WordMatchGameBoard } from "./WordMatchGameBoard";
 export {
   SelectionModal,
   type SelectionOption,

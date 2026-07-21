@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, Sparkles, RotateCcw, Shuffle } from "lucide-react";
 import { getPracticeWords } from "../../api";
 import { Button } from "../../components/Button";
-import { PATHS } from "../../constant";
+import { ALL_HIRAGANA, PATHS } from "../../constant";
 import type { Word } from "../../model";
 
 /* ────────────────────────────────────────────────────────────────── */
@@ -58,79 +58,6 @@ function shuffle<T>(arr: T[]): T[] {
   return copy;
 }
 
-const ALL_HIRAGANA = [
-  "あ",
-  "い",
-  "う",
-  "え",
-  "お",
-  "か",
-  "き",
-  "く",
-  "け",
-  "こ",
-  "さ",
-  "し",
-  "す",
-  "せ",
-  "そ",
-  "た",
-  "ち",
-  "つ",
-  "て",
-  "と",
-  "な",
-  "に",
-  "ぬ",
-  "ね",
-  "の",
-  "は",
-  "ひ",
-  "ふ",
-  "へ",
-  "ほ",
-  "ま",
-  "み",
-  "む",
-  "め",
-  "も",
-  "や",
-  "ゆ",
-  "よ",
-  "ら",
-  "り",
-  "る",
-  "れ",
-  "ろ",
-  "わ",
-  "を",
-  "ん",
-  "が",
-  "ぎ",
-  "ぐ",
-  "げ",
-  "ご",
-  "ざ",
-  "じ",
-  "ず",
-  "ぜ",
-  "ぞ",
-  "だ",
-  "ぢ",
-  "づ",
-  "で",
-  "ど",
-  "ば",
-  "び",
-  "ぶ",
-  "べ",
-  "ぼ",
-  "ぱ",
-  "ぴ",
-  "ぷ",
-  "ぺ",
-  "ぽ",
-];
 
 function randomHiragana(): string {
   return ALL_HIRAGANA[Math.floor(Math.random() * ALL_HIRAGANA.length)];
