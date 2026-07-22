@@ -5,11 +5,11 @@ import {
   ListChecks,
   Pencil,
   PenLine,
-  Share2,
   Sparkles,
   Trash2,
   Puzzle,
   Keyboard,
+  MessageSquareText,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -97,6 +97,17 @@ export const Topic = () => {
                 iconBg: "from-violet-100 to-violet-200",
                 iconColor: "text-violet-600",
               },
+              {
+                icon: MessageSquareText,
+                label: "Ghép câu",
+                subtitle: "Sắp xếp các từ để tạo thành câu hoàn chỉnh từ ví dụ",
+                onClick: () => {
+                  dispatch(closeModal());
+                  navigate(PATHS.sentenceBuild(topic.topic_id));
+                },
+                iconBg: "from-amber-100 to-amber-200",
+                iconColor: "text-amber-600",
+              },
             ]}
             onCancel={() => dispatch(closeModal())}
             cancelLabel="Huỷ"
@@ -172,8 +183,7 @@ export const Topic = () => {
               icon: Sparkles,
             }}
             menuItems={[
-              { icon: Pencil, label: "Chỉnh sửa", onClick: () => {} },
-              { icon: Share2, label: "Chia sẻ", onClick: () => {} },
+              { icon: Pencil, label: "Chỉnh sửa", onClick: () => navigate(PATHS.editTopic(topic?.topic_id)) },
               {
                 icon: Trash2,
                 label: "Xoá",

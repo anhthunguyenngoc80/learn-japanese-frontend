@@ -14,4 +14,4 @@ export {
   getPracticeWords,
   createTopic,
 } from "./topic";
-export { updateWordMastery, updateWords } from "./word";
+export { updateWordMastery, updateWords, replaceWords, deleteWord, addExamples, updateExamples, deleteExample } from "./word";

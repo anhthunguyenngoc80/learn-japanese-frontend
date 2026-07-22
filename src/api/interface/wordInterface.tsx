@@ -29,3 +29,20 @@ export interface UpdateWordsResponse {
   data: models.Word[];
   message: string;
 }
+
+export interface ReplaceWordsRequest {
+  words: {
+    word_id: string;
+    text: string;
+    sv_word?: string;
+    reading?: string;
+    meaning: string;
+    partOfSpeech?: string;
+    examples: { content: string; meaning?: string }[];
+  }[];
+}
+
+export interface ReplaceWordsResponse {
+  data: models.Word[];
+  message: string;
+}

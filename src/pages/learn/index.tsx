@@ -6,3 +6,4 @@ export { CreateLearningRoadmap } from "./CreateLearningRoadmap";
 export { LearningRoadmap } from "./LearningRoadMap";
 export { WordMatchGamePage } from "./WordMatchGame";
 export { WordSearchGridPage } from "./WordSearchGrid";
+export { SentenceBuildGamePage } from "./SentenceBuildGame";

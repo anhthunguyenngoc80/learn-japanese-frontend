@@ -82,6 +82,7 @@ export function PageThreeQuiz({
         words={[questionWord]}
         onComplete={handleComplete}
         onCanCheckChange={handleCanCheckChange}
+        color="rose"
       />
 
       {!checked && (

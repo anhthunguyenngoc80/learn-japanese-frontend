@@ -533,7 +533,7 @@ export const Flashcard = <T,>({
         >
           {/* Front */}
           <div
-            className={`absolute inset-0 rounded-3xl border-2 ${a.border2} bg-gradient-to-br from-white to-rose-50/30 shadow-lg p-8 backface-hidden`}
+            className={`absolute inset-0 rounded-3xl border-2 ${a.border2} bg-rose-50 shadow-lg p-8 backface-hidden`}
             style={{ backfaceVisibility: "hidden" }}
           >
             <div className="h-full flex flex-col items-center justify-center">
@@ -543,7 +543,7 @@ export const Flashcard = <T,>({
 
           {/* Back */}
           <div
-            className="absolute inset-0 rounded-3xl border-2 border-amber-200 bg-gradient-to-br from-amber-50/40 to-white shadow-lg p-8 backface-hidden"
+            className="absolute inset-0 rounded-3xl border-2 border-amber-200 bg-amber-50 shadow-lg p-8 backface-hidden"
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",

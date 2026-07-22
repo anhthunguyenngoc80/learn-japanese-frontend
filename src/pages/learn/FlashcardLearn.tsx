@@ -10,7 +10,7 @@ import {
   type FlashcardSettings,
 } from "../../components";
 import { getFlashcardReview, updateWordMastery } from "../../api";
-import type { Topic, Word } from "../../model";
+import type { Topic, Word, Example } from "../../model";
 import { ChevronLeft, ChevronRight, Pencil, Share2, Sparkles, Play, RotateCcw } from "lucide-react";
 import { PATHS } from "../../constant";
 
@@ -458,6 +458,23 @@ export const FlashcardLearnPage = () => {
     [session],
   );
 
+  const Divider = () => <hr className="border-t-2 border-amber-200 w-3/4 mx-auto my-3" />;
+
+  const ExamplesList = ({ examples }: { examples?: Example[] }) => {
+    if (!examples || examples.length === 0) return null;
+    return (
+      <div className="space-y-2 mt-2 px-4 w-full">
+        <div className="text-xs uppercase tracking-widest text-amber-600/70 font-medium mb-2">Ví dụ</div>
+        {examples.map((ex, i) => (
+          <div key={i} className="text-sm text-gray-600 border-l-2 border-amber-300 pl-3 text-left">
+            <div className="italic">"{ex.content}"</div>
+            {ex.meaning && <div className="text-xs text-gray-400 mt-0.5">{ex.meaning}</div>}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const renderFrontBack = (
     item: Word,
     settingsArg: FlashcardSettings,
@@ -466,49 +483,53 @@ export const FlashcardLearnPage = () => {
     isFlipped: boolean,
     animVersion: number,
   ): { front: ReactNode; back: ReactNode } => {
-    const front =
-      settingsArg.displayOrder === "word-first" ? (
-        <>
-          {renderWordWithKanji(
-            item.text,
-            "text-6xl font-jp font-bold text-gray-800",
-            strokeDuration,
-            charStartIndices,
-            isFlipped,
-            animVersion,
-          )}
-          {item.reading && <div className="text-2xl text-gray-600">{item.reading}</div>}
-        </>
-      ) : (
-        <div className="text-center space-y-4">
-          <div className="text-4xl font-bold text-gray-800">{item.meaning}</div>
-          {item.examples && item.examples.length > 0 && (
-            <div className="text-lg text-gray-600 italic">"{item.examples[0].content}"</div>
-          )}
-        </div>
-      );
+    const wordContent = (
+      <>
+        {renderWordWithKanji(
+          item.text,
+          "text-6xl font-jp font-bold text-gray-800",
+          strokeDuration,
+          charStartIndices,
+          isFlipped,
+          animVersion,
+        )}
+      </>
+    );
 
-    const back =
-      settingsArg.displayOrder === "word-first" ? (
-        <div className="text-center space-y-4">
-          <div className="text-4xl font-bold text-gray-800">{item.meaning}</div>
-          {item.examples && item.examples.length > 0 && (
-            <div className="text-lg text-gray-600 italic">"{item.examples[0].content}"</div>
-          )}
-        </div>
-      ) : (
-        <>
+    const meaningContent = (
+      <div className="text-4xl font-bold text-gray-800">{item.meaning}</div>
+    );
+
+    const detailContent = (
+      <div className="text-center space-y-1 w-full px-4">
+        <div className="text-3xl">{item.reading || "―"}</div>
+        <Divider />
+        <div className="text-3xl font-bold">{item.meaning}</div>
+        <Divider />
+        <ExamplesList examples={item.examples} />
+      </div>
+    );
+
+    const detailContentMeaningFirst = (
+      <div className="text-center space-y-1 w-full px-4">
+        <div>
           {renderWordWithKanji(
             item.text,
-            "text-6xl font-jp font-bold text-gray-800",
+            "text-4xl font-jp font-bold text-gray-800",
             strokeDuration,
             charStartIndices,
             isFlipped,
             animVersion,
           )}
-          {item.reading && <div className="text-2xl text-gray-600">{item.reading}</div>}
-        </>
-      );
+        </div>
+        {item.reading && <div className="text-lg text-gray-500">{item.reading}</div>}
+        <Divider />
+        <ExamplesList examples={item.examples} />
+      </div>
+    );
+
+    const front = settingsArg.displayOrder === "word-first" ? wordContent : meaningContent;
+    const back = settingsArg.displayOrder === "word-first" ? detailContent : detailContentMeaningFirst;
 
     return { front, back };
   };

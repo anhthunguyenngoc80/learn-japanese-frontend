@@ -16,6 +16,7 @@ export { PageTwoQuiz } from "./PageTwoQuiz";
 export { PageThreeQuiz } from "./PageThreeQuiz";
 export { FeedbackBar } from "./FeedbackBar";
 export { WordMatchGameBoard } from "./WordMatchGameBoard";
+export { SentenceBuildBoard } from "./SentenceBuildBoard";
 export {
   SelectionModal,
   type SelectionOption,

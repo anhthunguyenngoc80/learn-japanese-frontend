@@ -16,11 +16,14 @@ export const PATHS = {
   practiceWrite: (topicId?: string) =>
     `/practice/write/${topicId ?? ":topicId"}`,
   topic: (topicId?: string) => `/topics/${topicId ?? ":topicId"}`,
+  editTopic: (topicId?: string) => `/topics/edit/${topicId ?? ":topicId"}`,
   practiceQuiz: (topicId?: string) => `/practice/quiz/${topicId ?? ":topicId"}`,
   wordMatchGame: (topicId?: string) =>
     `/game/word-match/${topicId ?? ":topicId"}`,
   wordSearchGrid: (topicId?: string) =>
     `/game/word-search/${topicId ?? ":topicId"}`,
+  sentenceBuild: (topicId?: string) =>
+    `/game/sentence-build/${topicId ?? ":topicId"}`,
   roadmap: (roadmapId?: string) => `/roadmap/${roadmapId ?? ":roadmapId"}`,
   createRoadmap: "/roadmap/create",
 };

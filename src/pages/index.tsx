@@ -5,6 +5,7 @@ export {
   CollectionList,
   CreateCollection,
   Topic,
+  UpdateTopic
 } from "./moji-goi/";
 export {
   FlashcardLearnPage,
@@ -15,4 +16,5 @@ export {
   CreateLearningRoadmap,
   WordMatchGamePage,
   WordSearchGridPage,
+  SentenceBuildGamePage
 } from "./learn";

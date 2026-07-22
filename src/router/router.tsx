@@ -85,6 +85,12 @@ const PRIVATE_ROUTER: RouteType[] = [
     element: <pages.Topic />,
   },
   {
+    key: "editTopic",
+    name: "Update Topic",
+    path: PATHS.editTopic(),
+    element: <pages.UpdateTopic />,
+  },
+  {
     key: "roadmap",
     name: "Roadmap",
     path: PATHS.roadmap(),
@@ -107,6 +113,12 @@ const PRIVATE_ROUTER: RouteType[] = [
     name: "Word Search Grid",
     path: PATHS.wordSearchGrid(),
     element: <pages.WordSearchGridPage />,
+  },
+  {
+    key: "sentenceBuild",
+    name: "Sentence Build Game",
+    path: PATHS.sentenceBuild(),
+    element: <pages.SentenceBuildGamePage />,
   },
 ];
 

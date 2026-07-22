@@ -6,17 +6,17 @@ import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { PATHS } from "../../constant";
 import {
-  WordMatchGameBoard,
-  type WordMatchGameBoardHandle,
-} from "../../components/WordMatchGameBoard";
-import { extractHiragana, shuffle } from "../../utils/wordMatchGame";
+  SentenceBuildBoard,
+  type SentenceBuildBoardHandle,
+} from "../../components/SentenceBuildBoard";
+import { shuffle } from "../../utils/wordMatchGame";
 import type { Word } from "../../model";
 
 /* ────────────────────────────────────────────────────────────────── */
 /*  Page component                                                    */
 /* ────────────────────────────────────────────────────────────────── */
 
-export const WordMatchGamePage = () => {
+export const SentenceBuildGamePage = () => {
   const { topicId } = useParams();
   const navigate = useNavigate();
 
@@ -37,7 +37,7 @@ export const WordMatchGamePage = () => {
   } | null>(null);
 
   /* ── ref to game board ── */
-  const boardRef = useRef<WordMatchGameBoardHandle>(null);
+  const boardRef = useRef<SentenceBuildBoardHandle>(null);
   const [canCheck, setCanCheck] = useState(false);
 
   /* ── Load topic data ── */
@@ -55,8 +55,9 @@ export const WordMatchGamePage = () => {
           const words = (data.words || []) as Word[];
           setTopic(data);
 
+          // Only keep words that have at least one example
           const playable = words.filter(
-            (w) => extractHiragana(w.reading || w.text || "").length > 0,
+            (w) => w.examples && w.examples.length > 0,
           );
 
           if (playable.length === 0) {
@@ -148,7 +149,7 @@ export const WordMatchGamePage = () => {
           <p className="text-gray-500">
             {words.length === 0
               ? "Chưa có từ vựng để chơi."
-              : "Không có từ nào có thể chơi ghép chữ (cần có hiragana trong cách đọc)."}
+              : "Không có từ nào có ví dụ để chơi ghép câu."}
           </p>
           <Button
             kind="text"
@@ -225,7 +226,7 @@ export const WordMatchGamePage = () => {
                 <strong className="text-emerald-600">
                   {gameResult.correctCount}
                 </strong>{" "}
-                / {gameResult.totalAttempted} từ.
+                / {gameResult.totalAttempted} câu.
               </p>
               <p className="text-sm text-gray-400 mb-6">
                 Tỉ lệ đúng: {progressPercent}%
@@ -276,13 +277,13 @@ export const WordMatchGamePage = () => {
           item={{
             id: "" + topic?.topic_id,
             title: "" + topic?.name,
-            subtitle: "Hãy ghép các chữ để tạo thành từ đúng",
+            subtitle: "Hãy sắp xếp các từ để tạo thành câu đúng",
             icon: Sparkles,
           }}
           loading={topic === null}
         />
 
-        <WordMatchGameBoard
+        <SentenceBuildBoard
           ref={boardRef}
           words={allPlayable}
           onComplete={handleGameComplete}

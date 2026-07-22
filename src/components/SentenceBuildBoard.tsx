@@ -7,14 +7,14 @@ import {
   useRef,
   useState,
 } from "react";
-import type { Word } from "../model";
+import type { Word, Example } from "../model";
+import { shuffle } from "../utils/wordMatchGame";
 import {
-  buildBank,
-  checkAnswer,
-  shuffle,
-  type BankChar,
-  type PickedChar,
-} from "../utils/wordMatchGame";
+  buildSentenceBank,
+  checkSentenceAnswer,
+  type SentenceWord,
+  type PickedWord,
+} from "../utils/sentenceBuildGame";
 import { Button } from "./Button";
 import type { AccentColor } from "../constant";
 
@@ -25,12 +25,14 @@ import type { AccentColor } from "../constant";
 /** Active puzzle */
 interface PuzzleState {
   currentWord: Word;
+  currentExample: Example;
   target: string;
-  bank: BankChar[];
-  picked: PickedChar[];
+  targetWords: string[];
+  bank: SentenceWord[];
+  picked: PickedWord[];
 }
 
-export interface WordMatchGameBoardProps {
+export interface SentenceBuildBoardProps {
   words: Word[];
   onComplete: (correctCount: number, totalAttempted: number) => void;
   /** Called whenever the "checkable" state changes */
@@ -38,22 +40,28 @@ export interface WordMatchGameBoardProps {
   color: AccentColor;
 }
 
-export interface WordMatchGameBoardHandle {
+export interface SentenceBuildBoardHandle {
   /** Check the current puzzle answer */
   check: () => void;
 }
 
 /* ────────────────────────────────────────────────────────────────── */
-/*  WordMatchGameBoard component                                      */
+/*  SentenceBuildBoard component                                      */
 /* ────────────────────────────────────────────────────────────────── */
 
-export const WordMatchGameBoard = forwardRef<
-  WordMatchGameBoardHandle,
-  WordMatchGameBoardProps
+export const SentenceBuildBoard = forwardRef<
+  SentenceBuildBoardHandle,
+  SentenceBuildBoardProps
 >(({ words, onComplete, onCanCheckChange, color }, ref) => {
-  /* ── words we haven't answered yet ── */
+  /* ── Filter words that have examples ── */
+  const wordsWithExamples = useMemo(
+    () => words.filter((w) => w.examples && w.examples.length > 0),
+    [words],
+  );
+
+  /* ── Words we haven't answered yet ── */
   const [remainingWords, setRemainingWords] = useState<Word[]>(() =>
-    shuffle(words),
+    shuffle(wordsWithExamples),
   );
 
   /* ── current puzzle ── */
@@ -73,11 +81,30 @@ export const WordMatchGameBoard = forwardRef<
     const [next, ...rest] = remainingWords;
     setRemainingWords(rest);
 
-    const { bank, target } = buildBank(next);
+    // Pick a random example from the word
+    const examples = next.examples || [];
+    const example =
+      examples.length > 0
+        ? examples[Math.floor(Math.random() * examples.length)]
+        : null;
+
+    if (!example) {
+      // No example available, skip this word
+      nextWord();
+      return;
+    }
+
+    const { target, words: bankWords, originalWords } = buildSentenceBank(
+      example.content,
+    );
+    const targetWords = originalWords.map((w) => w.text);
+
     setPuzzle({
       currentWord: next,
+      currentExample: example,
       target,
-      bank,
+      targetWords,
+      bank: bankWords,
       picked: [],
     });
   }, [remainingWords]);
@@ -89,7 +116,7 @@ export const WordMatchGameBoard = forwardRef<
     }
   }, [remainingWords, puzzle, nextWord]);
 
-  /* ── Handle picking a character from the bank ── */
+  /* ── Handle picking a word from the bank ── */
   const handlePick = useCallback(
     (bankIdx: number) => {
       if (!puzzle) return;
@@ -99,23 +126,26 @@ export const WordMatchGameBoard = forwardRef<
       const newBank = bank.map((b, i) =>
         i === bankIdx ? { ...b, used: true } : b,
       );
-      const pickedChar = bank[bankIdx];
+      const pickedWord = bank[bankIdx];
       setPuzzle({
         ...puzzle,
         bank: newBank,
-        picked: [...puzzle.picked, { char: pickedChar.char, bankIdx }],
+        picked: [
+          ...puzzle.picked,
+          { text: pickedWord.text, sentenceWordIdx: bankIdx },
+        ],
       });
     },
     [puzzle],
   );
 
-  /* ── Handle removing a picked character ── */
+  /* ── Handle removing a picked word ── */
   const handleUnpick = useCallback(
     (pickIdx: number) => {
       if (!puzzle) return;
       const item = puzzle.picked[pickIdx];
       const newBank = puzzle.bank.map((b, i) =>
-        i === item.bankIdx ? { ...b, used: false } : b,
+        i === item.sentenceWordIdx ? { ...b, used: false } : b,
       );
       setPuzzle({
         ...puzzle,
@@ -130,14 +160,15 @@ export const WordMatchGameBoard = forwardRef<
   const check = useCallback(() => {
     if (!puzzle) return;
 
-    const isCorrect = checkAnswer(puzzle.picked, puzzle.target);
+    const isCorrect = checkSentenceAnswer(puzzle.picked, puzzle.targetWords);
 
     if (isCorrect) {
       setCorrectCount((n) => n + 1);
       setTimeout(() => {
         nextWord();
-      }, 600);
+      }, 800);
     } else {
+      // Show wrong state briefly then reset
       setPuzzle({
         ...puzzle,
         picked: [],
@@ -151,12 +182,7 @@ export const WordMatchGameBoard = forwardRef<
   /* ── Derived ── */
   const canCheck = useMemo(() => {
     if (!puzzle) return false;
-    return puzzle.picked.length === Array.from(puzzle.target).length;
-  }, [puzzle]);
-
-  const targetChars = useMemo(() => {
-    if (!puzzle) return [];
-    return Array.from(puzzle.target);
+    return puzzle.picked.length === puzzle.targetWords.length;
   }, [puzzle]);
 
   /* ── Expose handle to parent ── */
@@ -175,7 +201,6 @@ export const WordMatchGameBoard = forwardRef<
 
   /* ── Notify parent when all words are done ── */
   const hasReported = useRef(false);
-  const prevRemainingLength = useRef(remainingWords.length);
 
   useEffect(() => {
     if (
@@ -189,7 +214,8 @@ export const WordMatchGameBoard = forwardRef<
     }
   }, [puzzle, remainingWords, totalAttempted, correctCount, onComplete]);
 
-  /* ── Reset hasReported when words change ── */
+  /* ── Reset hasReported when remainingWords change ── */
+  const prevRemainingLength = useRef(remainingWords.length);
   useEffect(() => {
     if (remainingWords.length !== prevRemainingLength.current) {
       hasReported.current = false;
@@ -204,10 +230,12 @@ export const WordMatchGameBoard = forwardRef<
   return (
     <div className="grow flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-2xl space-y-8">
-        {/* Meaning display */}
+        {/* Meaning & word display */}
         <div className="text-center">
-          <p className={`text-sm uppercase tracking-[0.2em] text-${color}-600/80 font-medium mb-2`}>
-            Ghép chữ theo nghĩa
+          <p
+            className={`text-sm uppercase tracking-[0.2em] text-${color}-600/80 font-medium mb-2`}
+          >
+            Sắp xếp từ để tạo thành câu
           </p>
           <h2 className="text-3xl font-bold text-gray-800">
             {puzzle.currentWord.meaning}
@@ -219,52 +247,65 @@ export const WordMatchGameBoard = forwardRef<
           )}
         </div>
 
-        {/* Picked slots */}
-        <div className={`flex flex-wrap items-center justify-center gap-3 min-h-24 rounded-2xl border-2 border-dashed border-${color}-300 bg-${color}-50/30 p-6`}>
-          {Array.from({ length: targetChars.length }).map((_, i) =>
+        {/* Hint: example meaning */}
+        {puzzle.currentExample.meaning && (
+          <div className="text-center">
+            <p className="text-sm text-gray-500 italic">
+              Gợi ý: {puzzle.currentExample.meaning}
+            </p>
+          </div>
+        )}
+
+        {/* Picked slots - show words in order */}
+        <div
+          className={`flex flex-wrap items-center justify-center gap-2 min-h-24 rounded-2xl border-2 border-dashed border-${color}-300 bg-${color}-50/30 p-6`}
+        >
+          {Array.from({ length: puzzle.targetWords.length }).map((_, i) =>
             puzzle.picked[i] ? (
               <Button
-              key={i}
-              kind="soft"
-              color="rose"
-              size="2xl"
-              spacing="xs"
-              onClick={() => handleUnpick(i)}
-              className={`border-b-4 border-${color}-300`}
-            >
-              {puzzle.picked[i].char}
-            </Button>
+                key={i}
+                kind="soft"
+                color="rose"
+                size="4xl"
+                spacing="sm"
+                onClick={() => handleUnpick(i)}
+                className={`border-b-4 border-${color}-300 font-medium`}
+              >
+                {puzzle.picked[i].text}
+              </Button>
             ) : (
               <span
                 key={i}
-                className={`inline-flex items-center justify-center w-14 h-14 rounded-xl border-2 border-${color}-200 bg-white text-${color}-300 text-2xl`}
+                className={`inline-flex items-center justify-center min-w-16 h-14 rounded-xl border-2 border-${color}-200 bg-white text-${color}-300 text-xl px-4`}
               >
-                ＿
+                ＿＿＿
               </span>
             ),
           )}
         </div>
 
-        {/* Character bank */}
-        <div className={`flex flex-wrap items-center justify-center gap-2 p-4 rounded-xl bg-white shadow-sm border border-${color}-100`}>
+        {/* Word bank */}
+        <div
+          className={`flex flex-wrap items-center justify-center gap-2 p-4 rounded-xl bg-white shadow-sm border border-${color}-100`}
+        >
           {puzzle.bank.map((item, i) => {
-            const isFull = puzzle.picked.length >= targetChars.length;
+            const isFull = puzzle.picked.length >= puzzle.targetWords.length;
             return (
               <Button
-                key={`${item.char}-${i}`}
+                key={`${item.text}-${i}`}
                 kind="soft"
                 color={item.used || isFull ? "slate" : color}
-                size="2xl"
-                spacing="xs"
+                size="4xl"
+                spacing="sm"
                 onClick={() => handlePick(i)}
                 disabled={item.used || isFull}
-                className={`border-b-4 ${
+                className={`border-b-4 font-medium ${
                   item.used || isFull
                     ? "cursor-not-allowed"
                     : `border-${color}-300`
                 }`}
               >
-                {item.char}
+                {item.text}
               </Button>
             );
           })}
@@ -274,4 +315,4 @@ export const WordMatchGameBoard = forwardRef<
   );
 });
 
-WordMatchGameBoard.displayName = "WordMatchGameBoard";
+SentenceBuildBoard.displayName = "SentenceBuildBoard";
